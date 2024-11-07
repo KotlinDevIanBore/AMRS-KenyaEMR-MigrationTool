@@ -1,0 +1,40 @@
+#install mysql
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql.service
+sudo mysql
+sudo mysql_secure_installation
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'Ampath@2024';
+CREATE USER 'kenyaemr'@'%' IDENTIFIED BY 'Ampath@2024';
+GRANT ALL PRIVILEGES ON my_database.* TO 'kenyaemr'@'%';
+FLUSH PRIVILEGES;
+Exit
+
+#- Installing JDK 11
+sudo apt update
+sudo apt install openjdk-11-jdk
+java -version
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+source ~/.bashrc
+
+#- Tomcat 9
+
+
+# - List avalible JDKS
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+
+
+# - Install Tomcat 9
+
+# - Istall GUI to Ubuntu server
+sudo apt install slim
+sudo apt install ubuntu-desktop
+sudo reboot
+
+#- KenyaEMR Setup
+wget https://github.com/palladiumkenya/openmrs-config-kenyaemr/releases/download/v1.10.25.1/KENYAEMR3.X_FACILITY_WIDE_v1.10.25_24_07_2024.zip
+
+[mysqld]
+sql_mode="ALLOW_INVALID_DATES,NO_ENGINE_SUBSTITUTION"
+log_bin_trust_function_creators = 1
