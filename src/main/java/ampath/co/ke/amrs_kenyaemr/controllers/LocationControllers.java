@@ -21,6 +21,7 @@ import java.sql.*;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @Transactional
@@ -53,6 +54,16 @@ public class LocationControllers {
       //  System.out.println("url " + server + " pass " + username + "Password " + password);
         ModelAndView modelAndView = new ModelAndView();
         List<AMRSLocations> locationsList = locationsService.getAll();
+        List<AMRSLocations> distinctSortedLocations = locationsList.stream()
+                .filter(location -> location.getParentlocationName() != null) // Exclude null parentlocationName
+                .collect(Collectors.groupingBy(AMRSLocations::getParentlocationName))
+                .values()
+                .stream()
+                .map(locationGroup -> locationGroup.get(0)) // Take the first entry for each parentlocationName
+                .sorted((l1, l2) -> l1.getParentlocationName().compareToIgnoreCase(l2.getParentlocationName())) // Sort by parentlocationName
+                .collect(Collectors.toList());
+
+
         /*int x = locationsService.getParents().size();
         List<?> listLocations = locationsService.getParents();
         List<AMRSLocations> amrsLocationsList = new ArrayList<>();
@@ -67,8 +78,8 @@ public class LocationControllers {
         }
         */
 
-        System.out.println("Locations Sizes "+ locationsList.size());
-       modelAndView.addObject("parents",locationsList);
+        System.out.println("Locations Sizes "+ locationsList.size() +" distinc "+distinctSortedLocations.size());
+       modelAndView.addObject("parents",distinctSortedLocations);
         modelAndView.setViewName("index");
         return modelAndView;
 
@@ -98,8 +109,13 @@ public class LocationControllers {
                     ae.setParentlocationId(rs.getString(4));
                     ae.setPuuid(rs.getString(5));
                     ae.setParentlocationName(rs.getString(6));
+                    ae.setStatus(1);
                     locationsService.save(ae);
                     System.out.println("test here");
+                }else{
+                    AMRSLocations ae = locations;
+                    ae.setStatus(1);
+                    locationsService.save(ae);
                 }
 
             }
@@ -133,7 +149,7 @@ public class LocationControllers {
        // MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,OpenMRSURL,auth);
         //Relationships
         //Programs
-        MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
+       // MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
 
         System.out.println("AMRS Locations "+locationId);
 

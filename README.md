@@ -2,7 +2,7 @@
 
 Create .env file on your root application with the following valiables
 
-#To run the application
+To run the application
 
 mvn spring-boot:run
 
