@@ -20,8 +20,8 @@ public class MigrateCareData {
                 "pp.date_enrolled,\n" +
                 "pp.date_completed\n" +
                 "from amrs.patient_program pp\n" +
-                "inner join amrs.program p on p.program_id=pp.program_id\n" +
-                "where pp.patient_id=1080061";
+                "inner join amrs.program p on p.program_id=pp.program_id\n"+
+                "where pp.patient_id in (1080061,1080062)";
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -32,10 +32,17 @@ public class MigrateCareData {
         x = rs.getRow();
         rs.beforeFirst();
         while (rs.next()) {
-            List<AMRSPrograms> patientsList = amrsProgramService.getprogramByLocation(rs.getString(2),parentUUID);
-            if (patientsList.size()==0) {
 
-                AMRSPatients amrsPatients = amrsPatientServices.getByPatientID(patientsList.get(0).getPatientid());
+            String patientId = rs.getString("patient_id");
+            String locationId = rs.getString("location_id");
+            String programName = rs.getString("name");
+            String uuid = rs.getString("uuid");
+
+           // List<AMRSPrograms> patientsList = amrsProgramService.getprogramByLocation(rs.getString(2),parentUUID);
+
+            //if (patientsList.size()==0) {
+
+                AMRSPatients amrsPatients = amrsPatientServices.getByPatientID(patientId);
 
                 String person_id=rs.getString(1);
                 AMRSPrograms ae = new AMRSPrograms();
@@ -47,9 +54,9 @@ public class MigrateCareData {
                 ae.setProgramname(rs.getString(2));
                 ae.setDateenrolled(rs.getString(6));
                 ae.setDatecompleted(rs.getString(7));
-                ae.setKenyaemruuid(amrsPatients.getKenyaemrpatientUUID());
+               // ae.setKenyaemruuid(amrsPatients.getKenyaemrpatientUUID());
                 amrsProgramService.save(ae);
-            }
+           // }
 
             }
 

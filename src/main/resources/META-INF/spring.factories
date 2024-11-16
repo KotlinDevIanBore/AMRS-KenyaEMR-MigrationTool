@@ -1,0 +1,1 @@
+org.springframework.boot.env.EnvironmentPostProcessor=ampath.co.ke.amrs_kenyaemr.config.DotenvEnvironmentPostProcessor

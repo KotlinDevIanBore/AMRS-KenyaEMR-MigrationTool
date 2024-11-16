@@ -121,86 +121,90 @@ public class RegisterOpenMRSPayload {
         amrsIdentifiersService.save(ai);
 
         for (int x = 0; x < identifiers.size(); x++) {
+            System.out.println("AMRS ID before Error " + amrsPatients.getPersonId() + " " + amrsPatients.getFamily_name() + " Type Failing" + identifiers.get(x).getIdentifier());
 
-            String identifyType = Mappers.identifers(identifiers.get(x).getUuid());
-            if(identifyType.isEmpty()){
+            if (identifiers.get(x).getUuid() == null) {
 
-            }else {
+            } else {
+                String identifyType = Mappers.identifers(identifiers.get(x).getUuid());
+                if (identifyType.isEmpty() || identifiers.get(x).getUuid() == null) {
 
-                JSONObject jsonIdentifier = new JSONObject();
-                jsonIdentifier.put("identifier", identifiers.get(x).getIdentifier());
-                jsonIdentifier.put("identifierType", identifyType);
-                jsonIdentifier.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
-                jsonIdentifier.put("preferred","false");// identifiers.get(x).getPreferred());
-                Identifierarray.put(jsonIdentifier);
+                } else {
+
+                    JSONObject jsonIdentifier = new JSONObject();
+                    jsonIdentifier.put("identifier", identifiers.get(x).getIdentifier());
+                    jsonIdentifier.put("identifierType", identifyType);
+                    jsonIdentifier.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+                    jsonIdentifier.put("preferred", "false");// identifiers.get(x).getPreferred());
+                    Identifierarray.put(jsonIdentifier);
+                }
             }
         }
-        //Start of Names
-        JSONArray namearray = new JSONArray();
-        JSONObject jsonNames = new JSONObject();
-        jsonNames.put("givenName", amrsPatients.getGiven_name());
-        jsonNames.put("familyName", amrsPatients.getFamily_name());
-        jsonNames.put("middleName", amrsPatients.getMiddle_name());
-        namearray.put(jsonNames);
-        // End of dentifier
-        JSONArray jsonAddressesArray = new JSONArray();
-        JSONObject jsonAddresses = new JSONObject();
-        jsonAddresses.put("address1", amrsPatients.getAddress1());
-        jsonAddresses.put("address2", amrsPatients.getAddress1());
-        jsonAddresses.put("address3", amrsPatients.getAddress4());
-        jsonAddresses.put("address4", amrsPatients.getAddress4());
-        jsonAddressesArray.put(jsonAddresses);
+            //Start of Names
+            JSONArray namearray = new JSONArray();
+            JSONObject jsonNames = new JSONObject();
+            jsonNames.put("givenName", amrsPatients.getGiven_name());
+            jsonNames.put("familyName", amrsPatients.getFamily_name());
+            jsonNames.put("middleName", amrsPatients.getMiddle_name());
+            namearray.put(jsonNames);
+            // End of dentifier
+            JSONArray jsonAddressesArray = new JSONArray();
+            JSONObject jsonAddresses = new JSONObject();
+            jsonAddresses.put("address1", amrsPatients.getAddress1());
+            jsonAddresses.put("address2", amrsPatients.getAddress1());
+            jsonAddresses.put("address3", amrsPatients.getAddress4());
+            jsonAddresses.put("address4", amrsPatients.getAddress4());
+            jsonAddressesArray.put(jsonAddresses);
 
-        //person
-        JSONObject jsonPerson = new JSONObject();
-        jsonPerson.put("gender", amrsPatients.getGender());
-        jsonPerson.put("birthdate", amrsPatients.getBirthdate());// sdf2.format(sdf.parse(startDateString)));
-        String birthdateEstimatedc = amrsPatients.getBirthdate_estimated();
-        String birthdateEstimated = "false";
-        if (birthdateEstimatedc.equals("0")) {
-            birthdateEstimated = "false";
-        } else {
-            birthdateEstimated = "true";
+            //person
+            JSONObject jsonPerson = new JSONObject();
+            jsonPerson.put("gender", amrsPatients.getGender());
+            jsonPerson.put("birthdate", amrsPatients.getBirthdate());// sdf2.format(sdf.parse(startDateString)));
+            String birthdateEstimatedc = amrsPatients.getBirthdate_estimated();
+            String birthdateEstimated = "false";
+            if (birthdateEstimatedc.equals("0")) {
+                birthdateEstimated = "false";
+            } else {
+                birthdateEstimated = "true";
+            }
+            jsonPerson.put("birthdateEstimated", birthdateEstimated);
+            String dead = amrsPatients.getDead();
+            String deadcheck = "false";
+            if (dead.equals("0")) {
+                deadcheck = "false";
+            } else {
+                deadcheck = "true";
+            }
+            jsonPerson.put("dead", deadcheck);
+            jsonPerson.put("names", namearray);
+            jsonPerson.put("addresses", jsonAddressesArray);
+
+            JSONObject patientObject = new JSONObject();
+            patientObject.put("identifiers", Identifierarray);
+            patientObject.put("person", jsonPerson);
+
+            // Basic Authentication
+            // String auth = "admin" + ":" + "Admin123";
+            // String encodedAuth = java.util.Base64.getEncoder().encodeToString(auth.getBytes());
+            // String url = "http://192.168.100.48:8080/openmrs/ws/rest/v1/";
+
+            OkHttpClient client = new OkHttpClient();
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody body = RequestBody.create(mediaType, patientObject.toString());
+            Request request = new Request.Builder()
+                    .url(url + "patient")
+                    .method("POST", body)
+                    .addHeader("Authorization", "Basic " + auth)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+            Response response = client.newCall(request).execute();
+
+            // System.out.println("Response ndo hii " + jsonUser.toString());
+            System.out.println("Response ndo hii " + response.request() + " More message " + response.message());
+            amrsPatients.setMigrated(1);
+            amrsPatients.setResponse_code(response.code());
+            //amrsPatients.setKenyaemrpatientUUID();
+            amrsPatientServices.save(amrsPatients);
+            System.out.println("identifers ndo hii " + patientObject.toString());
         }
-        jsonPerson.put("birthdateEstimated", birthdateEstimated);
-        String dead = amrsPatients.getDead();
-        String deadcheck = "false";
-        if (dead.equals("0")) {
-            deadcheck = "false";
-        } else {
-            deadcheck = "true";
-        }
-        jsonPerson.put("dead", deadcheck);
-        jsonPerson.put("names", namearray);
-        jsonPerson.put("addresses", jsonAddressesArray);
-
-        JSONObject patientObject = new JSONObject();
-        patientObject.put("identifiers", Identifierarray);
-        patientObject.put("person", jsonPerson);
-
-        // Basic Authentication
-       // String auth = "admin" + ":" + "Admin123";
-       // String encodedAuth = java.util.Base64.getEncoder().encodeToString(auth.getBytes());
-       // String url = "http://192.168.100.48:8080/openmrs/ws/rest/v1/";
-
-        OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, patientObject.toString());
-        Request request = new Request.Builder()
-                .url(url + "patient")
-                .method("POST", body)
-                .addHeader("Authorization", "Basic " + auth)
-                .addHeader("Content-Type", "application/json")
-                .build();
-        Response response = client.newCall(request).execute();
-
-        // System.out.println("Response ndo hii " + jsonUser.toString());
-        System.out.println("Response ndo hii " + response.request()+" More message "+ response.message());
-        amrsPatients.setMigrated(1);
-        amrsPatients.setResponse_code(response.code());
-        //amrsPatients.setKenyaemrpatientUUID();
-        amrsPatientServices.save(amrsPatients);
-        System.out.println("identifers ndo hii "+ patientObject.toString());
-
-    }
 }

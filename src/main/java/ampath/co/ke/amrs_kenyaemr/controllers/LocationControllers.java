@@ -128,12 +128,12 @@ public class LocationControllers {
                           @PathVariable(name = "puuid") String parentUuid) throws SQLException, JSONException, ParseException, IOException {
 
         //System Users default password to super users
-       // MigrateRegistration.users(server,username,password,locationId,parentUuid, amrsUserServices,OpenMRSURL,auth);
+        ///MigrateRegistration.users(server,username,password,locationId,parentUuid, amrsUserServices,OpenMRSURL,auth);
         //Patient Registration & identifiers
-         MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,OpenMRSURL,auth);
+       // MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,OpenMRSURL,auth);
         //Relationships
         //Programs
-        //MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
+        MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
 
         System.out.println("AMRS Locations "+locationId);
 
