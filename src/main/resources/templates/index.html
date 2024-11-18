@@ -211,7 +211,7 @@
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"></script> -->
 <script>
 function getmodules(id){
-alert(id);
+//alert(id);
 $.get( "/locations/modules/" + id, function( data ) {
     var sites='';
     var location_id='';
@@ -225,7 +225,7 @@ $.get( "/locations/modules/" + id, function( data ) {
     });
     sites = sites.substring(1);
     location_id = location_id.substring(1);
-    alert(sites+''+ location_id);
+   // alert(sites+''+ location_id);
     $('#txtmodules').val(sites) ;
     $('#txtLocationIds').val(location_id) ;
 
@@ -238,7 +238,7 @@ function migrate(){
     var parent_uuid = document.getElementById('locations').value;
 
     $.get( "/locations/migrate/" + location_id+"/"+parent_uuid, function( data ) {
-    alert(data);
+    //alert(data);
 
    });
 }
