@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service("patientsService")
 public class AMRSPatientServices {
@@ -28,6 +29,9 @@ public class AMRSPatientServices {
 
     public List<AMRSPatients> getPatientByLocation(String uuid,String location) {
         return amrsPatientsRespository.findByUuidAndParentlocationuuid(uuid, location);
+    }
+    public List<AMRSPatients> findFirstByOrderByIdDesc() {
+        return amrsPatientsRespository.findFirstByOrderByIdDesc();
     }
     public AMRSPatients save(AMRSPatients dataset) {
         return amrsPatientsRespository.save(dataset);

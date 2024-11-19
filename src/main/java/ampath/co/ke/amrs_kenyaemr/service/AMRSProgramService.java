@@ -23,7 +23,7 @@ public class AMRSProgramService {
     }
 
     public List<AMRSPrograms> getprogramByLocation(String uuid,String location) {
-        return amrsProgramsRepository.findByUuidAndParentlocationuuid(uuid, location);
+        return amrsProgramsRepository.findByUUIDAndParentLocationUuid(uuid, location);
     }
     public AMRSPrograms save(AMRSPrograms dataset) {
         return amrsProgramsRepository.save(dataset);

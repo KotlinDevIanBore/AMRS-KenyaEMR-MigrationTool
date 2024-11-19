@@ -36,6 +36,7 @@ public class SecurityConfiguration  {
                 .authorizeHttpRequests()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/locations/**").permitAll()
+                .requestMatchers("/mappings/**").permitAll()
                 .requestMatchers("/static/**").permitAll()
                 .requestMatchers("/assets/**").permitAll()
                 .requestMatchers("/*").permitAll()

@@ -8,96 +8,127 @@ public class AMRSPrograms {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Integer id;
-    @Column(name="uuid")
-    private String uuid;
-    @Column(name="patientid")
-    private String patientid;
 
-    @Column(name="patientkenyaemruuid")
-    private String patientkenyaemruuid;
-    @Column(name="kenyaemruuid")
-    private String kenyaemruuid;
-    @Column(name="programname")
-    private String programname;
-    @Column(name="locationid")
-    private String locationid;
-    @Column(name="conceptid")
-    private String conceptid;
-    @Column(name="dateenrolled")
-    private String dateenrolled;
-    @Column(name="datecompleted")
-    private String datecompleted;
-    @Column(name = "parent_location_uuid")
-    private String parentlocationuuid;
-    @Column(name = "migrated")
+    private Integer Id;
+    private String UUID;
+    private String patientId;
+
+    //@Column(name="patient_kenyaemr_uuid")
+    private String patientKenyaemrUuid;
+
+    private String kenyaemrUUID;
+
+    private String programName;
+
+    private String locationId;
+
+    private String locationUUID;
+
+    private String conceptId;
+
+    private String dateEnrolled;
+
+    private String dateCompleted;
+
+    private String parentLocationUuid;
+
     private int migrated;
-
-    @Column(name = "response_code")
-    private int response_code;
+    private int responseCode;
 
     public Integer getId() {
-        return id;
+        return Id;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.Id = id;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getUUID() {
+        return UUID;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
     }
 
-    public String getKenyaemruuid() {
-        return kenyaemruuid;
+    public String getPatientId() {
+        return patientId;
     }
 
-    public void setKenyaemruuid(String kenyaemruuid) {
-        this.kenyaemruuid = kenyaemruuid;
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
-    public String getProgramname() {
-        return programname;
+    public String getPatientKenyaemrUuid() {
+        return patientKenyaemrUuid;
     }
 
-    public void setProgramname(String programname) {
-        this.programname = programname;
+    public void setPatientKenyaemrUuid(String patientKenyaemrUuid) {
+        this.patientKenyaemrUuid = patientKenyaemrUuid;
     }
 
-    public String getLocationid() {
-        return locationid;
+    public String getKenyaemrUUID() {
+        return kenyaemrUUID;
     }
 
-    public void setLocationid(String locationid) {
-        this.locationid = locationid;
+    public void setKenyaemrUUID(String kenyaemrUUID) {
+        this.kenyaemrUUID = kenyaemrUUID;
     }
 
-    public String getConceptid() {
-        return conceptid;
+    public String getProgramName() {
+        return programName;
     }
 
-    public void setConceptid(String conceptid) {
-        this.conceptid = conceptid;
+    public void setProgramName(String programName) {
+        this.programName = programName;
     }
 
-    public String getDateenrolled() {
-        return dateenrolled;
+    public String getLocationId() {
+        return locationId;
     }
 
-    public void setDateenrolled(String dateenrolled) {
-        this.dateenrolled = dateenrolled;
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
     }
 
-    public String getParentlocationuuid() {
-        return parentlocationuuid;
+    public String getLocationUUID() {
+        return locationUUID;
     }
 
-    public void setParentlocationuuid(String parentlocationuuid) {
-        this.parentlocationuuid = parentlocationuuid;
+    public void setLocationUUID(String locationUUID) {
+        this.locationUUID = locationUUID;
+    }
+
+    public String getConceptId() {
+        return conceptId;
+    }
+
+    public void setConceptId(String conceptId) {
+        this.conceptId = conceptId;
+    }
+
+    public String getDateEnrolled() {
+        return dateEnrolled;
+    }
+
+    public void setDateEnrolled(String dateEnrolled) {
+        this.dateEnrolled = dateEnrolled;
+    }
+
+    public String getDateCompleted() {
+        return dateCompleted;
+    }
+
+    public void setDateCompleted(String dateCompleted) {
+        this.dateCompleted = dateCompleted;
+    }
+
+    public String getParentLocationUuid() {
+        return parentLocationUuid;
+    }
+
+    public void setParentLocationUuid(String parentLocationUuid) {
+        this.parentLocationUuid = parentLocationUuid;
     }
 
     public int getMigrated() {
@@ -108,35 +139,11 @@ public class AMRSPrograms {
         this.migrated = migrated;
     }
 
-    public int getResponse_code() {
-        return response_code;
+    public int getResponseCode() {
+        return responseCode;
     }
 
-    public void setResponse_code(int response_code) {
-        this.response_code = response_code;
-    }
-
-    public String getPatientid() {
-        return patientid;
-    }
-
-    public void setPatientid(String patientid) {
-        this.patientid = patientid;
-    }
-
-    public String getDatecompleted() {
-        return datecompleted;
-    }
-
-    public void setDatecompleted(String datecompleted) {
-        this.datecompleted = datecompleted;
-    }
-
-    public String getPatientkenyaemruuid() {
-        return patientkenyaemruuid;
-    }
-
-    public void setPatientkenyaemruuid(String patientkenyaemruuid) {
-        this.patientkenyaemruuid = patientkenyaemruuid;
+    public void setResponseCode(int responseCode) {
+        this.responseCode = responseCode;
     }
 }
