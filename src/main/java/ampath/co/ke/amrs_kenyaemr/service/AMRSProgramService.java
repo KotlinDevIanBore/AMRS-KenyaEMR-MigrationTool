@@ -25,6 +25,14 @@ public class AMRSProgramService {
     public List<AMRSPrograms> getprogramByLocation(String uuid,String location) {
         return amrsProgramsRepository.findByUUIDAndParentLocationUuid(uuid, location);
     }
+    public List<AMRSPrograms> findByPatientIdAndProgramID(String pateint_id,int pid) {
+        return amrsProgramsRepository.findByPatientIdAndProgramID(pateint_id, pid);
+    }
+    public List<AMRSPrograms> findByParentLocationUuid(String location) {
+        return amrsProgramsRepository.findByParentLocationUuid(location);
+    }
+
+
     public AMRSPrograms save(AMRSPrograms dataset) {
         return amrsProgramsRepository.save(dataset);
     }

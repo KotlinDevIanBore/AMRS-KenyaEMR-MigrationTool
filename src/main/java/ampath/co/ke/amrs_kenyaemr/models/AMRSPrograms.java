@@ -13,12 +13,12 @@ public class AMRSPrograms {
     private String UUID;
     private String patientId;
 
-    //@Column(name="patient_kenyaemr_uuid")
     private String patientKenyaemrUuid;
 
     private String kenyaemrUUID;
 
     private String programName;
+    private String programUUID;
 
     private String locationId;
 
@@ -34,6 +34,8 @@ public class AMRSPrograms {
 
     private int migrated;
     private int responseCode;
+
+    private int programID;
 
     public Integer getId() {
         return Id;
@@ -145,5 +147,21 @@ public class AMRSPrograms {
 
     public void setResponseCode(int responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public int getProgramID() {
+        return programID;
+    }
+
+    public void setProgramID(int programID) {
+        this.programID = programID;
+    }
+
+    public String getProgramUUID() {
+        return programUUID;
+    }
+
+    public void setProgramUUID(String programUUID) {
+        this.programUUID = programUUID;
     }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository("AMRSPatientRepository")
 public interface AMRSPatientsRespository extends JpaRepository<AMRSPatients, Long> {
     AMRSPatients findById(int pid);
-    AMRSPatients findByPersonId(String pid);
+    List<AMRSPatients> findByPersonId(String pid);
     List<AMRSPatients> findByUuid(String uuid);
     List<AMRSPatients> findAll();
     List<AMRSPatients> findByUuidAndParentlocationuuid(String uuid,String location);

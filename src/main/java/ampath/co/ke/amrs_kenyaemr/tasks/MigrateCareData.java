@@ -2,14 +2,10 @@ package ampath.co.ke.amrs_kenyaemr.tasks;
 
 import ampath.co.ke.amrs_kenyaemr.models.*;
 import ampath.co.ke.amrs_kenyaemr.service.*;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.json.JSONArray;
+import ampath.co.ke.amrs_kenyaemr.tasks.payloads.CareOpenMRSPayload;
+import ampath.co.ke.amrs_kenyaemr.tasks.payloads.EncountersPayload;
+import ampath.co.ke.amrs_kenyaemr.tasks.payloads.EnrollmentsPayload;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.sql.*;
@@ -26,16 +22,14 @@ public class MigrateCareData {
                 "       l.uuid location_uuid,\n" +
                 "       p.concept_id,\n" +
                 "       pp.date_enrolled,\n" +
-                "       pp.date_completed\n" +
+                "       pp.date_completed,\n" +
+                "       p.program_id\n" +
                 "       from amrs.patient_program pp\n" +
                 "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
                 "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                 "       inner join amrs.location l on l.location_id = e.location_id\n" +
-                "       and\n" +
-                "       -- where pp.patient_id in (1080061,1080062) and \n" +
-                "       l.uuid in (\"08feb14c-1352-11df-a1f1-0026b9348838\",\n" +
-                "\"8cad59c8-7f88-4964-aa9e-908f417f70b2\")\n" +
-                "       group by  pp.patient_id,p.concept_id";
+                "       and l.uuid in ('"+ locations +"') and e. patient_id in ('1224605,1222698')\n" +
+                "       group by  pp.patient_id,p.concept_id  order by pp.patient_id desc limit 100";
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -50,30 +44,44 @@ public class MigrateCareData {
             String patientId = rs.getString("patient_id");
             String locationId = rs.getString("location_id");
             String programName = rs.getString("name");
-            String uuid = rs.getString("uuid");
+            String programUuid = rs.getString("program_uuid");
+            String locationUuid = rs.getString("location_uuid");
+            String conceptId = rs.getString("concept_id");
+            String dateEnrolled = rs.getString("date_enrolled");
+            String dateCompleted = rs.getString("date_completed");
+            String programId = rs.getString("program_id");
+
 
            // List<AMRSPrograms> patientsList = amrsProgramService.getprogramByLocation(rs.getString(2),parentUUID);
 
             //if (patientsList.size()==0) {
 
-                AMRSPatients amrsPatients = amrsPatientServices.getByPatientID(patientId);
+                List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
 
-                String person_id=rs.getString(1);
-                AMRSPrograms ae = new AMRSPrograms();
-                ae.setPatientId(person_id);
-                ae.setParentLocationUuid(parentUUID);
-                ae.setLocationId(rs.getString(4));
-                ae.setUUID(rs.getString(3));
-                ae.setConceptId(rs.getString(5));
-                ae.setProgramName(rs.getString(2));
-                ae.setDateEnrolled(rs.getString(6));
-                ae.setDateCompleted(rs.getString(7));
-               // ae.setKenyaemruuid(amrsPatients.getKenyaemrpatientUUID());
-                amrsProgramService.save(ae);
-           // }
+                String person_id=patientId;
+                List<AMRSPrograms> amrsPrograms = amrsProgramService.findByPatientIdAndProgramID(patientId, Integer.parseInt(programId));
+               if(amrsPrograms.size()==0) {
+                   AMRSPrograms ae = new AMRSPrograms();
+                   ae.setProgramUUID(programUuid);
+                   ae.setPatientId(person_id);
+                   ae.setParentLocationUuid(parentUUID);
+                   ae.setLocationId(locationId);
+                   ae.setUUID(String.valueOf(UUID.randomUUID()));
+                   ae.setProgramID(Integer.parseInt(programId));
+                   ae.setConceptId(conceptId);
+                   ae.setProgramName(programName);
+                   ae.setDateEnrolled(dateEnrolled);
+                   ae.setDateCompleted(dateCompleted);
+                   ae.setPatientKenyaemrUuid(amrsPatients.get(0).getKenyaemrpatientUUID());
+                   //ae.setKenyaemruuid(amrsPatients.getKenyaemrpatientUUID());
+                   amrsProgramService.save(ae);
+                   // }
+               }else{
+
+               }
 
             //Migate Programs
-           // ProgramsPayload.programs(ae,amrsUserServices,url,auth);
+            CareOpenMRSPayload.programs(amrsProgramService,locations,parentUUID,url,auth);
             }
 
         }

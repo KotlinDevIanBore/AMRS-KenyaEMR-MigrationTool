@@ -23,7 +23,7 @@ public class AMRSPatientServices {
         return amrsPatientsRespository.findAll();
     }
 
-    public AMRSPatients getByPatientID(String pid) {
+    public List<AMRSPatients> getByPatientID(String pid) {
         return amrsPatientsRespository.findByPersonId(pid);
     }
 

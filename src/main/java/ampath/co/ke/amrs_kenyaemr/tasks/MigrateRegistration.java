@@ -6,15 +6,13 @@ import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSIdentifiersService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSUserServices;
-import org.json.JSONArray;
+import ampath.co.ke.amrs_kenyaemr.tasks.payloads.RegisterOpenMRSPayload;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MigrateRegistration {
@@ -52,7 +50,7 @@ public class MigrateRegistration {
                 "inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
                 "where location_id in ('"+ locations+"') \n" +
                 "group by u.user_id\n" +
-                "order by u.username asc limit 25");
+                "order by u.username asc");
         rs.last();
         x = rs.getRow();
         rs.beforeFirst();
@@ -149,7 +147,7 @@ public class MigrateRegistration {
                  "inner join amrs.location l on e.location_id=l.location_id\n" +
                  "where l.uuid in ('" + locations + "') and p.person_id < '"+ pid +"'  \n" +
                  "group by pt.patient_id\n" +
-                 "order by e.patient_id desc ";
+                 "order by e.patient_id desc";
      }
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);

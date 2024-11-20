@@ -1,4 +1,4 @@
-package ampath.co.ke.amrs_kenyaemr.tasks;
+package ampath.co.ke.amrs_kenyaemr.tasks.payloads;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSUserServices;
@@ -9,12 +9,11 @@ import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.text.ParseException;
 
-public class EncountersPayload {
+public class EnrollmentsPayload {
     public static void programs(AMRSUsers amrsUsers, AMRSUserServices amrsUserServices, String url, String auth) throws JSONException, ParseException, IOException {
     }
     public  static void encounters( String url, String auth) throws JSONException, IOException {
