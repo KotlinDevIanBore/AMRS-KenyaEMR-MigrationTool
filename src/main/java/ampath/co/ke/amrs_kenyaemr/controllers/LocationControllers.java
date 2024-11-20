@@ -48,12 +48,19 @@ public class LocationControllers {
     private AMRSPatientServices amrsPatientServices;
     @Autowired
     private AMRSProgramService amrsProgramService;
+    @Autowired
+    private AMRSEnrollmentService amrsEnrollmentService;
+    @Autowired
+    private AMRSEncounterService amrsEncounterService;
+    @Autowired
+    private AMRSConceptMappingService amrsConceptMappingService;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView Locations(){
       //  System.out.println("url " + server + " pass " + username + "Password " + password);
         ModelAndView modelAndView = new ModelAndView();
         List<AMRSLocations> locationsList = locationsService.getAll();
+
         List<AMRSLocations> distinctSortedLocations = locationsList.stream()
                 .filter(location -> location.getParentlocationName() != null) // Exclude null parentlocationName
                 .collect(Collectors.groupingBy(AMRSLocations::getParentlocationName))
@@ -77,9 +84,8 @@ public class LocationControllers {
           System.out.println("Locations uuid "+ uuid);
         }
         */
-
-        System.out.println("Locations Sizes "+ locationsList.size() +" distinc "+distinctSortedLocations.size());
-       modelAndView.addObject("parents",distinctSortedLocations);
+       // System.out.println("Locations Sizes "+ locationsList.size() +" distinc "+distinctSortedLocations.size());
+        modelAndView.addObject("parents",distinctSortedLocations);
         modelAndView.setViewName("index");
         return modelAndView;
 
@@ -94,7 +100,11 @@ public class LocationControllers {
             Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_READ_ONLY);
            // ResultSet rs = stmt.executeQuery("SELECT location_id,location_name,uuid,parent_location,parent_uuid,parent_name,id FROM amrs_etl.location; ");
-        ResultSet rs = stmt.executeQuery("SELECT location_id,location_name,uuid,case when parent_location is null then location_id else parent_location end as parent_location  ,case when parent_location is null then uuid else parent_uuid end parent_uuid ,case when parent_name is null then location_name else parent_name end as location_name,id FROM amrs_etl.location;");
+       // ResultSet rs = stmt.executeQuery("SELECT location_id,location_name,uuid,case when parent_location is null then location_id else parent_location end as parent_location  ,case when parent_location is null then uuid else parent_uuid end parent_uuid ,case when parent_name is null then location_name else parent_name end as location_name,id FROM amrs_etl.location;");
+         ResultSet rs=stmt.executeQuery(" select location_id,name,description,parent_location" +
+                 " from amrs.location where location_id in(select distinct(parent_location)\n" +
+                 " from amrs.location l where l.parent_location is not null)\n" +
+                 " order by name asc");
             rs.last();
             x = rs.getRow();
             rs.beforeFirst();
@@ -144,12 +154,16 @@ public class LocationControllers {
                           @PathVariable(name = "puuid") String parentUuid) throws SQLException, JSONException, ParseException, IOException {
 
         //System Users default password to super users
-        ///MigrateRegistration.users(server,username,password,locationId,parentUuid, amrsUserServices,OpenMRSURL,auth);
+         MigrateRegistration.users(server,username,password,locationId,parentUuid, amrsUserServices,OpenMRSURL,auth);
         //Patient Registration & identifiers
-       // MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,OpenMRSURL,auth);
+        MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,OpenMRSURL,auth);
         //Relationships
         //Programs
-        MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
+        ///MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
+       //Encounters
+        /// MigrateCareData.encounters(server,username,password,locationId,parentUuid,amrsEncounterService,amrsPatientServices, amrsConceptMappingService,OpenMRSURL,auth);
+       //Enrollments
+        // MigrateCareData.enrollments(server,username,password,locationId,parentUuid,amrsEnrollmentService,amrsPatientServices,OpenMRSURL,auth);
 
         System.out.println("AMRS Locations "+locationId);
 

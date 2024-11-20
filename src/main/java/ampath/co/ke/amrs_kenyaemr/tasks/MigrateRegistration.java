@@ -6,18 +6,19 @@ import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSIdentifiersService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSUserServices;
-import org.json.JSONArray;
+import ampath.co.ke.amrs_kenyaemr.tasks.payloads.RegisterOpenMRSPayload;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MigrateRegistration {
+
+    @Autowired
+    AMRSPatientServices amrsPatientServices;
     public static void users(String server, String username, String password, String locations, String parentUUID,AMRSUserServices amrsUserServices,String url,String auth) throws SQLException, JSONException, ParseException, IOException {
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
@@ -49,7 +50,7 @@ public class MigrateRegistration {
                 "inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
                 "where location_id in ('"+ locations+"') \n" +
                 "group by u.user_id\n" +
-                "order by u.username asc limit 25");
+                "order by u.username asc");
         rs.last();
         x = rs.getRow();
         rs.beforeFirst();
@@ -87,33 +88,67 @@ public class MigrateRegistration {
     }
     //Patients
     public static void patients (String server, String username, String password, String locations, String parentUUID, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,String url,String auth) throws SQLException, JSONException, ParseException, IOException {
-        String sql ="select \n" +
-                "p.uuid,\n" +
-                "p.person_id,\n" +
-                "pn.given_name,\n" +
-                "pn.family_name,\n" +
-                "pn.middle_name,\n" +
-                "p.gender,\n" +
-                "p.birthdate,\n" +
-                "pa.address1,\n" +
-                "pa.county_district,\n" +
-                "pa.address4,\n" +
-                "pa.address5,\n" +
-                "pa.address6,\n" +
-                "p.dead,\n" +
-                "p.birthdate_estimated,\n" +
-                "p.voided,\n" +
-                "l.location_id,\n" +
-                "l.name\n" +
-                "from amrs.encounter e \n" +
-                "inner join amrs.patient pt on e.patient_id =pt.patient_id\n" +
-                "inner join amrs.person p on p.person_id=pt.patient_id\n" +
-                "inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
-                "inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
-                "inner join amrs.location l on e.location_id=l.location_id\n" +
-                "where e.location_id in ('"+ locations +"') and e.patient_id<1098247 \n" +
-                "group by pt.patient_id\n" +
-                "order by e.patient_id desc";
+      List<AMRSPatients> patientsListt = amrsPatientServices.findFirstByOrderByIdDesc();
+        String sql="";
+     if(patientsListt.size()==0){
+         sql = "select \n" +
+                 "p.uuid,\n" +
+                 "p.person_id,\n" +
+                 "pn.given_name,\n" +
+                 "pn.family_name,\n" +
+                 "pn.middle_name,\n" +
+                 "p.gender,\n" +
+                 "p.birthdate,\n" +
+                 "pa.address1,\n" +
+                 "pa.county_district,\n" +
+                 "pa.address4,\n" +
+                 "pa.address5,\n" +
+                 "pa.address6,\n" +
+                 "p.dead,\n" +
+                 "p.birthdate_estimated,\n" +
+                 "p.voided,\n" +
+                 "l.location_id,\n" +
+                 "l.name\n" +
+                 "from amrs.encounter e \n" +
+                 "inner join amrs.patient pt on e.patient_id =pt.patient_id\n" +
+                 "inner join amrs.person p on p.person_id=pt.patient_id\n" +
+                 "inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
+                 "inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
+                 "inner join amrs.location l on e.location_id=l.location_id\n" +
+                 "where l.uuid in ('" + locations + "') \n" +
+                 "group by pt.patient_id\n" +
+                 "order by e.patient_id desc ";
+     }else {
+         String pid = patientsListt.get(0).getPersonId();
+
+         sql = "select \n" +
+                 "p.uuid,\n" +
+                 "p.person_id,\n" +
+                 "pn.given_name,\n" +
+                 "pn.family_name,\n" +
+                 "pn.middle_name,\n" +
+                 "p.gender,\n" +
+                 "p.birthdate,\n" +
+                 "pa.address1,\n" +
+                 "pa.county_district,\n" +
+                 "pa.address4,\n" +
+                 "pa.address5,\n" +
+                 "pa.address6,\n" +
+                 "p.dead,\n" +
+                 "p.birthdate_estimated,\n" +
+                 "p.voided,\n" +
+                 "l.location_id,\n" +
+                 "l.name\n" +
+                 "from amrs.encounter e \n" +
+                 "inner join amrs.patient pt on e.patient_id =pt.patient_id\n" +
+                 "inner join amrs.person p on p.person_id=pt.patient_id\n" +
+                 "inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
+                 "inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
+                 "inner join amrs.location l on e.location_id=l.location_id\n" +
+                 "where l.uuid in ('" + locations + "') and p.person_id < '"+ pid +"'  \n" +
+                 "group by pt.patient_id\n" +
+                 "order by e.patient_id desc";
+     }
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;

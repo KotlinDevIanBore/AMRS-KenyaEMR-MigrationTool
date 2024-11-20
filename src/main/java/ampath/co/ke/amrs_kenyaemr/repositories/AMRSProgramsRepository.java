@@ -10,6 +10,8 @@ import java.util.List;
 @Repository("AMRSProgramsRepository")
 public interface AMRSProgramsRepository extends JpaRepository<AMRSPrograms, Long> {
     AMRSPrograms findById(int pid);
-    List<AMRSPrograms> findByUuid(String uuid);
-    List<AMRSPrograms> findByUuidAndParentlocationuuid(String uuid,String location);
+    List<AMRSPrograms> findByUUID(String uuid);
+    List<AMRSPrograms> findByUUIDAndParentLocationUuid(String uuid,String location);
+    List<AMRSPrograms> findByParentLocationUuid(String location);
+    List<AMRSPrograms> findByPatientIdAndProgramID(String patient_id,int pid);
 }

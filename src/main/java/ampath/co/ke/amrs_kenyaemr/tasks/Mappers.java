@@ -62,6 +62,11 @@ public class Mappers {
         else if(uuid.equals("fc15ac01-5381-4854-bf5e-917c907aa77f")){
             //NCD
             programs="ffee43c4-9ccd-4e55-8a70-93194e7fafc6";}
+        else if(uuid.equals("9bb195d1-5a64-4fa7-80ab-ab2f1e21583f")){
+            //HEI - MCH Child
+            programs="c2ecdf11-97cd-432a-a971-cfd9bd296b83";}
+
+
         return programs;
     }
 

@@ -1,4 +1,4 @@
-package ampath.co.ke.amrs_kenyaemr.tasks;
+package ampath.co.ke.amrs_kenyaemr.tasks.payloads;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSIdentifiers;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
@@ -6,6 +6,8 @@ import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSIdentifiersService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSUserServices;
+import ampath.co.ke.amrs_kenyaemr.tasks.IdentifierGenerator;
+import ampath.co.ke.amrs_kenyaemr.tasks.Mappers;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -198,12 +200,25 @@ public class RegisterOpenMRSPayload {
                     .addHeader("Content-Type", "application/json")
                     .build();
             Response response = client.newCall(request).execute();
+        String responseBody = response.body().string(); // Get the response as a string
+        //System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
+        JSONObject jsonObject = new JSONObject(responseBody);
 
-            // System.out.println("Response ndo hii " + jsonUser.toString());
+        // Extract the person UUID
+        String personUuid = jsonObject.getJSONObject("person").getString("uuid");
+
+        // Print the person UUID
+        System.out.println("Person UUID: " + personUuid);
+        // Assuming the response is in JSON format and contains a 'uuid' field
+        JSONObject jsonResponse = new JSONObject(responseBody); // Use a JSON parsing library
+        String patientUuid = jsonResponse.optString("uuid", "UUID not found");
+
+
+        // System.out.println("Response ndo hii " + jsonUser.toString());
             System.out.println("Response ndo hii " + response.request() + " More message " + response.message());
             amrsPatients.setMigrated(1);
             amrsPatients.setResponse_code(response.code());
-            //amrsPatients.setKenyaemrpatientUUID();
+            amrsPatients.setKenyaemrpatientUUID(personUuid);
             amrsPatientServices.save(amrsPatients);
             System.out.println("identifers ndo hii " + patientObject.toString());
         }
