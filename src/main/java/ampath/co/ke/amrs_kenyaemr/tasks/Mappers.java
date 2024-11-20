@@ -31,7 +31,14 @@ public class Mappers {
     }
     public static String programs(String uuid) {
         String programs="";
-        if(uuid.equals("58a47054-1359-11df-a1f1-0026b9348838")||uuid.equals("781d85b0-1359-11df-a1f1-0026b9348838")){
+        if(uuid.equals("58a47054-1359-11df-a1f1-0026b9348838")||
+                uuid.equals("781d85b0-1359-11df-a1f1-0026b9348838")||
+                uuid.equals("c6bf3625-de80-4a88-a913-38273e300a55")||
+                uuid.equals("96ba279b-b23b-4e78-aba9-dcbd46a96b7b")||
+                uuid.equals(" 7843bd0e-2309-44dd-963b-1380789c372c")||
+                uuid.equals("3aebf7f4-bb06-40e9-9eb4-0a6ea458bc63")||
+                uuid.equals("334c9e98-173f-4454-a8ce-f80b20b7fdf0")
+        ){
             //HIV
             programs="dfdc6d40-2f2f-463d-ba90-cc97350441a8";
         }

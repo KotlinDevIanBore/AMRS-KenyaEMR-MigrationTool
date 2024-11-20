@@ -16,21 +16,45 @@ import java.util.UUID;
 
 public class MigrateCareData {
     public static void programs (String server, String username, String password, String locations, String parentUUID, AMRSProgramService amrsProgramService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-        String sql="select  pp.patient_id, \n" +
-                "       p.name,\n" +
-                "       p.uuid program_uuid,\n" +
-                "       pp.location_id,\n" +
-                "       l.uuid location_uuid,\n" +
-                "       p.concept_id,\n" +
-                "       pp.date_enrolled,\n" +
-                "       pp.date_completed,\n" +
-                "       p.program_id\n" +
-                "       from amrs.patient_program pp\n" +
-                "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
-                "       inner join amrs.program p on p.program_id=pp.program_id\n" +
-                "       inner join amrs.location l on l.location_id = e.location_id\n" +
-                "       and l.uuid in ("+ locations +") \n" + //and e. patient_id in ('1224605,1222698')
-                "       group by  pp.patient_id,p.concept_id  order by pp.patient_id desc";
+       List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
+        String sql="";
+        if(amrsProgramss.size()>0){
+            int pid = Integer.parseInt(amrsProgramss.get(0).getPatientId());
+            sql = "select  pp.patient_id, \n" +
+                    "       p.name,\n" +
+                    "       p.uuid program_uuid,\n" +
+                    "       pp.location_id,\n" +
+                    "       l.uuid location_uuid,\n" +
+                    "       p.concept_id,\n" +
+                    "       pp.date_enrolled,\n" +
+                    "       pp.date_completed,\n" +
+                    "       p.program_id\n" +
+                    "       from amrs.patient_program pp\n" +
+                    "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
+                    "       inner join amrs.program p on p.program_id=pp.program_id\n" +
+                    "       inner join amrs.location l on l.location_id = e.location_id\n" +
+                    "       and l.uuid in (" + locations + ") and e.patient_id>="+pid +"  \n" + //and e. patient_id in ('1224605,1222698')
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_id asc";
+
+        }else {
+
+
+            sql = "select  pp.patient_id, \n" +
+                    "       p.name,\n" +
+                    "       p.uuid program_uuid,\n" +
+                    "       pp.location_id,\n" +
+                    "       l.uuid location_uuid,\n" +
+                    "       p.concept_id,\n" +
+                    "       pp.date_enrolled,\n" +
+                    "       pp.date_completed,\n" +
+                    "       p.program_id\n" +
+                    "       from amrs.patient_program pp\n" +
+                    "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
+                    "       inner join amrs.program p on p.program_id=pp.program_id\n" +
+                    "       inner join amrs.location l on l.location_id = e.location_id\n" +
+                    "       and l.uuid in (" + locations + ") \n" + //and e. patient_id in ('1224605,1222698')
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_id asc";
+        }
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
