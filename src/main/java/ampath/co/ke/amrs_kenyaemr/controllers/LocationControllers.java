@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,12 +51,14 @@ public class LocationControllers {
     @Autowired
     private AMRSEnrollmentService amrsEnrollmentService;
     @Autowired
-    private AMRSEncounterService amrsEncounterService;
+    private AMRSObsService amrsEncounterService;
     @Autowired
     private AMRSConceptMappingService amrsConceptMappingService;
     @Autowired
     private AMRSVisitService amrsVisitService;
 
+    @Autowired
+    private AMRSOrderService amrsOrderService;
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView Locations(){
       //  System.out.println("url " + server + " pass " + username + "Password " + password);
@@ -157,16 +158,21 @@ public class LocationControllers {
                           @PathVariable(name = "puuid") String parentUuid) throws SQLException, JSONException, ParseException, IOException {
 
         //System Users default password to super users
-         //MigrateRegistration.users(server,username,password,locationId,parentUuid, amrsUserServices,OpenMRSURL,auth);
+
+       //  MigrateRegistration.users(server,username,password,locationId,parentUuid, amrsUserServices,OpenMRSURL,auth);
+
         //Patient Registration & identifiers
         // MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,OpenMRSURL,auth);
         //Relationships
         //Programs
         //MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
-       //Encounters
-        /// MigrateCareData.encounters(server,username,password,locationId,parentUuid,amrsEncounterService,amrsPatientServices, amrsConceptMappingService,OpenMRSURL,auth);
-       //Enrollments
+         //Enrollments
         // MigrateCareData.enrollments(server,username,password,locationId,parentUuid,amrsEnrollmentService,amrsPatientServices,OpenMRSURL,auth);
+        // Orders
+        //MigrateCareData.order(server, username, password, locationId, parentUuid, amrsOrderService, amrsPatientServices,amrsConceptMappingService, OpenMRSURL, auth);
+
+        //Encounters
+        //MigrateCareData.encounters(server,username,password,locationId,parentUuid,amrsEncounterService,amrsPatientServices, amrsConceptMappingService,OpenMRSURL,auth);
 
         //visits
          MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsEncounterService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
