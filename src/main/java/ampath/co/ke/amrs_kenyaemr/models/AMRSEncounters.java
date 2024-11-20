@@ -28,6 +28,10 @@ public class AMRSEncounters {
     private String kenyaemrlocationuuid;
     @Column(name="kenyaemr_concept_uuid")
     private String kenyaemrconceptuuid;
+    @Column(name="kenyaemr_encounter_uuid")
+    private String kenyaemrencounteruuid;
+    @Column(name="amrs_encounter_uuid")
+    private String amrsencounteruuid;
 
     public Integer getId() {
         return id;
@@ -147,6 +151,22 @@ public class AMRSEncounters {
 
     public void setDataType(String dataType) {
         DataType = dataType;
+    }
+
+    public String getKenyaemrencounteruuid() {
+        return kenyaemrencounteruuid;
+    }
+
+    public void setKenyaemrencounteruuid(String kenyaemrencounteruuid) {
+        this.kenyaemrencounteruuid = kenyaemrencounteruuid;
+    }
+
+    public String getAmrsencounteruuid() {
+        return amrsencounteruuid;
+    }
+
+    public void setAmrsencounteruuid(String amrsencounteruuid) {
+        this.amrsencounteruuid = amrsencounteruuid;
     }
 }
 

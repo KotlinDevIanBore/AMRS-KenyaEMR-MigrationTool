@@ -28,7 +28,7 @@ public class MigrateCareData {
                 "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
                 "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                 "       inner join amrs.location l on l.location_id = e.location_id\n" +
-                "       and l.uuid in ('"+ locations +"') and e. patient_id in ('1224605,1222698')\n" +
+                "       and l.uuid in ('"+ locations +"') \n" + //and e. patient_id in ('1224605,1222698')
                 "       group by  pp.patient_id,p.concept_id  order by pp.patient_id desc limit 100";
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
@@ -184,7 +184,7 @@ public class MigrateCareData {
     public static void enrollments (String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         String sql="select person_id,encounter_id,enrollment_date,hiv_start_date,death_date,transfer_out,transfer_out_date from etl.flat_hiv_summary_v15b  \n" +
                 "where is_clinical_encounter = 1 and next_clinical_datetime_hiv is null\n" +
-                "and location_id in (339,2,379)";
+                "and location_id in (339,2,98,379)";
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -220,5 +220,14 @@ public class MigrateCareData {
 
             EnrollmentsPayload.encounters(url,auth);
     }
+
+    public static void visits (String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+      String sql ="select v.visit_id,e.patient_id,visit_type_id,date_started,e.location_id,date_started,encounter_type,v.voided from amrs.visit v\n" +
+              "inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
+              "where e.location_id in (2,379,339)\n" +
+              "group by  v.visit_id";
+    }
+
+
 
     }
