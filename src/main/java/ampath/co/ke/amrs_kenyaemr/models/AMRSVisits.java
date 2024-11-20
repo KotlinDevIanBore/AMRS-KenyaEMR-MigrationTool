@@ -10,7 +10,6 @@ public class AMRSVisits {
     @Column(nullable = false)
 
     private Integer id;
-
     private String visitId;
     private String patientId;
     private  String visitType;
@@ -18,8 +17,9 @@ public class AMRSVisits {
     private String dateStop;
     private String locationId;
     private  String responseCode;
-
-    private String encounter_type;
+    private String encounterType;
+    private String kenyaemrPatientUuid;
+    private String kenyaemrVisitUuid;
     private String voided;
 
     public Integer getId() {
@@ -78,14 +78,6 @@ public class AMRSVisits {
         this.locationId = locationId;
     }
 
-    public String getEncounter_type() {
-        return encounter_type;
-    }
-
-    public void setEncounter_type(String encounter_type) {
-        this.encounter_type = encounter_type;
-    }
-
     public String getVoided() {
         return voided;
     }
@@ -100,5 +92,29 @@ public class AMRSVisits {
 
     public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public String getEncounterType() {
+        return encounterType;
+    }
+
+    public void setEncounterType(String encounterType) {
+        this.encounterType = encounterType;
+    }
+
+    public String getKenyaemrPatientUuid() {
+        return kenyaemrPatientUuid;
+    }
+
+    public void setKenyaemrPatientUuid(String kenyaemrPatientUuid) {
+        this.kenyaemrPatientUuid = kenyaemrPatientUuid;
+    }
+
+    public String getKenyaemrVisitUuid() {
+        return kenyaemrVisitUuid;
+    }
+
+    public void setKenyaemrVisitUuid(String kenyaemrVisitUuid) {
+        this.kenyaemrVisitUuid = kenyaemrVisitUuid;
     }
 }

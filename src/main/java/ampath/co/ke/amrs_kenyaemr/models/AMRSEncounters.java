@@ -18,7 +18,8 @@ public class AMRSEncounters {
     private String locationId;
     private String visitId;
 
-    private String kenyaemrUuid;
+    private int responseCode;
+
 
     public Integer getId() {
         return id;
@@ -92,11 +93,11 @@ public class AMRSEncounters {
         this.visitId = visitId;
     }
 
-    public String getKenyaemrUuid() {
-        return kenyaemrUuid;
+    public int getResponseCode() {
+        return responseCode;
     }
 
-    public void setKenyaemrUuid(String kenyaemrUuid) {
-        this.kenyaemrUuid = kenyaemrUuid;
+    public void setResponseCode(int responseCode) {
+        this.responseCode = responseCode;
     }
 }

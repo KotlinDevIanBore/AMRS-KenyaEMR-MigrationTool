@@ -115,11 +115,12 @@ public class MigrateRegistration {
                  "inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
                  "inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
                  "inner join amrs.location l on e.location_id=l.location_id\n" +
-                 "where l.uuid in ('" + locations + "') \n" +
+                 "where l.uuid in (" + locations + ") \n" +
                  "group by pt.patient_id\n" +
-                 "order by e.patient_id desc ";
+                 "order by e.patient_id asc ";
      }else {
          String pid = patientsListt.get(0).getPersonId();
+         System.out.println("Person ID is "+ pid);
 
          sql = "select \n" +
                  "p.uuid,\n" +
@@ -145,11 +146,13 @@ public class MigrateRegistration {
                  "inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
                  "inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
                  "inner join amrs.location l on e.location_id=l.location_id\n" +
-                 "where l.uuid in ('" + locations + "') and p.person_id < '"+ pid +"'  \n" +
+                 "where l.uuid in (" + locations + ")  \n" + //and p.person_id >'"+ pid +"'
                  "group by pt.patient_id\n" +
                  "order by e.patient_id desc";
      }
+
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
+     System.out.println("SQL "+ sql);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,

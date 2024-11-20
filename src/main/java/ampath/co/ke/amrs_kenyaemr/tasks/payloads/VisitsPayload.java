@@ -18,41 +18,53 @@ public class VisitsPayload {
         List<AMRSVisits> amrsVisits = amrsVisitService.getAll();
         if(amrsVisits.size() > 0) {
 
-            for(int x  =0; x < amrsVisits.size(); x++) {
+            for (int x = 0; x < amrsVisits.size(); x++) {
                 AMRSVisits av = amrsVisits.get(x);
-                List<AMRSPatients> patientId = amrsPatientServices.getByPatientID(av.getPatientId());
-                String pid = patientId.get(0).getPersonId();
-                String vtype = amrsVisits.get(x).getVisitType();
-                String startDate = amrsVisits.get(x).getDateStarted();
-                String stopDate = amrsVisits.get(x).getDateStop();
+                if (av.getKenyaemrVisitUuid() == null) {
+                    List<AMRSPatients> patientsList = amrsPatientServices.getByPatientID(av.getPatientId());
+                    if (patientsList.size() > 0) {
+                        String pid = patientsList.get(0).getKenyaemrpatientUUID();
+                        String vtype = amrsVisits.get(x).getVisitType();
+                        String startDate = amrsVisits.get(x).getDateStarted();
+                        String stopDate = amrsVisits.get(x).getDateStop();
 
-                JSONObject jsonVisit = new JSONObject();
-                jsonVisit.put("patient",pid);//"60168b73-60f1-4044-9dc6-84fdcbc1962c");
-                jsonVisit.put("visitType","9865c08a-97a4-4571-b873-dd422583b3a7");
-                jsonVisit.put("startDatetime",startDate); //+"T06:08:25.000+0000"
-                jsonVisit.put("stopDatetime",stopDate); //+"T06:09:25.000+0000"
+                        JSONObject jsonVisit = new JSONObject();
+                        jsonVisit.put("patient", pid);//"60168b73-60f1-4044-9dc6-84fdcbc1962c");
+                        jsonVisit.put("visitType", "3371a4d4-f66f-4454-a86d-92c7b3da990c");
+                        jsonVisit.put("startDatetime", startDate); //+"T06:08:25.000+0000"
+                        jsonVisit.put("stopDatetime", stopDate); //+"T06:09:25.000+0000"
 
-                OkHttpClient client = new OkHttpClient();
-                MediaType mediaType = MediaType.parse("application/json");
-                RequestBody body = RequestBody.create(mediaType, jsonVisit.toString());
-                String bodyString =body.toString();
-                Request request = new Request.Builder()
-                        .url(url + "visit")
-                        .method("POST", body)
-                        .addHeader("Authorization", "Basic " + auth)
-                        .addHeader("Content-Type", "application/json")
-                        .build();
-                Response response = client.newCall(request).execute();
+                        OkHttpClient client = new OkHttpClient();
+                        MediaType mediaType = MediaType.parse("application/json");
+                        RequestBody body = RequestBody.create(mediaType, jsonVisit.toString());
+                        String bodyString = body.toString();
+                        Request request = new Request.Builder()
+                                .url(url + "visit")
+                                .method("POST", body)
+                                .addHeader("Authorization", "Basic " + auth)
+                                .addHeader("Content-Type", "application/json")
+                                .build();
+                        Response response = client.newCall(request).execute();
 
-                // System.out.println("Response ndo hii " + jsonUser.toString());
-                System.out.println("Response ndo hii " + response);
-                System.out.println("Response Payload " + jsonVisit.toString());
-//                av(1);
-                av.setResponseCode(String.valueOf(response.code()));
-                amrsVisitService.save(av);
+                        String responseBody = response.body().string(); // Get the response as a string
+                        System.out.println("Response ndo hii " + responseBody + " More message " + response.message() + " reponse code " + response.code());
+                        JSONObject jsonObject = new JSONObject(responseBody);
+
+                        // System.out.println("Response ndo hii " + jsonUser.toString());
+                        System.out.println("Response ndo hii " + response);
+                        System.out.println("Response Payload " + jsonVisit.toString());
+                        if(response.code()==201) {
+                            String visitUuid = jsonObject.getString("uuid");
+                            av.setKenyaemrVisitUuid(visitUuid);
+                            av.setResponseCode(String.valueOf(response.code()));
+                            amrsVisitService.save(av);
+                        }
+                    }
+                }else{
+                    System.out.println("Visist Information exists");
+                }
             }
         }
-
 
     }
 
