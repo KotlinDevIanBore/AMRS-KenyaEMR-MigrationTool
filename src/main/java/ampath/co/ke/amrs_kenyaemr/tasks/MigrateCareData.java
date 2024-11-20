@@ -16,21 +16,45 @@ import java.util.UUID;
 
 public class MigrateCareData {
     public static void programs (String server, String username, String password, String locations, String parentUUID, AMRSProgramService amrsProgramService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-        String sql="select  pp.patient_id, \n" +
-                "       p.name,\n" +
-                "       pp.uuid program_uuid,\n" +
-                "       pp.location_id,\n" +
-                "       l.uuid location_uuid,\n" +
-                "       p.concept_id,\n" +
-                "       pp.date_enrolled,\n" +
-                "       pp.date_completed,\n" +
-                "       p.program_id\n" +
-                "       from amrs.patient_program pp\n" +
-                "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
-                "       inner join amrs.program p on p.program_id=pp.program_id\n" +
-                "       inner join amrs.location l on l.location_id = e.location_id\n" +
-                "       and l.uuid in ('"+ locations +"') \n" + //and e. patient_id in ('1224605,1222698')
-                "       group by  pp.patient_id,p.concept_id  order by pp.patient_id desc limit 100";
+       List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
+        String sql="";
+        if(amrsProgramss.size()>0){
+            int pid = Integer.parseInt(amrsProgramss.get(0).getPatientId());
+            sql = "select  pp.patient_id, \n" +
+                    "       p.name,\n" +
+                    "       p.uuid program_uuid,\n" +
+                    "       pp.location_id,\n" +
+                    "       l.uuid location_uuid,\n" +
+                    "       p.concept_id,\n" +
+                    "       pp.date_enrolled,\n" +
+                    "       pp.date_completed,\n" +
+                    "       p.program_id\n" +
+                    "       from amrs.patient_program pp\n" +
+                    "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
+                    "       inner join amrs.program p on p.program_id=pp.program_id\n" +
+                    "       inner join amrs.location l on l.location_id = e.location_id\n" +
+                    "       and l.uuid in (" + locations + ") and e.patient_id>="+pid +"  \n" + //and e. patient_id in ('1224605,1222698')
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_id asc";
+
+        }else {
+
+
+            sql = "select  pp.patient_id, \n" +
+                    "       p.name,\n" +
+                    "       p.uuid program_uuid,\n" +
+                    "       pp.location_id,\n" +
+                    "       l.uuid location_uuid,\n" +
+                    "       p.concept_id,\n" +
+                    "       pp.date_enrolled,\n" +
+                    "       pp.date_completed,\n" +
+                    "       p.program_id\n" +
+                    "       from amrs.patient_program pp\n" +
+                    "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
+                    "       inner join amrs.program p on p.program_id=pp.program_id\n" +
+                    "       inner join amrs.location l on l.location_id = e.location_id\n" +
+                    "       and l.uuid in (" + locations + ") \n" + //and e. patient_id in ('1224605,1222698')
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_id asc";
+        }
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -58,10 +82,10 @@ public class MigrateCareData {
             //if (patientsList.size()==0) {
 
                 List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
-
                 String person_id=patientId;
                 List<AMRSPrograms> amrsPrograms = amrsProgramService.findByPatientIdAndProgramID(patientId, Integer.parseInt(programId));
                if(amrsPrograms.size()==0) {
+                   String kenyaemr_progra_uuid = Mappers.programs(programUuid);
                    AMRSPrograms ae = new AMRSPrograms();
                    ae.setProgramUUID(programUuid);
                    ae.setPatientId(person_id);
@@ -74,11 +98,8 @@ public class MigrateCareData {
                    ae.setDateEnrolled(dateEnrolled);
                    ae.setDateCompleted(dateCompleted);
                    ae.setPatientKenyaemrUuid(amrsPatients.get(0).getKenyaemrpatientUUID());
-                   //ae.setKenyaemruuid(amrsPatients.getKenyaemrpatientUUID());
+                   ae.setKenyaemrProgramUuid(Mappers.programs(programUuid));
                    amrsProgramService.save(ae);
-                   // }
-               }else{
-
                }
 
             //Migate Programs
@@ -223,13 +244,24 @@ public class MigrateCareData {
     }
 
 
-    public static void visits (String server, String username, String password, String locations, String parentUUID, AMRSVisitService amrsVisitService, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-      String sql ="select v.visit_id,e.patient_id,visit_type_id,date_started,e.location_id,date_started,encounter_type,v.voided from amrs.visit v\n" +
-              "inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
-              "where e.location_id in (2,379,339) and patient_id = 7870\n" +
-              "group by  v.visit_id";
+    public static void visits (String server, String username, String password, String locations, String parentUUID, AMRSVisitService amrsVisitService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+      String sql ="select v.visit_id,\n" +
+              "       e.patient_id,\n" +
+              "\t     visit_type_id,\n" +
+              "       date_started,\n" +
+              "       e.location_id,\n" +
+              "\t     date_stopped,\n" +
+              "       encounter_type,\n" +
+              "       v.voided \n" +
+              "              from amrs.visit v\n" +
+              "              inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
+              "              inner join amrs.location l on l.location_id=e.location_id\n" +
+              "              where l.uuid in ("+ locations +")\n" +
+              "              and v.voided=0\n" +
+              "              group by  v.visit_id order by e.patient_id asc ";
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        System.out.println("locations " +sql);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -244,16 +276,29 @@ public class MigrateCareData {
             String patientId = rs.getString("patient_id");
             String visitTypeId = rs.getString("visit_type_id");
             String dateStarted = rs.getString("date_started");
+            String dateStopped = rs.getString("date_stopped");
+            String locationId = rs.getString("location_id");
+            String voided= rs.getString("voided");
+
+            System.out.println("Visit_Id "+visitId);
 
             List<AMRSVisits> av = amrsVisitService.findByVisitID(visitId);
 
             if(av.size()==0) {
+                List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+               String kenyaemrpid ="Client Not Migrated";
+                if(amrsPatients.size()>0){
+                    kenyaemrpid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                }
                 AMRSVisits avv = new AMRSVisits();
                 avv.setVisitId(visitId);
                 avv.setDateStarted(dateStarted);
                 avv.setPatientId(patientId);
                 avv.setVisitType(visitTypeId);
-
+                avv.setKenyaemrPatientUuid(kenyaemrpid);
+                avv.setDateStop(dateStopped);
+                avv.setVoided(voided);
+                avv.setLocationId(locationId);
                 amrsVisitService.save(avv);
             }
 

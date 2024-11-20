@@ -1,5 +1,6 @@
 package ampath.co.ke.amrs_kenyaemr.service;
 
+import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPrograms;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.repositories.AMRSProgramsRepository;
@@ -31,6 +32,10 @@ public class AMRSProgramService {
     public List<AMRSPrograms> findByParentLocationUuid(String location) {
         return amrsProgramsRepository.findByParentLocationUuid(location);
     }
+    public List<AMRSPrograms> findFirstByOrderByIdDesc() {
+        return amrsProgramsRepository.findFirstByOrderByIdDesc();
+    }
+
 
 
     public AMRSPrograms save(AMRSPrograms dataset) {

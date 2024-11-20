@@ -31,15 +31,22 @@ public class Mappers {
     }
     public static String programs(String uuid) {
         String programs="";
-        if(uuid.equals("58a47054-1359-11df-a1f1-0026b9348838")||uuid.equals("58a47054-1359-11df-a1f1-0026b9348838")){
+        if(uuid.equals("58a47054-1359-11df-a1f1-0026b9348838")||
+                uuid.equals("781d85b0-1359-11df-a1f1-0026b9348838")||
+                uuid.equals("c6bf3625-de80-4a88-a913-38273e300a55")||
+                uuid.equals("96ba279b-b23b-4e78-aba9-dcbd46a96b7b")||
+                uuid.equals(" 7843bd0e-2309-44dd-963b-1380789c372c")||
+                uuid.equals("3aebf7f4-bb06-40e9-9eb4-0a6ea458bc63")||
+                uuid.equals("334c9e98-173f-4454-a8ce-f80b20b7fdf0")
+        ){
             //HIV
             programs="dfdc6d40-2f2f-463d-ba90-cc97350441a8";
         }
         else if(uuid.equals("80839137-9711-483f-a239-dfd383d020f6")){
             //MCH - Mother Services
             programs="b5d9e05f-f5ab-4612-98dd-adb75438ed34";}
-        else if(uuid.equals("a8e7c30d-6d2f-401c-bb52-d4433689a36b")){
-            //MCH - Child Services
+        else if(uuid.equals("01948855-8491-4164-b54f-9b16d174d93e")||(uuid.equals("d2552058-d7bd-47c6-aed1-480a4308027a"))||(uuid.equals("52aeb285-fb18-455b-893e-3e53ccc77ceb"))||(uuid.equals("781d897a-1359-11df-a1f1-0026b9348838"))){
+            //MCH - Mother Services
             programs="c2ecdf11-97cd-432a-a971-cfd9bd296b83";}
         else if(uuid.equals("91099b3f-69be-4607-a309-bd358d85af46")){
             //TB
@@ -47,7 +54,7 @@ public class Mappers {
         else if(uuid.equals("ead42a8f-203e-4b11-a942-df03a460d617")){
             //TPT
             programs="335517a1-04bc-438b-9843-1ba49fb7fcd9";}
-        else if(uuid.equals("d8ee3b8c-a8fc-4d6b-af6a-9423be5f8906")){
+        else if(uuid.equals("781d8768-1359-11df-a1f1-0026b9348838")){
             //OVC
             programs="6eda83f0-09d9-11ea-8d71-362b9e155667";}
         else if(uuid.equals("203571d6-a4f2-4953-9e8b-e1105e2340f5")){
@@ -62,7 +69,7 @@ public class Mappers {
         else if(uuid.equals("fc15ac01-5381-4854-bf5e-917c907aa77f")){
             //NCD
             programs="ffee43c4-9ccd-4e55-8a70-93194e7fafc6";}
-        else if(uuid.equals("9bb195d1-5a64-4fa7-80ab-ab2f1e21583f")){
+        else if(uuid.equals("a8e7c30d-6d2f-401c-bb52-d4433689a36b")){
             //HEI - MCH Child
             programs="c2ecdf11-97cd-432a-a971-cfd9bd296b83";}
 
