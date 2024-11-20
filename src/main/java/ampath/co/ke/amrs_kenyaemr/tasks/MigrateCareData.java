@@ -5,6 +5,7 @@ import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.CareOpenMRSPayload;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.EncountersPayload;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.EnrollmentsPayload;
+import ampath.co.ke.amrs_kenyaemr.tasks.payloads.VisitsPayload;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -221,11 +222,44 @@ public class MigrateCareData {
             EnrollmentsPayload.encounters(url,auth);
     }
 
-    public static void visits (String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void visits (String server, String username, String password, String locations, String parentUUID, AMRSVisitService amrsVisitService, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
       String sql ="select v.visit_id,e.patient_id,visit_type_id,date_started,e.location_id,date_started,encounter_type,v.voided from amrs.visit v\n" +
               "inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
-              "where e.location_id in (2,379,339)\n" +
+              "where e.location_id in (2,379,339) and patient_id = 7870\n" +
               "group by  v.visit_id";
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+
+            String visitId = rs.getString("visit_id");
+            String patientId = rs.getString("patient_id");
+            String visitTypeId = rs.getString("visit_type_id");
+            String dateStarted = rs.getString("date_started");
+
+            List<AMRSVisits> av = amrsVisitService.findByVisitID(visitId);
+
+            if(av.size()==0) {
+                AMRSVisits avv = new AMRSVisits();
+                avv.setVisitId(visitId);
+                avv.setDateStarted(dateStarted);
+                avv.setPatientId(patientId);
+                avv.setVisitType(visitTypeId);
+
+                amrsVisitService.save(avv);
+            }
+
+            VisitsPayload.visits(amrsVisitService, amrsPatientServices, auth, url);
+
+
+        }
     }
 
 

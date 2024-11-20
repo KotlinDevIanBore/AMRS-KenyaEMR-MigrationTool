@@ -17,6 +17,7 @@ public class AMRSVisits {
     private String dateStarted;
     private String dateStop;
     private String locationId;
+    private  String responseCode;
 
     private String encounter_type;
     private String voided;
@@ -91,5 +92,13 @@ public class AMRSVisits {
 
     public void setVoided(String voided) {
         this.voided = voided;
+    }
+
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
     }
 }
