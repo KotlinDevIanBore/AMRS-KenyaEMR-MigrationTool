@@ -86,7 +86,7 @@ public class MigrateCareData {
 
         }
 
-    public static void encounters (String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void encounters (String server, String username, String password, String locations, String parentUUID, AMRSObsService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         String sql="SELECT o.person_id,\n" +
                 "\te.encounter_id,\n" +
                 "    e.encounter_datetime,\n" +
@@ -137,7 +137,7 @@ public class MigrateCareData {
             String encounterName = rs.getString("encounterName");
 
 
-            List<AMRSEncounters> amrsEncountersList = amrsEncounterService.findByPatientIdAndEncounterIDAndConceptId(patientId,encounterId,conceptId);
+            List<AMRSObs> amrsEncountersList = amrsEncounterService.findByPatientIdAndEncounterIDAndConceptId(patientId,encounterId,conceptId);
             if(amrsEncountersList.size()==0){
                 List<AMRSConceptMapper> cm = amrsConceptMappingService.findByAmrsConceptID(conceptId);
                String kenyaemr_uuid="";
@@ -157,7 +157,7 @@ public class MigrateCareData {
                     kenyaemr_value =value;
                 }
 
-                AMRSEncounters ae = new AMRSEncounters();
+                AMRSObs ae = new AMRSObs();
                 ae.setUUID(String.valueOf(UUID.randomUUID()));
                 ae.setPatientId(patientId);
                 ae.setEncounterID(encounterId);
@@ -221,11 +221,73 @@ public class MigrateCareData {
             EnrollmentsPayload.encounters(url,auth);
     }
 
-    public static void visits (String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void visits (String server, String username, String password, String locations, String parentUUID, AMRSObsService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
       String sql ="select v.visit_id,e.patient_id,visit_type_id,date_started,e.location_id,date_started,encounter_type,v.voided from amrs.visit v\n" +
               "inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
-              "where e.location_id in (2,379,339)\n" +
+              "where e.location_id in (2,379,339) \n" +
               "group by  v.visit_id";
+    }
+
+    public static void order (String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        String sql ="SELECT *, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid, NULL AS kenyaemr_order_id FROM amrs.orders where patient_id in (7870) and order_reason is not null limit 50";
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String patientId = rs.getString("patient_id");
+           // String patientId = rs.getString(2);
+            String conceptId = rs.getString("concept_id");
+            String amrs_uuid = rs.getString("uuid");
+            String justification = rs.getString("order_reason");
+
+            List<AMRSOrders> amrsOrders = amrsOrderService.findByUuid(amrs_uuid);
+            if(amrsOrders.size()==0){
+                String kenyaemr_uuid="";
+                AMRSOrders ao = new AMRSOrders();
+                List<AMRSConceptMapper> ac = amrsConceptMappingService.findByAmrsConceptID(conceptId);
+                if(ac.size()!=0) {
+                    kenyaemr_uuid = ac.get(0).getKenyaemrConceptUUID();
+                    ao.setConceptId(Integer.valueOf(conceptId));
+                    ao.setPatientId(Integer.valueOf(patientId));
+                    List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+                    String kenyaemr_patirnt_uuid = "";
+                    if (amrsPatients.size() != 0) {
+                        kenyaemr_patirnt_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                    } else {
+                        kenyaemr_patirnt_uuid = "Not Found"; // add logic for missing patient
+                    }
+                    String justificationcode ="";
+                    if(!justification.equals("")){
+                        List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(justification);
+                        if(amrsConceptMapper.size()>0){
+                            justificationcode = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
+
+                        }
+                    }
+
+                    System.out.println("Patient " + kenyaemr_patirnt_uuid + " concept " + conceptId + " kenyaemr_concept_id " + kenyaemr_uuid +" justification" + justification +"Kenyaemr justicafiation "+ justificationcode);
+
+                }else{
+                    System.out.println("No mapping for  " + conceptId );
+
+
+                }
+
+              //  amrsOrderService.save(ao);
+
+            }
+
+
+
+
+
+        }
     }
 
 

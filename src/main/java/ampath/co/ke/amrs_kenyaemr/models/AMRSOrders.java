@@ -71,7 +71,7 @@ public class AMRSOrders {
     @Column(name = "accession_number")
     private String accessionNumber;
 
-    @Column(name = "uuid", length = 36)
+    @Column(name = "amrs_uuid", length = 36)
     private String uuid;
 
     @Column(name = "urgency")
