@@ -105,11 +105,11 @@ public class RegisterOpenMRSPayload {
         //identifier
         List<AMRSIdentifiers> identifiers = amrsIdentifiersService.getByPatientID(amrsPatients.getPersonId());
         JSONArray Identifierarray = new JSONArray();
-        String OpenMRSID = IdentifierGenerator.generateIdentifier(url,auth);
+        String OpenMRSID = IdentifierGenerator.generateIdentifier(url, auth);
 
         //Add OpenmrsID
         JSONObject jsonIdentifierOpenMRSID = new JSONObject();
-        jsonIdentifierOpenMRSID.put("identifier",OpenMRSID);
+        jsonIdentifierOpenMRSID.put("identifier", OpenMRSID);
         jsonIdentifierOpenMRSID.put("identifierType", "dfacd928-0370-4315-99d7-6ec1c9f7ae76");
         jsonIdentifierOpenMRSID.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
         jsonIdentifierOpenMRSID.put("preferred", "true");
@@ -142,84 +142,86 @@ public class RegisterOpenMRSPayload {
                 }
             }
         }
-            //Start of Names
-            JSONArray namearray = new JSONArray();
-            JSONObject jsonNames = new JSONObject();
-            jsonNames.put("givenName", amrsPatients.getGiven_name());
-            jsonNames.put("familyName", amrsPatients.getFamily_name());
-            jsonNames.put("middleName", amrsPatients.getMiddle_name());
-            namearray.put(jsonNames);
-            // End of dentifier
-            JSONArray jsonAddressesArray = new JSONArray();
-            JSONObject jsonAddresses = new JSONObject();
-            jsonAddresses.put("address1", amrsPatients.getAddress1());
-            jsonAddresses.put("address2", amrsPatients.getAddress1());
-            jsonAddresses.put("address3", amrsPatients.getAddress4());
-            jsonAddresses.put("address4", amrsPatients.getAddress4());
-            jsonAddressesArray.put(jsonAddresses);
+        //Start of Names
+        JSONArray namearray = new JSONArray();
+        JSONObject jsonNames = new JSONObject();
+        jsonNames.put("givenName", amrsPatients.getGiven_name());
+        jsonNames.put("familyName", amrsPatients.getFamily_name());
+        jsonNames.put("middleName", amrsPatients.getMiddle_name());
+        namearray.put(jsonNames);
+        // End of dentifier
+        JSONArray jsonAddressesArray = new JSONArray();
+        JSONObject jsonAddresses = new JSONObject();
+        jsonAddresses.put("address1", amrsPatients.getAddress1());
+        jsonAddresses.put("address2", amrsPatients.getAddress1());
+        jsonAddresses.put("address3", amrsPatients.getAddress4());
+        jsonAddresses.put("address4", amrsPatients.getAddress4());
+        jsonAddressesArray.put(jsonAddresses);
 
-            //person
-            JSONObject jsonPerson = new JSONObject();
-            jsonPerson.put("gender", amrsPatients.getGender());
-            jsonPerson.put("birthdate", amrsPatients.getBirthdate());// sdf2.format(sdf.parse(startDateString)));
-            String birthdateEstimatedc = amrsPatients.getBirthdate_estimated();
-            String birthdateEstimated = "false";
-            if (birthdateEstimatedc.equals("0")) {
-                birthdateEstimated = "false";
-            } else {
-                birthdateEstimated = "true";
-            }
-            jsonPerson.put("birthdateEstimated", birthdateEstimated);
-            String dead = amrsPatients.getDead();
-            String deadcheck = "false";
-            if (dead.equals("0")) {
-                deadcheck = "false";
-            } else {
-                deadcheck = "true";
-            }
-            jsonPerson.put("dead", deadcheck);
-            jsonPerson.put("names", namearray);
-            jsonPerson.put("addresses", jsonAddressesArray);
+        //person
+        JSONObject jsonPerson = new JSONObject();
+        jsonPerson.put("gender", amrsPatients.getGender());
+        jsonPerson.put("birthdate", amrsPatients.getBirthdate());// sdf2.format(sdf.parse(startDateString)));
+        String birthdateEstimatedc = amrsPatients.getBirthdate_estimated();
+        String birthdateEstimated = "false";
+        if (birthdateEstimatedc.equals("0")) {
+            birthdateEstimated = "false";
+        } else {
+            birthdateEstimated = "true";
+        }
+        jsonPerson.put("birthdateEstimated", birthdateEstimated);
+        String dead = amrsPatients.getDead();
+        String deadcheck = "false";
+        if (dead.equals("0")) {
+            deadcheck = "false";
+        } else {
+            deadcheck = "true";
+        }
+        jsonPerson.put("dead", deadcheck);
+        jsonPerson.put("names", namearray);
+        jsonPerson.put("addresses", jsonAddressesArray);
 
-            JSONObject patientObject = new JSONObject();
-            patientObject.put("identifiers", Identifierarray);
-            patientObject.put("person", jsonPerson);
+        JSONObject patientObject = new JSONObject();
+        patientObject.put("identifiers", Identifierarray);
+        patientObject.put("person", jsonPerson);
 
-            // Basic Authentication
-            // String auth = "admin" + ":" + "Admin123";
-            // String encodedAuth = java.util.Base64.getEncoder().encodeToString(auth.getBytes());
-            // String url = "http://192.168.100.48:8080/openmrs/ws/rest/v1/";
+        // Basic Authentication
+        // String auth = "admin" + ":" + "Admin123";
+        // String encodedAuth = java.util.Base64.getEncoder().encodeToString(auth.getBytes());
+        // String url = "http://192.168.100.48:8080/openmrs/ws/rest/v1/";
 
-            OkHttpClient client = new OkHttpClient();
-            MediaType mediaType = MediaType.parse("application/json");
-            RequestBody body = RequestBody.create(mediaType, patientObject.toString());
-            Request request = new Request.Builder()
-                    .url(url + "patient")
-                    .method("POST", body)
-                    .addHeader("Authorization", "Basic " + auth)
-                    .addHeader("Content-Type", "application/json")
-                    .build();
-            Response response = client.newCall(request).execute();
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, patientObject.toString());
+        Request request = new Request.Builder()
+                .url(url + "patient")
+                .method("POST", body)
+                .addHeader("Authorization", "Basic " + auth)
+                .addHeader("Content-Type", "application/json")
+                .build();
+        Response response = client.newCall(request).execute();
         String responseBody = response.body().string(); // Get the response as a string
-        //System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
+        System.out.println("Response ndo hii " + responseBody + " More message " + response.message() + " reponse code " + response.code());
         JSONObject jsonObject = new JSONObject(responseBody);
 
-        // Extract the person UUID
-        String personUuid = jsonObject.getJSONObject("person").getString("uuid");
+        if (response.code() ==201) {
+            // Extract the person UUID
+            String personUuid = jsonObject.getJSONObject("person").getString("uuid");
 
-        // Print the person UUID
-        System.out.println("Person UUID: " + personUuid);
-        // Assuming the response is in JSON format and contains a 'uuid' field
-        JSONObject jsonResponse = new JSONObject(responseBody); // Use a JSON parsing library
-        String patientUuid = jsonResponse.optString("uuid", "UUID not found");
+            // Print the person UUID
+            System.out.println("Person UUID: " + personUuid);
+            // Assuming the response is in JSON format and contains a 'uuid' field
+            JSONObject jsonResponse = new JSONObject(responseBody); // Use a JSON parsing library
+            String patientUuid = jsonResponse.optString("uuid", "UUID not found");
 
 
-        // System.out.println("Response ndo hii " + jsonUser.toString());
+            // System.out.println("Response ndo hii " + jsonUser.toString());
             System.out.println("Response ndo hii " + response.request() + " More message " + response.message());
             amrsPatients.setMigrated(1);
             amrsPatients.setResponse_code(response.code());
             amrsPatients.setKenyaemrpatientUUID(personUuid);
             amrsPatientServices.save(amrsPatients);
+        }
             System.out.println("identifers ndo hii " + patientObject.toString());
         }
 }

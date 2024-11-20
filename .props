@@ -1,59 +1,71 @@
 spring.application.name=amrs_kenyaemr
+
 #==============================================================
 # = Data Source
 # ==============================================================
-spring.datasource.url = jdbc:mysql://10.50.80.112:3306/amrs_migration?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Africa/Nairobi&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull
-#spring.datasource.url = jdbc:mysql://10.50.80.24:3306/amrs_migration?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Africa/Nairobi&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull
-#spring.datasource.url =${DATABASE_URL}
-#spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
-
-spring.datasource.username = root
-spring.datasource.password = test
+spring.datasource.url =${DATABASE_URL}
+spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
+spring.datasource.username = ${DATABASE_USER}
+spring.datasource.password = ${DATABASE_PASSWORD}
 spring.datasource.connectionTimeout=50000000000000000
 spring.jpa.properties.hibernate.jdbc.time_zone=Africa/Nairobi
 spring.jpa.show-sql = true
+
 # ==============================================================
 # = Hibernate ddl auto (create, create-drop, update)
 # ==============================================================
 spring.jpa.hibernate.ddl-auto = update
 spring.h2.console.enabled=true
+
 # ==============================================================
 # = The SQL dialect makes Hibernate generate better SQL for the chosen database
 # ==============================================================
 #spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect
-server.port=8082
+server.port=8081
 app.dir = /home/migration/data/
 spring.servlet.multipart.max-file-size=-1
 spring.servlet.multipart.max-request-size=-1
 spring.http.multipart.max-file-size=-1
 spring.http.multipart.max-request-size=-1
 spring.main.allow-bean-definition-overriding=true
+
 # Token Generator
-security.jwt.secret-key=3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
+security.jwt.secret-key=${JWT_SECRET_KEY}
 # 1h in millisecond
 security.jwt.expiration-time=3600000
+
 #================================================================
 #Locations DB
 #================================================================
 # ETL Server
-spring.etl.username = erugut
-spring.etl.password = Ampath@2020
-spring.etl.server = jdbc:mysql://10.50.80.24:3306/amrs_etl
+spring.etl.username = ${ETL_USERNAME}
+spring.etl.password = ${ETL_PASSWORD}
+spring.etl.server = ${ETL_SERVER}
+
 #================================================================
-#spring.openmrs.url=http://10.50.140.64:8080/openmrs/ws/rest/v1/
-spring.openmrs.url=http://10.50.80.112:8080/openmrs/ws/rest/v1/
-spring.openmrs.localhosturl=http://localhost:8080/openmrs/ws/rest/v1/
-default_amrs_Location=1233
-default_kenyaemr_Location=1233
-spring.openmrs.auth=YWRtaW46QWRtaW4xMjM=
+#KenyaEMR Instance
+#================================================================
+spring.openmrs.url=${KENYAEMR_URL}
+spring.openmrs.localhosturl=${KENYAEMR_LOCAL_URL}
+default_amrs_Location=${AMRS_DEFAULT_LOCATION}
+default_kenyaemr_Location=${KENYAEMR_DEFAULT_LOCATION}
+spring.openmrs.auth=${KENYAEMR_AUTH}
+
 # Sort SQL Data
 SET sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
-#ALl Invalidate
-#noengine subtituion
-#mysql_d
-Log_bin_trust_function_createors=1
 
-#add phone number
+
+mvn package
+docker buildx build --push --tag erugut/ampath-ioms:a2k --platform=linux/arm64,linux/amd64 .
+ssh 113
+sudo docker pull erugut/ampath-ioms:a2k #run on server
+sudo docker run -d -p 8082:8082 erugut/ampath-ioms:a2k
+sudo docker run --env-file .env -p 8080:8080 erugut/ampath-ioms:a2k
+docker run --env-file .env:/app/.env 8082:8082 erugut/ampath-ioms:a2k
+#run on server
+sudo docker-compose pull
+docker login -u erugut
+token: dckr_pat_0OxbRX4c9AcZ5K3npzqkZ2Xnyys
 
 
 

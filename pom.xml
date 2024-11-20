@@ -10,8 +10,8 @@
 	</parent>
 	<groupId>ampath.co.ke</groupId>
 	<artifactId>amrs_kenyaemr</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<version>0.0.1</version>
+	<packaging>jar</packaging>
 	<name>amrs_kenyaemr</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -28,7 +28,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>

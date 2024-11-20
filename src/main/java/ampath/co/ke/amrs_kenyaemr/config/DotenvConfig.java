@@ -9,6 +9,7 @@ public class DotenvConfig {
     @Bean
     public Dotenv dotenv() {
         return Dotenv.configure()
+                //.directory("/app")
                 .directory(".") // Path to the .env file
                 .load();
     }
