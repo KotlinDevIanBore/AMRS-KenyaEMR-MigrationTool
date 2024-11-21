@@ -178,10 +178,12 @@ public class LocationControllers {
         //MigrateCareData.encounters(server,username,password,locationId,parentUuid,amrsEncounterService,amrsPatientServices, amrsConceptMappingService,OpenMRSURL,auth);
 
         //visits
+
          //MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
         //Orders
         MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService,  amrsPatientServices, amrsEncounterMappingService,  amrsConceptMappingService, OpenMRSURL,auth);
+
 
       //HIVEnrollment
         MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);

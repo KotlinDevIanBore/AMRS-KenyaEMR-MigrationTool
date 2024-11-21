@@ -17,11 +17,11 @@ public class AMRSHIVEnrollmentService {
     private AMRSHIVEnrollmentRepository amrsHIVEnrollmentRepository;
 
     @Autowired
-    public AMRSHIVEnrollmentService(AMRSHIVEnrollmentRepository AMRSHIVEnrollmentRepository) {
+    public AMRSHIVEnrollmentService(AMRSHIVEnrollmentRepository amrsHIVEnrollmentRepository) {
         this.amrsHIVEnrollmentRepository = amrsHIVEnrollmentRepository;
     }
-    public List<AMRSHIVEnrollment> findByPatientIdAndEncounterIdAndConceptId(String pid, String eid, String cid) {
-        return amrsHIVEnrollmentRepository.findByPatientIdAndEncounterIdAndConceptId(pid,eid,cid);
+    public List<AMRSHIVEnrollment> findByPatientIdAndEncounterIDAndConceptId(String pid, String eid, String cid) {
+        return amrsHIVEnrollmentRepository.findByPatientIdAndEncounterIDAndConceptId(pid,eid,cid);
     }
 
     public List<AMRSHIVEnrollment> findFirstByOrderByIdDesc() {

@@ -31,6 +31,16 @@ public class AMRSHIVEnrollment
     private String kenyaemrEncounterUuid;
     private String kenyaemrConceptUuid;
     private String kenyaemrValue;
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    private String provider;
     private int responseCode;
 
     public Integer getId() {
