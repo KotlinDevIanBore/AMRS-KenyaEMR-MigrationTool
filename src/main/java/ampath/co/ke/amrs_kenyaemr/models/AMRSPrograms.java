@@ -12,6 +12,7 @@ public class AMRSPrograms {
     private Integer Id;
     private String UUID;
     private String patientId;
+    private String amrsPatientProgramID;
 
     private String patientKenyaemrUuid;
 
@@ -163,5 +164,13 @@ public class AMRSPrograms {
 
     public void setKenyaemrProgramUuid(String kenyaemrProgramUuid) {
         this.kenyaemrProgramUuid = kenyaemrProgramUuid;
+    }
+
+    public String getAmrsPatientProgramID() {
+        return amrsPatientProgramID;
+    }
+
+    public void setAmrsPatientProgramID(String amrsPatientProgramID) {
+        this.amrsPatientProgramID = amrsPatientProgramID;
     }
 }

@@ -21,7 +21,7 @@ public class AMRSTriageService {
     this.amrsTriageRepository = amrsTriageRepository;
   }
   public List<AMRSTriage> findByPatientIdAndEncounterIdAndConceptId(String pid,String eid, String cid) {
-    return amrsTriageRepository.findByPatientIdAndEncounterIdAndConceptId(pid,eid,cid);
+    return amrsTriageRepository.findByPatientIdAndEncounterIDAndConceptId(pid,eid,cid);
   }
 
   public List<AMRSTriage> findFirstByOrderByIdDesc() {

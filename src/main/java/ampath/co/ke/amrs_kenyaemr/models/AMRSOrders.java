@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 public class AMRSOrders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id")
+    private Integer Id;
+
     private Integer orderId;
 
     @Column(name = "order_type_id")
@@ -115,6 +116,14 @@ public class AMRSOrders {
 
     @Column(name = "kenyaemr_order_id")
     private Integer kenyaemrOrderId;
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer id) {
+        Id = id;
+    }
 
     public Integer getOrderId() {
         return orderId;

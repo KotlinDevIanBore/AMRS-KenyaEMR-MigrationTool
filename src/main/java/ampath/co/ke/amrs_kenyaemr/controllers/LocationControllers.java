@@ -173,7 +173,7 @@ public class LocationControllers {
         //MigrateCareData.encounters(server,username,password,locationId,parentUuid,amrsEncounterService,amrsPatientServices, amrsConceptMappingService,OpenMRSURL,auth);
 
         //visits
-         //MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
+         MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
         //Triage
       MigrateCareData.triage(server,username,password,locationId,parentUuid, amrsTriageService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
