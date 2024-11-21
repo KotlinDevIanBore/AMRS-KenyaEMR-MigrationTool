@@ -114,7 +114,7 @@ public class MigrateCareData {
     }
 
 
-    public static void encounters(String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void encounters(String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         List<AMRSEncounters> amrsEncounters = amrsEncounterService.findFirstByOrderByIdDesc();
 
@@ -124,7 +124,7 @@ public class MigrateCareData {
 
             sql = "select patient_id as person_id, \n" +
                     " e.uuid as amrs_encounter_uuid,\n" +
-                    " encounter_id ,\n" +
+                    " e.encounter_id ,\n" +
                     "  case\n" +
                     "  when e.encounter_type = 147 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
                     "  when e.encounter_type = 55 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
@@ -268,7 +268,7 @@ public class MigrateCareData {
                     "et.encounter_type_id,\n" +
                     "et.name as encounterName,\n" +
                     "e.location_id,\n" +
-                    "visit_id,\n" +
+                    "e.visit_id,\n" +
                     "case \n" +
                     " when e.encounter_type =110 then 6\n" +
                     " when e.encounter_type = 270 then 8\n" +
@@ -409,14 +409,14 @@ public class MigrateCareData {
                     " when e.encounter_type = 55 then 278\n" +
                     "  end kenyaem_encounter_id,\n" +
                     " e.creator,\n" +
-                    " encounter_datetime as obs_datetime,\n" +
+                    " e.encounter_datetime ,\n" +
                     " e.encounter_type,\n" +
                     " form_id,\n" +
                     "  e.voided\n" +
-                    " \n" +
                     " from amrs.encounter e\n" +
-                    " inner join amrs.encounter_type et on  e.encounter_type=et.encounter_type_id\n" +
-                    " where e.voided =0 where e.encounter_id>" + EncounterID + "  \n" +
+                    " inner join amrs.encounter_type et on  e.encounter_type=et.encounter_type_id \n" +
+                    " inner join amrs.location l on  e.location_id=l.location_id\n" +
+                    " where e.voided =0 and l.uuid in ("+ locations  +") and e.encounter_id>" + EncounterID + "  \n" +
                     " order by e.encounter_id asc " +
                     "limit 100;";
 
@@ -569,7 +569,7 @@ public class MigrateCareData {
                     "et.encounter_type_id,\n" +
                     "et.name as encounterName,\n" +
                     "e.location_id,\n" +
-                    "visit_id,\n" +
+                    "e.visit_id,\n" +
                     "case \n" +
                     " when e.encounter_type =110 then 6\n" +
                     " when e.encounter_type = 270 then 8\n" +
@@ -710,14 +710,14 @@ public class MigrateCareData {
                     " when e.encounter_type = 55 then 278\n" +
                     "  end kenyaem_encounter_id,\n" +
                     " e.creator,\n" +
-                    " encounter_datetime as obs_datetime,\n" +
+                    " e.encounter_datetime ,\n" +
                     " e.encounter_type,\n" +
                     " form_id,\n" +
                     "  e.voided\n" +
-                    " \n" +
                     " from amrs.encounter e\n" +
                     " inner join amrs.encounter_type et on  e.encounter_type=et.encounter_type_id\n" +
-                    " where e.voided =0\n" +
+                    " inner join amrs.location l on  e.location_id=l.location_id\n" +
+                    " where e.voided =0 and l.uuid in ("+ locations  +")  \n" +
                     " order by e.encounter_id asc " +
                     "limit 100;";
         }
@@ -737,39 +737,32 @@ public class MigrateCareData {
             String amrsEncounterUuid = rs.getString("amrs_encounter_uuid");
             String encounterId = rs.getString("encounter_id");
             String encounterTypeId = rs.getString("encounter_type_id");
+            String encounterDateTime = rs.getString("encounter_datetime");
             String encounterName = rs.getString("encounterName");
             String locationId = rs.getString("location_id");
             String visitId = rs.getString("visit_id");
-            // String kenyaemrEncounterTypeId = rs.getString("kenyaem_encounter_id");
-            //  String kenyaemrEncounterUuid = rs.getString("kenyaemr_encounter_uuid");
+            String kenyaemrEncounterTypeId = rs.getString("kenyaem_encounter_id");
+            String kenyaemrEncounterUuid = rs.getString("kenyaemr_encounter_uuid");
 
-            System.out.println("patientId " + patientId);
+            System.out.println("patientId " + patientId + " EncouterID " + encounterId + "encounterTypeId " + encounterTypeId + " encounterName " + encounterName + " locationId " + locationId + " visitId " + visitId);
 
-          /*  List<AMRSEncounters> amrsEncountersList = amrsEncounterService.findByPatientIdAndEncounterId(patientId,encounterId);
-            if(amrsEncountersList.size()==0){
- */
-            AMRSEncounters aea = new AMRSEncounters();
-            aea.setPatientId(patientId);
-            amrsEncounterService.save(aea);
-
-
-            AMRSEncounters ae = new AMRSEncounters();
-
-            ae.setPatientId(patientId);
-            //ae.set
-            ae.setEncounterId(encounterId);
-            ae.setEncounterTypeId(encounterTypeId);
-            ae.setEncounterName(encounterName);
-
-            ae.setLocationId(locationId);
-            ae.setVisitId(visitId);
-            //ae.setKenyaemrEncounterTypeId(kenyaemrEncounterTypeId);
-            // ae.setKenyaemrEncounterTypeUuid(kenyaemrEncounterUuid);
-            amrsEncounterService.save(ae);
+            List<AMRSEncounters> amrsEncountersList = amrsEncounterService.findByPatientIdAndEncounterId(patientId, encounterId);
+            if (amrsEncountersList.size() == 0) {
+                AMRSEncounters ae = new AMRSEncounters();
+                ae.setPatientId(patientId);
+                ae.setEncounterId(encounterId);
+                ae.setEncounterTypeId(encounterTypeId);
+                ae.setEncounterName(encounterName);
+                ae.setLocationId(locationId);
+                ae.setVisitId(visitId);
+                ae.setEncounterDateTime(encounterDateTime);
+                ae.setKenyaemrEncounterTypeId(kenyaemrEncounterTypeId);
+                ae.setKenyaemrEncounterTypeUuid(kenyaemrEncounterUuid);
+                amrsEncounterService.save(ae);
+            }
         }
 
-
-        // EncountersPayload.encounters(url,auth);
+         EncountersPayload.encounters(amrsEncounterService, amrsPatientServices, amrsVisitService,url,auth);
 
     }
 

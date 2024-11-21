@@ -185,7 +185,7 @@ public class MigrateRegistration {
      }
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
-     System.out.println("SQL "+ sql);
+        //System.out.println("SQL "+ sql);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
