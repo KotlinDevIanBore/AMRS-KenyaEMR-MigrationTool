@@ -25,6 +25,6 @@ public class AMRSEncounterService {
         return amrsEncountersRepository.findFirstByOrderByIdDesc();
     }
 
-    public void save(AMRSObs ae) {
+    public void save(AMRSEncounters ae) {
     }
 }

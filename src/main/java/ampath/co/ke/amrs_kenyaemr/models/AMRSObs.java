@@ -2,7 +2,7 @@ package ampath.co.ke.amrs_kenyaemr.models;
 
 import jakarta.persistence.*;
 
-@Table(name = "obs")
+@Table(name = "amrs_obs")
 @Entity
 public class AMRSObs {
     @Id

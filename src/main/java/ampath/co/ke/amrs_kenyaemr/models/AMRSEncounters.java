@@ -2,7 +2,7 @@ package ampath.co.ke.amrs_kenyaemr.models;
 
 import jakarta.persistence.*;
 
-@Table(name = "encounters")
+@Table(name = "amrs_encounters")
 @Entity
 public class AMRSEncounters {
     @Id
@@ -19,7 +19,7 @@ public class AMRSEncounters {
     private String visitId;
     private String kenyaemrEncounterTypeId;
     private String kenyaemrEncounterTypeUuid;
-    private int responseCode;
+    private String responseCode;
 
     public Integer getId() {
         return Id;
@@ -85,14 +85,6 @@ public class AMRSEncounters {
         this.visitId = visitId;
     }
 
-    public int getResponseCode() {
-        return responseCode;
-    }
-
-    public void setResponseCode(int responseCode) {
-        this.responseCode = responseCode;
-    }
-
     public String getKenyaemrEncountyUuid() {
         return kenyaemrEncounterUuid;
     }
@@ -115,5 +107,21 @@ public class AMRSEncounters {
 
     public void setKenyaemrEncounterTypeUuid(String kenyaemrEncounterTypeUuid) {
         this.kenyaemrEncounterTypeUuid = kenyaemrEncounterTypeUuid;
+    }
+
+    public String getKenyaemrEncounterUuid() {
+        return kenyaemrEncounterUuid;
+    }
+
+    public void setKenyaemrEncounterUuid(String kenyaemrEncounterUuid) {
+        this.kenyaemrEncounterUuid = kenyaemrEncounterUuid;
+    }
+
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
     }
 }
