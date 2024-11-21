@@ -323,7 +323,8 @@ public class MigrateCareData {
     }
 
     public static void order (String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-        String sql ="SELECT *, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid, NULL AS kenyaemr_order_id FROM amrs.orders where order_reason is not null limit 20";
+        String sql ="SELECT *, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid,\n" +
+                " NULL AS kenyaemr_order_id FROM amrs.orders where order_reason order by date_created ASC limit 50";
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
