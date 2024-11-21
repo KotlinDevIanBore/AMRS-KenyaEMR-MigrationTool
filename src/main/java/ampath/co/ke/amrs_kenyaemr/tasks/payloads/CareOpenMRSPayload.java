@@ -2,6 +2,7 @@ package ampath.co.ke.amrs_kenyaemr.tasks.payloads;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPrograms;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSProgramService;
+import ampath.co.ke.amrs_kenyaemr.service.AMRSTriageService;
 import ampath.co.ke.amrs_kenyaemr.tasks.Mappers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -69,4 +70,8 @@ public class CareOpenMRSPayload {
 
        }
     }
-}
+  public static void triage(AMRSTriageService amrsTriageService, String locations, String parentUUID, String url, String auth ) throws JSONException, IOException {
+
+  }
+
+  }
