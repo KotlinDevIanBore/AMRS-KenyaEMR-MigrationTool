@@ -25,10 +25,13 @@ public class AMRSOrders {
     private Integer conceptId;
 
     @Column(name = "orderer")
-    private Integer orderer;
+    private String orderer;
 
     @Column(name = "encounter_id")
     private Integer encounterId;
+
+    @Column(name = "uuid")
+    private Integer encounterUuid;
 
     @Column(name = "instructions")
     private String instructions;
@@ -43,7 +46,7 @@ public class AMRSOrders {
     private LocalDateTime dateStopped;
 
     @Column(name = "order_reason")
-    private Integer orderReason;
+    private String orderReason;
 
     @Column(name = "order_reason_non_coded")
     private String orderReasonNonCoded;
@@ -67,7 +70,10 @@ public class AMRSOrders {
     private String voidReason;
 
     @Column(name = "patient_id")
-    private Integer patientId;
+    private String patientId;
+
+    @Column(name = "response_code")
+    private  String responseCode;
 
     @Column(name = "accession_number")
     private String accessionNumber;
@@ -91,7 +97,7 @@ public class AMRSOrders {
     private String commentToFulfiller;
 
     @Column(name = "care_setting")
-    private Integer careSetting;
+    private String careSetting;
 
     @Column(name = "scheduled_date")
     private LocalDateTime scheduledDate;
@@ -149,11 +155,11 @@ public class AMRSOrders {
         this.conceptId = conceptId;
     }
 
-    public Integer getOrderer() {
+    public String getOrderer() {
         return orderer;
     }
 
-    public void setOrderer(Integer orderer) {
+    public void setOrderer(String orderer) {
         this.orderer = orderer;
     }
 
@@ -197,11 +203,11 @@ public class AMRSOrders {
         this.dateStopped = dateStopped;
     }
 
-    public Integer getOrderReason() {
+    public String getOrderReason() {
         return orderReason;
     }
 
-    public void setOrderReason(Integer orderReason) {
+    public void setOrderReason(String orderReason) {
         this.orderReason = orderReason;
     }
 
@@ -261,11 +267,11 @@ public class AMRSOrders {
         this.voidReason = voidReason;
     }
 
-    public Integer getPatientId() {
+    public String getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(Integer patientId) {
+    public void setPatientId(String patientId) {
         this.patientId = patientId;
     }
 
@@ -293,6 +299,14 @@ public class AMRSOrders {
         this.urgency = urgency;
     }
 
+    public Integer getEncounterUuid() {
+        return encounterUuid;
+    }
+
+    public void setEncounterUuid(Integer encounterUuid) {
+        this.encounterUuid = encounterUuid;
+    }
+
     public String getOrderNumber() {
         return orderNumber;
     }
@@ -313,6 +327,14 @@ public class AMRSOrders {
         return orderAction;
     }
 
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
+    }
+
     public void setOrderAction(String orderAction) {
         this.orderAction = orderAction;
     }
@@ -325,11 +347,11 @@ public class AMRSOrders {
         this.commentToFulfiller = commentToFulfiller;
     }
 
-    public Integer getCareSetting() {
+    public String getCareSetting() {
         return careSetting;
     }
 
-    public void setCareSetting(Integer careSetting) {
+    public void setCareSetting(String careSetting) {
         this.careSetting = careSetting;
     }
 

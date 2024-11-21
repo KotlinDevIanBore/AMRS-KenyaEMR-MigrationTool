@@ -2,10 +2,7 @@ package ampath.co.ke.amrs_kenyaemr.tasks;
 
 import ampath.co.ke.amrs_kenyaemr.models.*;
 import ampath.co.ke.amrs_kenyaemr.service.*;
-import ampath.co.ke.amrs_kenyaemr.tasks.payloads.CareOpenMRSPayload;
-import ampath.co.ke.amrs_kenyaemr.tasks.payloads.EncountersPayload;
-import ampath.co.ke.amrs_kenyaemr.tasks.payloads.EnrollmentsPayload;
-import ampath.co.ke.amrs_kenyaemr.tasks.payloads.VisitsPayload;
+import ampath.co.ke.amrs_kenyaemr.tasks.payloads.*;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -351,13 +348,13 @@ public class MigrateCareData {
                 if(ac.size()!=0) {
                     kenyaemr_uuid = ac.get(0).getKenyaemrConceptUUID();
                     ao.setConceptId(Integer.valueOf(conceptId));
-                    ao.setPatientId(Integer.valueOf(patientId));
+                    ao.setPatientId(patientId);
                     List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
-                    String kenyaemr_patirnt_uuid = "";
+                    String kenyaemr_patient_uuid = "";
                     if (amrsPatients.size() != 0) {
-                        kenyaemr_patirnt_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                        kenyaemr_patient_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
                     } else {
-                        kenyaemr_patirnt_uuid = "Not Found"; // add logic for missing patient
+                        kenyaemr_patient_uuid = "Not Found"; // add logic for missing patient
                     }
                     String justificationcode ="";
                     if(!justification.equals("")){
@@ -368,7 +365,7 @@ public class MigrateCareData {
                         }
                     }
 
-                    System.out.println("Patient " + kenyaemr_patirnt_uuid + " concept " + conceptId + " kenyaemr_concept_id " + kenyaemr_uuid +" justification" + justification +"Kenyaemr justicafiation "+ justificationcode);
+                    System.out.println("Patient " + kenyaemr_patient_uuid + " concept " + conceptId + " kenyaemr_concept_id " + kenyaemr_uuid +" justification" + justification +"Kenyaemr justicafiation "+ justificationcode);
 
                 }else{
                     System.out.println("No mapping for  " + conceptId );
@@ -376,14 +373,11 @@ public class MigrateCareData {
 
                 }
 
-              //  amrsOrderService.save(ao);
+               //amrsOrderService.save(ao);
 
             }
-
-
-
-
-
+            // orders
+            // OrdersPayload.orders(amrsOrderService, amrsPatientServices, auth, url);
         }
     }
   public static void triage (String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
