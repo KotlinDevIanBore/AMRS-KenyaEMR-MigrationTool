@@ -11,6 +11,6 @@ public interface AMRSHIVEnrollmentRepository extends JpaRepository<AMRSHIVEnroll
     List<AMRSHIVEnrollment> findByPersonId(String pid);
     List<AMRSHIVEnrollment> findByUUID(String uuid);
     List<AMRSHIVEnrollment> findAll();
-    // List< AMRSHIVEnrollment> findByUUIDAndParentlocationUUID(String uuid,String location);
+     List< AMRSHIVEnrollment> findByPatientIdAndEncounterIdAndConceptId(String pid,String encid,String cid);
     List<AMRSHIVEnrollment> findFirstByOrderByIdDesc();
 }

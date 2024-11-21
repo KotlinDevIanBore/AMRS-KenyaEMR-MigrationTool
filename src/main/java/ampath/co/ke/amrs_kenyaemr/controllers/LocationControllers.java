@@ -58,6 +58,8 @@ public class LocationControllers {
     private AMRSVisitService amrsVisitService;
 
     @Autowired
+    private AMRSHIVEnrollmentService amrsHIVEnrollmentService;
+    @Autowired
     private AMRSOrderService amrsOrderService;
 
     @Autowired
@@ -180,6 +182,9 @@ public class LocationControllers {
 
         //Orders
         MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService,  amrsPatientServices, amrsEncounterMappingService,  amrsConceptMappingService, OpenMRSURL,auth);
+
+      //HIVEnrollment
+        MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
         System.out.println("AMRS Locations "+locationId);
 

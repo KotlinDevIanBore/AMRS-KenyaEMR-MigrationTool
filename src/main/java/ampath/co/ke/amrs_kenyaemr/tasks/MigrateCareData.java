@@ -1031,9 +1031,104 @@ public class MigrateCareData {
     }
 
 
+    public static void hivenrollment (String server, String username, String password, String locations, String parentUUID, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        String sql = "select\n" +
+                "\to.person_id,\n" +
+                "\te.encounter_id,\n" +
+                "\te.encounter_datetime,\n" +
+                "\te.encounter_type,\n" +
+                "\to.concept_id,\n" +
+                "    cn.name as conceptName,\n" +
+                "\to.obs_datetime,\n" +
+                "\tCOALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
+                "\tcd.name as value_type,\n" +
+                "\tc.datatype_id,\n" +
+                "\tet.name as encounterName,\n" +
+                "\t\"HIV Enrollment\" as Category\n" +
+                "from\n" +
+                "\tamrs.obs o\n" +
+                "inner join amrs.encounter e on\n" +
+                "\t(o.encounter_id = e.encounter_id)\n" +
+                "inner join amrs.encounter_type et on\n" +
+                "\tet.encounter_type_id = e.encounter_type\n" +
+                "inner join amrs.concept c on\n" +
+                "\tc.concept_id = o.concept_id\n" +
+                "    inner join amrs.concept_name cn on\n" +
+                "\to.concept_id = cn.concept_id\n" +
+                "inner join amrs.concept_datatype cd on\n" +
+                "\tcd.concept_datatype_id = c.datatype_id\n" +
+                "where \n" +
+                "\te.encounter_type in(1,3,24,32,105,137,135,136,265,266) and \n" +
+                "    o.concept_id in (9203,8287,1224,1633)\n" +
+                "\tand e.location_id in (2)\n" +
+                "\tand e.voided = 0\n" +
+                "\tand cd.name <> 'N/A' \n" +
+                "order by\n" +
+                "\to.person_id asc \n" +
+                "    limit 10;";
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String patientId = rs.getString("patient_id");
+            String conceptId = rs.getString("concept_id");
+            String encounterID = rs.getString("encounter_id");
+            String locationUuid = rs.getString("location_uuid");
+            String encounterDatetime = rs.getString("encounter_datetime");
+            String encounterType = rs.getString("encounter_type");
+            String conceptName = rs.getString("concept_name");
+            String obsDatetime = rs.getString("obs_datetime");
+            String value = rs.getString("value");
+            String valueType = rs.getString("value_type");
+            String datatypeId = rs.getString("datatype_id");
+            String encounterName = rs.getString("encounterName");
+            String category = rs.getString("Category");
 
 
+            List<AMRSHIVEnrollment> amrshivEnrollmentList = amrsHIVEnrollmentService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterID,conceptId);
+            if(amrshivEnrollmentList.isEmpty()){
+                AMRSHIVEnrollment ahe = new AMRSHIVEnrollment();
+                ahe.setPatientId(patientId);
+                ahe.setConceptId(conceptId);
+                ahe.setLocationUuid(locationUuid);
+                ahe.setEncounterDateTime(encounterDatetime);
+                ahe.setEncounterType(encounterType);
+                ahe.setConceptName(conceptName);
+                ahe.setObsDateTime(obsDatetime);
+                ahe.setConceptValue(value);
+                ahe.setValueDataType(valueType);
+                ahe.setDataTypeId(datatypeId);
+                ahe.setEncounterName(encounterName);
+                ahe.setCategory(category);
+                ahe.setKenyaemrConceptUuid(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(conceptId)));
+                if(datatypeId.equals("1")||datatypeId.equals("2")){
+                    ahe.setKenyaemrValue(value);
+                }else {
+                    ahe.setKenyaemrValue(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(value)));
+                }
+
+                amrsHIVEnrollmentService.save(ahe);
+                // CareOpenMRSPayload.triage(amrsHIVEnrollmentService, parentUUID, locations, auth, url);
 
 
+            }
 
+            System.out.println("Patient_id" + patientId);
+        }
     }
+
+
+
+
+
+
+
+
+}
+

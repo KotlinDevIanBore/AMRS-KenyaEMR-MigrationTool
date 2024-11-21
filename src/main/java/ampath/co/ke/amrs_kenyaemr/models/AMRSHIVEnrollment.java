@@ -2,7 +2,7 @@ package ampath.co.ke.amrs_kenyaemr.models;
 
 import jakarta.persistence.*;
 
-@Table(name = "hivenrollments")
+@Table(name = "hivenrollment")
 @Entity
 public class AMRSHIVEnrollment
 {
@@ -17,6 +17,10 @@ public class AMRSHIVEnrollment
     private String encounterType;
     private String conceptId;
     private String conceptName;
+
+
+
+    private String conceptValue;
     private String obsDateTime;
     private String value;
     private String valueDataType;
@@ -56,7 +60,13 @@ public class AMRSHIVEnrollment
     public String getEncounterID() {
         return encounterID;
     }
+    public String getConceptValue() {
+        return conceptValue;
+    }
 
+    public void setConceptValue(String conceptValue) {
+        this.conceptValue = conceptValue;
+    }
     public void setEncounterID(String encounterID) {
         this.encounterID = encounterID;
     }
