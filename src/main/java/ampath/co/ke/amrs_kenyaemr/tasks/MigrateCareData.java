@@ -16,7 +16,7 @@ public class MigrateCareData {
        List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
         String sql="";
         if(amrsProgramss.size()>0){
-System.out.println("Latest program "+ amrsProgramss.get(0).getPatientId());
+          System.out.println("Latest program "+ amrsProgramss.get(0).getPatientId());
             String ppid = amrsProgramss.get(0).getAmrsPatientProgramID();
             sql = "select pp.patient_program_id, pp.patient_id, \n" +
                     "       p.name,\n" +
@@ -92,7 +92,9 @@ System.out.println("Latest program "+ amrsProgramss.get(0).getPatientId());
                    ae.setProgramName(programName);
                    ae.setDateEnrolled(dateEnrolled);
                    ae.setDateCompleted(dateCompleted);
-                   ae.setPatientKenyaemrUuid(amrsPatients.get(0).getKenyaemrpatientUUID());
+                   if(amrsPatients.size()>0) {
+                       ae.setPatientKenyaemrUuid(amrsPatients.get(0).getKenyaemrpatientUUID());
+                   }
                    ae.setKenyaemrProgramUuid(Mappers.programs(programUuid));
                    ae.setAmrsPatientProgramID(patientProgramId);
                    amrsProgramService.save(ae);
@@ -272,7 +274,7 @@ System.out.println("Latest program "+ amrsProgramss.get(0).getPatientId());
                         "              inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
                         "              inner join amrs.location l on l.location_id=e.location_id\n" +
                         "              where l.uuid in (" + locations + ")\n" +
-                        "              and v.voided=0\n" +
+                        "              and v.voided=0 \n" +
                         "              group by  v.visit_id order by v.visit_id asc ";
             }
 
@@ -303,10 +305,12 @@ System.out.println("Latest program "+ amrsProgramss.get(0).getPatientId());
             if(av.size()==0) {
                 List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
                String kenyaemrpid ="Client Not Migrated";
+                AMRSVisits avv = new AMRSVisits();
                 if(amrsPatients.size()>0){
                     kenyaemrpid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                    avv.setResponseCode("400");
                 }
-                AMRSVisits avv = new AMRSVisits();
+
                 avv.setVisitId(visitId);
                 avv.setDateStarted(dateStarted);
                 avv.setPatientId(patientId);

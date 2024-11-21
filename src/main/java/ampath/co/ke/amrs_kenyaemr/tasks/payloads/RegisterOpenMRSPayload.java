@@ -95,7 +95,7 @@ public class RegisterOpenMRSPayload {
         System.out.println("Response ndo hii " + response);
         System.out.println("Response Payload " + jsonUser.toString());
         amrsUsers.setMigrated(1);
-        amrsUsers.setResponse_code(response.code());
+        amrsUsers.setResponse_code(String.valueOf(response.code()));
         amrsUserServices.save(amrsUsers);
 
     }

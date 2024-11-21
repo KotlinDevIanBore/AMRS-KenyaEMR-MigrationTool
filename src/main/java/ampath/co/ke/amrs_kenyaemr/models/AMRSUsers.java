@@ -49,7 +49,7 @@ public class AMRSUsers {
     private int migrated;
 
     @Column(name = "response_code")
-    private int response_code;
+    private String response_code;
 
 
     public Integer getId() {
@@ -212,11 +212,11 @@ public class AMRSUsers {
         this.migrated = migrated;
     }
 
-    public int getResponse_code() {
+    public String getResponse_code() {
         return response_code;
     }
 
-    public void setResponse_code(int response_code) {
+    public void setResponse_code(String response_code) {
         this.response_code = response_code;
     }
 }
