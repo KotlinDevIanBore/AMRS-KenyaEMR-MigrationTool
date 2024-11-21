@@ -18,7 +18,8 @@ import java.util.List;
 
 public class CareOpenMRSPayload {
     public static void programs(AMRSProgramService amrsProgramService, String locations, String parentUUID,String url, String auth ) throws JSONException, IOException {
-       List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
+       //List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
+        List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByResponseCodeIsNull();
        if(amrsProgramsList.size()>0) {
        JSONObject jsonProgram = new JSONObject();
         for(int x=0;x<amrsProgramsList.size();x++) {
@@ -27,8 +28,6 @@ public class CareOpenMRSPayload {
             System.out.println("Program UUID is here " + programms + " amrs UUID " + amrsProgramsList.get(x).getProgramUUID());
             int pid = amrsProgramsList.get(x).getProgramID();
             AMRSPrograms ap = amrsProgramsList.get(x);
-
-           // if (ap.getResponseCode() != 201) {
 
                 if (!programms.equals("") || ap.getPatientKenyaemrUuid() != null) {
 
@@ -41,7 +40,6 @@ public class CareOpenMRSPayload {
                     } else {
                         jsonProgram.put("dateCompleted", ap.getDateCompleted());
                     }
-
                     System.out.println("Payload for Programs is here " + jsonProgram.toString());
                     OkHttpClient client = new OkHttpClient();
                     MediaType mediaType = MediaType.parse("application/json");
@@ -57,17 +55,14 @@ public class CareOpenMRSPayload {
                     String responseBody = response.body().string(); // Get the response as a string
                     System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
 
-
                     // String resBody = response.request().toString();
                     int rescode = response.code();
-                    ap.setResponseCode(rescode);
+                    ap.setResponseCode(String.valueOf(rescode));
                     System.out.println("Imefika Hapa na data " + rescode);
                 } else {
-                    //ap.setResponseCode();
+                    ap.setResponseCode(String.valueOf(400));
                 }
                 amrsProgramService.save(ap);
-
-           // }
         }
 
        }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Service("encounterService")
+@Service("encounterMappingService")
 public class AMRSEncounterMappingService {
 
     private AMRSEncounterMappingRepository amrsEncounterMappingRepository;

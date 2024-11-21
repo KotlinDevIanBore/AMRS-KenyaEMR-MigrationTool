@@ -31,5 +31,8 @@ public class AMRSVisitService {
     public List<AMRSVisits> findFirstByOrderByIdDesc() {
         return amrsVisitsRepository.findFirstByOrderByIdDesc();
     }
+    public List<AMRSVisits> findByResponseCodeIsNull() {
+        return amrsVisitsRepository.findByResponseCodeIsNull();
+    }
 
 }

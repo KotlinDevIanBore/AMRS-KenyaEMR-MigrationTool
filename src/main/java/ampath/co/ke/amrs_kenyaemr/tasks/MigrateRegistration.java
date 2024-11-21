@@ -3,6 +3,7 @@ package ampath.co.ke.amrs_kenyaemr.tasks;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSIdentifiers;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSVisits;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSIdentifiersService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSUserServices;
@@ -20,31 +21,62 @@ public class MigrateRegistration {
     @Autowired
     AMRSPatientServices amrsPatientServices;
     public static void users(String server, String username, String password, String locations, String parentUUID,AMRSUserServices amrsUserServices,String url,String auth) throws SQLException, JSONException, ParseException, IOException {
-        String sql="select \n" +
-                "                u.uuid,\n" +
-                "                u.user_id,\n" +
-                "                u.system_id,\n" +
-                "                u.username,\n" +
-                "                pn.given_name,\n" +
-                "                pn.family_name,\n" +
-                "                pn.middle_name,\n" +
-                "                p.gender,\n" +
-                "                p.birthdate,\n" +
-                "                pa.address1,\n" +
-                "                pa.county_district,\n" +
-                "                pa.address4,\n" +
-                "                pa.address5,\n" +
-                "                pa.address6,\n" +
-                "                p.dead,\n" +
-                "                p.birthdate_estimated \n" +
-                "                from amrs.encounter e \n" +
-                "                inner join amrs.users u on e.creator =u.user_id\n" +
-                "                inner join amrs.person p on p.person_id=u.person_id\n" +
-                "                inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
-                "                inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
-                "                where location_id in ("+ locations + ") \n" +
-                "                group by u.user_id\n" +
-                "                order by u.user_id asc";
+        String sql ="";
+        List<AMRSUsers> amrsVisitsList = amrsUserServices.findFirstByOrderByIdDesc();
+        if(amrsVisitsList.size()>0) {
+            String visitId= amrsVisitsList.get(0).getUser_id();
+             sql = "select \n" +
+                    "                u.uuid,\n" +
+                    "                u.user_id,\n" +
+                    "                u.system_id,\n" +
+                    "                u.username,\n" +
+                    "                pn.given_name,\n" +
+                    "                pn.family_name,\n" +
+                    "                pn.middle_name,\n" +
+                    "                p.gender,\n" +
+                    "                p.birthdate,\n" +
+                    "                pa.address1,\n" +
+                    "                pa.county_district,\n" +
+                    "                pa.address4,\n" +
+                    "                pa.address5,\n" +
+                    "                pa.address6,\n" +
+                    "                p.dead,\n" +
+                    "                p.birthdate_estimated \n" +
+                    "                from amrs.encounter e \n" +
+                    "                inner join amrs.users u on e.creator =u.user_id\n" +
+                    "                inner join amrs.person p on p.person_id=u.person_id\n" +
+                    "                inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
+                    "                inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
+                    "                where location_id in (" + locations + ") and u.user_id >"+ visitId +"  \n" +
+                    "                group by u.user_id\n" +
+                    "                order by u.user_id asc";
+        }else{
+            sql = "select \n" +
+                    "                u.uuid,\n" +
+                    "                u.user_id,\n" +
+                    "                u.system_id,\n" +
+                    "                u.username,\n" +
+                    "                pn.given_name,\n" +
+                    "                pn.family_name,\n" +
+                    "                pn.middle_name,\n" +
+                    "                p.gender,\n" +
+                    "                p.birthdate,\n" +
+                    "                pa.address1,\n" +
+                    "                pa.county_district,\n" +
+                    "                pa.address4,\n" +
+                    "                pa.address5,\n" +
+                    "                pa.address6,\n" +
+                    "                p.dead,\n" +
+                    "                p.birthdate_estimated \n" +
+                    "                from amrs.encounter e \n" +
+                    "                inner join amrs.users u on e.creator =u.user_id\n" +
+                    "                inner join amrs.person p on p.person_id=u.person_id\n" +
+                    "                inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
+                    "                inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
+                    "                where location_id in (" + locations + ") \n" +
+                    "                group by u.user_id\n" +
+                    "                order by u.user_id asc";
+        }
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
@@ -80,7 +112,7 @@ public class MigrateRegistration {
                 amrsUserServices.save(ae);
 
                 //Migate user
-               // RegisterOpenMRSPayload.users(ae,amrsUserServices,url,auth);
+                RegisterOpenMRSPayload.users(ae,amrsUserServices,url,auth);
 
 
             }
@@ -147,9 +179,9 @@ public class MigrateRegistration {
                  "inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
                  "inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
                  "inner join amrs.location l on e.location_id=l.location_id\n" +
-                 "where l.uuid in (" + locations + ")  \n" + //and p.person_id >'"+ pid +"'
+                 "where l.uuid in (" + locations + ") and p.person_id >"+ pid +"\n" +
                  "group by pt.patient_id\n" +
-                 "order by e.patient_id desc";
+                 "order by e.patient_id asc";
      }
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);

@@ -1,6 +1,7 @@
 package ampath.co.ke.amrs_kenyaemr.service;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSLocations;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSTriage;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.repositories.AMRSUsersRepository;
 import ampath.co.ke.amrs_kenyaemr.repositories.LocationsRepository;
@@ -25,6 +26,10 @@ public class AMRSUserServices {
     public List<AMRSUsers> getUserByLocation(String uuid,String location) {
         return amrsUsersRepository.findByUuidAndAmrsLocation(uuid, location);
     }
+    public List<AMRSUsers> findFirstByOrderByIdDesc() {
+        return amrsUsersRepository.findFirstByOrderByIdDesc();
+    }
+
     public AMRSUsers save(AMRSUsers dataset) {
         return amrsUsersRepository.save(dataset);
     }
