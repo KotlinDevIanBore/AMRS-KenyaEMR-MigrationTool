@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface AMRSHIVEnrollmentRepository extends JpaRepository<AMRSHIVEnrollment, Long> {
     AMRSHIVEnrollment findById(int pid);
-    List<AMRSHIVEnrollment> findByPersonId(String pid);
-    List<AMRSHIVEnrollment> findByUUID(String uuid);
+    List<AMRSHIVEnrollment> findByPersonID(String pid);
+   // List<AMRSHIVEnrollment> findByUUID(String uuid);
     List<AMRSHIVEnrollment> findAll();
      List< AMRSHIVEnrollment> findByPatientIdAndEncounterIdAndConceptId(String pid,String encid,String cid);
     List<AMRSHIVEnrollment> findFirstByOrderByIdDesc();
