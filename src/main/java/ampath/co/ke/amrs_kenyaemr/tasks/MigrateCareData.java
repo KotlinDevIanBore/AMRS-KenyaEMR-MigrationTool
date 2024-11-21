@@ -575,9 +575,12 @@ public class MigrateCareData {
         }
     }
 
-    public static void order (String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-        String sql ="SELECT *, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid,\n" +
-                " NULL AS kenyaemr_order_id FROM amrs.orders where order_reason order by date_created ASC limit 50";
+    public static void order (String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        String sql ="SELECT o.*, et.encounter_type_id, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid,\n" +
+                " NULL AS kenyaemr_order_id FROM amrs.orders o \n" +
+                " inner join amrs.encounter e on (e.encounter_id = o.encounter_id)\n" +
+                " inner join amrs.encounter_type et on (et.encounter_type_id = e.encounter_type)\n" +
+                " where  o.order_reason order by o.date_created ASC limit 100";
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -596,7 +599,9 @@ public class MigrateCareData {
             String instructions = rs.getString("instructions");
             String conceptId = rs.getString("concept_id");
             String amrsOrderUuid = rs.getString("uuid");
+            String amrsEncounterTypeId = rs.getString("encounter_type_id");
             String justification = rs.getString("order_reason");
+            String careSetting = rs.getString("care_setting");
             String order_reason_non_coded = rs.getString("order_reason_non_coded");
             String urgency = rs.getString("urgency");
             String orderNumber = rs.getString("order_number");
@@ -606,11 +611,12 @@ public class MigrateCareData {
             if(amrsOrders.isEmpty()){
                 String kenyaemr_uuid="";
                 AMRSOrders ao = new AMRSOrders();
-                List<AMRSConceptMapper> ac = amrsConceptMappingService.findByAmrsConceptID(conceptId);
+                List<AMRSEncountersMapping> ac = amrsEncounterMappingService.getByAmrsID(amrsEncounterTypeId);
+                String kenyaemr_encounter_id;
                 if(!ac.isEmpty()) {
-                    kenyaemr_uuid = ac.get(0).getKenyaemrConceptUUID();
+                    kenyaemr_encounter_id = ac.get(0).getKenyaemrEncounterTypeUuid();
                 }else{
-                    kenyaemr_uuid="";
+                    kenyaemr_encounter_id="";
 
                 }
                     ao.setConceptId(Integer.valueOf(conceptId));
@@ -619,11 +625,14 @@ public class MigrateCareData {
                     ao.setOrderer(orderer);
                     ao.setOrderTypeId(Integer.valueOf(orderTypeId));
                     ao.setEncounterId(Integer.valueOf(encounterId));
+                    ao.setKenyaemrOrderUuid(kenyaemr_encounter_id);
                     ao.setInstructions(instructions);
                     ao.setOrderReasonNonCoded(order_reason_non_coded);
                     ao.setUrgency(urgency);
+                    ao.setOrderReason(justification);
                     ao.setOrderNumber(orderNumber);
                     ao.setOrderAction(orderAction);
+                    ao.setCareSetting(careSetting);
                     List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
                     String kenyaemr_patient_uuid = "";
                     if (!amrsPatients.isEmpty()) {

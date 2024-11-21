@@ -60,6 +60,9 @@ public class LocationControllers {
     @Autowired
     private AMRSOrderService amrsOrderService;
 
+    @Autowired
+    private AMRSEncounterMappingService amrsEncounterMappingService;
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView Locations(){
       //  System.out.println("url " + server + " pass " + username + "Password " + password);
@@ -176,7 +179,7 @@ public class LocationControllers {
          //MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
         //Orders
-        MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService,  amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
+        MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService,  amrsPatientServices, amrsEncounterMappingService,  amrsConceptMappingService, OpenMRSURL,auth);
 
         System.out.println("AMRS Locations "+locationId);
 
