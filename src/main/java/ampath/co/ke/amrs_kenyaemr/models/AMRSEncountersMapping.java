@@ -12,12 +12,8 @@ public class AMRSEncountersMapping {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Integer Id;
-
-    private Integer amrsEncounterTypeId;
-
-
-    private Integer kenyaemrEncounterTypeId;
-
+    private String amrsEncounterTypeId;
+    private String kenyaemrEncounterTypeId;
     private String kenyaemrEncounterTypeUuid;
 
     public Integer getId() {
@@ -28,19 +24,19 @@ public class AMRSEncountersMapping {
         Id = id;
     }
 
-    public Integer getAmrsEncounterTypeId() {
+    public String getAmrsEncounterTypeId() {
         return amrsEncounterTypeId;
     }
 
-    public void setAmrsEncounterTypeId(Integer amrsEncounterTypeId) {
+    public void setAmrsEncounterTypeId(String amrsEncounterTypeId) {
         this.amrsEncounterTypeId = amrsEncounterTypeId;
     }
 
-    public Integer getKenyaemrEncounterTypeId() {
+    public String getKenyaemrEncounterTypeId() {
         return kenyaemrEncounterTypeId;
     }
 
-    public void setKenyaemrEncounterTypeId(Integer kenyaemrEncounterTypeId) {
+    public void setKenyaemrEncounterTypeId(String kenyaemrEncounterTypeId) {
         this.kenyaemrEncounterTypeId = kenyaemrEncounterTypeId;
     }
 

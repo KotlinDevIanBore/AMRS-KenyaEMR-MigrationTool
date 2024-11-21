@@ -16,7 +16,8 @@ public class MigrateCareData {
        List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
         String sql="";
         if(amrsProgramss.size()>0){
-            int ppid = Integer.parseInt(amrsProgramss.get(0).getAmrsPatientProgramID());
+System.out.println("Latest program "+ amrsProgramss.get(0).getPatientId());
+            String ppid = amrsProgramss.get(0).getAmrsPatientProgramID();
             sql = "select pp.patient_program_id, pp.patient_id, \n" +
                     "       p.name,\n" +
                     "       p.uuid program_uuid,\n" +
@@ -31,7 +32,8 @@ public class MigrateCareData {
                     "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                     "       inner join amrs.location l on l.location_id = e.location_id\n" +
                     "       and l.uuid in (" + locations + ") and pp.patient_program_id>="+ppid +"  \n" + //and e. patient_id in ('1224605,1222698')
-                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc";
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc limit 100";
+            System.out.println("SQLs "+ sql);
 
         }else {
 
@@ -494,10 +496,284 @@ public class MigrateCareData {
       System.out.println("Patient_id" + patientId);
     }
   }
+    public static void encounterMappings (String server, String username, String password, String locations, String parentUUID, AMRSEncounterMappingService amrsEncounterMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        String sql="select \n" +
+                " encounter_type_id,\n" +
+                " case \n" +
+                " when e.encounter_type_id =110 then 6\n" +
+                " when e.encounter_type_id = 270 then 8\n" +
+                " when e.encounter_type_id = 23 then 303\n" +
+                " when e.encounter_type_id = 22 then 303\n" +
+                " when e.encounter_type_id = 280 then 302\n" +
+                " when e.encounter_type_id = 1 then 7\n" +
+                " when e.encounter_type_id = 14 then 21\n" +
+                " when e.encounter_type_id = 14 then 8\n" +
+                " when e.encounter_type_id = 16 then 6\n" +
+                " when e.encounter_type_id = 16 then 252\n" +
+                " when e.encounter_type_id = 2 then 8\n" +
+                " when e.encounter_type_id = 265 then 14\n" +
+                " when e.encounter_type_id = 264 then 15\n" +
+                " when e.encounter_type_id = 32 then 14\n" +
+                " when e.encounter_type_id = 33 then 15\n" +
+                " when e.encounter_type_id = 242 then 21\n" +
+                " when e.encounter_type_id = 294 then 73\n" +
+                " when e.encounter_type_id = 13 then 300\n" +
+                " when e.encounter_type_id = 138 then 8\n" +
+                " when e.encounter_type_id = 252 then 243\n" +
+                " when e.encounter_type_id = 209 then 243\n" +
+                " when e.encounter_type_id = 208 then 243\n" +
+                " when e.encounter_type_id = 234 then 10\n" +
+                " when e.encounter_type_id = 233 then 9\n" +
+                " when e.encounter_type_id = 31 then 2\n" +
+                " when e.encounter_type_id = 127 then 8\n" +
+                " when e.encounter_type_id = 144 then 8\n" +
+                " when e.encounter_type_id = 153 then 8\n" +
+                " when e.encounter_type_id = 181 then 21\n" +
+                " when e.encounter_type_id = 182 then 21\n" +
+                " when e.encounter_type_id = 248 then 24\n" +
+                " when e.encounter_type_id = 249 then 29\n" +
+                " when e.encounter_type_id = 203 then 24\n" +
+                " when e.encounter_type_id = 186 then 21\n" +
+                " when e.encounter_type_id = 19 then 21\n" +
+                " when e.encounter_type_id = 20 then 21\n" +
+                " when e.encounter_type_id = 26 then 21\n" +
+                " when e.encounter_type_id = 17 then 21\n" +
+                " when e.encounter_type_id = 18 then 21\n" +
+                " when e.encounter_type_id = 279 then 303\n" +
+                " when e.encounter_type_id = 157 then 2\n" +
+                " when e.encounter_type_id = 250 then 28\n" +
+                " when e.encounter_type_id = 243 then 22\n" +
+                " when e.encounter_type_id = 43 then 8\n" +
+                " when e.encounter_type_id = 132 then 22\n" +
+                " when e.encounter_type_id = 115 then 11\n" +
+                " when e.encounter_type_id = 115 then 12\n" +
+                " when e.encounter_type_id = 115 then 13\n" +
+                " when e.encounter_type_id = 115 then 9\n" +
+                " when e.encounter_type_id = 115 then 10\n" +
+                " when e.encounter_type_id = 253 then 306\n" +
+                " when e.encounter_type_id = 129 then 303\n" +
+                " when e.encounter_type_id = 110 then 6\n" +
+                " when e.encounter_type_id = 251 then 30\n" +
+                " when e.encounter_type_id = 227 then 4\n" +
+                " when e.encounter_type_id = 5 then 4\n" +
+                " when e.encounter_type_id = 6 then 4\n" +
+                " when e.encounter_type_id = 8 then 4\n" +
+                " when e.encounter_type_id = 9 then 4\n" +
+                " when e.encounter_type_id = 196 then 15\n" +
+                " when e.encounter_type_id = 121 then 30\n" +
+                " when e.encounter_type_id = 7 then 4\n" +
+                " when e.encounter_type_id = 273 then 15\n" +
+                " when e.encounter_type_id = 274 then 15\n" +
+                " when e.encounter_type_id = 237 then 13\n" +
+                " when e.encounter_type_id = 235 then 11\n" +
+                " when e.encounter_type_id = 236 then 12\n" +
+                " when e.encounter_type_id = 239 then 15\n" +
+                " when e.encounter_type_id = 240 then 16\n" +
+                " when e.encounter_type_id = 238 then 14\n" +
+                " when e.encounter_type_id = 268 then 15\n" +
+                " when e.encounter_type_id = 140 then 303\n" +
+                " when e.encounter_type_id = 114 then 8\n" +
+                " when e.encounter_type_id = 120 then 21\n" +
+                " when e.encounter_type_id = 168 then 252\n" +
+                " when e.encounter_type_id = 284 then 36\n" +
+                " when e.encounter_type_id = 285 then 35\n" +
+                " when e.encounter_type_id = 283 then 34\n" +
+                " when e.encounter_type_id = 21 then 31\n" +
+                " when e.encounter_type_id = 220 then 33\n" +
+                " when e.encounter_type_id = 214 then 32\n" +
+                " when e.encounter_type_id = 282 then 302\n" +
+                " when e.encounter_type_id = 3 then 7\n" +
+                " when e.encounter_type_id = 15 then 21\n" +
+                " when e.encounter_type_id = 80 then 252\n" +
+                " when e.encounter_type_id = 4 then 8\n" +
+                " when e.encounter_type_id = 67 then 8\n" +
+                " when e.encounter_type_id = 162 then 8\n" +
+                " when e.encounter_type_id = 10 then 15\n" +
+                " when e.encounter_type_id = 44 then 15\n" +
+                " when e.encounter_type_id = 125 then 15\n" +
+                " when e.encounter_type_id = 11 then 15\n" +
+                " when e.encounter_type_id = 47 then 15\n" +
+                " when e.encounter_type_id = 46 then 15\n" +
+                " when e.encounter_type_id = 266 then 15\n" +
+                " when e.encounter_type_id = 267 then 15\n" +
+                " when e.encounter_type_id = 111 then 30\n" +
+                " when e.encounter_type_id = 34 then 15\n" +
+                " when e.encounter_type_id = 133 then 51\n" +
+                " when e.encounter_type_id = 263 then 38\n" +
+                " when e.encounter_type_id = 263 then 51\n" +
+                " when e.encounter_type_id = 262 then 50\n" +
+                " when e.encounter_type_id = 134 then 38\n" +
+                " when e.encounter_type_id = 117 then 8\n" +
+                " when e.encounter_type_id = 176 then 8\n" +
+                " when e.encounter_type_id = 116 then 2\n" +
+                " when e.encounter_type_id = 119 then 8\n" +
+                " when e.encounter_type_id = 221 then 6\n" +
+                " when e.encounter_type_id = 158 then 8\n" +
+                " when e.encounter_type_id = 281 then 302\n" +
+                " when e.encounter_type_id = 105 then 7\n" +
+                " when e.encounter_type_id = 106 then 8\n" +
+                " when e.encounter_type_id = 163 then 8\n" +
+                " when e.encounter_type_id = 137 then 7\n" +
+                "  end kenyaem_encounter_id\n" +
+                " ,\n" +
+                "  case \n" +
+                "  when e.encounter_type_id =110 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
+                "  when e.encounter_type_id = 270 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 23 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+                "  when e.encounter_type_id = 22 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+                "  when e.encounter_type_id = 280 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
+                "  when e.encounter_type_id = 1 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+                "  when e.encounter_type_id = 14 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 14 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 16 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
+                "  when e.encounter_type_id = 16 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
+                "  when e.encounter_type_id = 2 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 265 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
+                "  when e.encounter_type_id = 264 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 32 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
+                "  when encounter_type_id = 33 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 242 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 294 then '5021b1a1-e7f6-44b4-ba02-da2f2bcf8718'\n" +
+                "  when e.encounter_type_id = 13 then 'e360f35f-e496-4f01-843b-e2894e278b5b'\n" +
+                "  when e.encounter_type_id = 138 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 252 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
+                "  when e.encounter_type_id = 209 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
+                "  when e.encounter_type_id = 208 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
+                "  when e.encounter_type_id = 234 then 'bcc6da85-72f2-4291-b206-789b8186a021'\n" +
+                "  when e.encounter_type_id = 233 then '415f5136-ca4a-49a8-8db3-f994187c3af6'\n" +
+                "  when e.encounter_type_id = 31 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
+                "  when e.encounter_type_id = 127 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 144 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 153 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 181 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 182 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 248 then '7df67b83-1b84-4fe2-b1b7-794b4e9bfcc3'\n" +
+                "  when e.encounter_type_id = 249 then '7dffc392-13e7-11e9-ab14-d663bd873d93'\n" +
+                "  when e.encounter_type_id = 203 then '7df67b83-1b84-4fe2-b1b7-794b4e9bfcc3'\n" +
+                "  when e.encounter_type_id = 186 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 19 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 20 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 26 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 17 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 18 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 279 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+                "  when e.encounter_type_id = 157 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
+                "  when e.encounter_type_id = 250 then '9bc15e94-2794-11e8-b467-0ed5f89f718b'\n" +
+                "  when e.encounter_type_id = 243 then '975ae894-7660-4224-b777-468c2e710a2a'\n" +
+                "  when e.encounter_type_id = 43 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 132 then '975ae894-7660-4224-b777-468c2e710a2a'\n" +
+                "  when e.encounter_type_id = 115 then '01894f88-dc73-42d4-97a3-0929118403fb'\n" +
+                "  when e.encounter_type_id = 115 then '82169b8d-c945-4c41-be62-433dfd9d6c86'\n" +
+                "  when e.encounter_type_id = 115 then '5feee3f1-aa16-4513-8bd0-5d9b27ef1208'\n" +
+                "  when e.encounter_type_id = 115 then '415f5136-ca4a-49a8-8db3-f994187c3af6'\n" +
+                "  when e.encounter_type_id = 115 then 'bcc6da85-72f2-4291-b206-789b8186a021'\n" +
+                "  when e.encounter_type_id = 253 then 'bfbb5dc2-d3e6-41ea-ad86-101336e3e38f'\n" +
+                "  when e.encounter_type_id = 129 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+                "  when e.encounter_type_id = 110 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
+                "  when e.encounter_type_id = 251 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
+                "  when e.encounter_type_id = 227 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+                "  when e.encounter_type_id = 5 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+                "  when e.encounter_type_id = 6 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+                "  when e.encounter_type_id = 8 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+                "  when e.encounter_type_id = 9 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+                "  when e.encounter_type_id = 196 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 121 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
+                "  when e.encounter_type_id = 7 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+                "  when e.encounter_type_id = 273 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 274 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 237 then '5feee3f1-aa16-4513-8bd0-5d9b27ef1208'\n" +
+                "  when e.encounter_type_id = 235 then '01894f88-dc73-42d4-97a3-0929118403fb'\n" +
+                "  when e.encounter_type_id = 236 then '82169b8d-c945-4c41-be62-433dfd9d6c86'\n" +
+                "  when e.encounter_type_id = 239 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 240 then '7c426cfc-3b47-4481-b55f-89860c21c7de'\n" +
+                "  when e.encounter_type_id = 238 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
+                "  when e.encounter_type_id = 268 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 140 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+                "  when e.encounter_type_id = 114 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 120 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 168 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
+                "  when e.encounter_type_id = 284 then '162386c8-0464-11ea-9a9f-362b9e155667'\n" +
+                "  when e.encounter_type_id = 285 then '162382b8-0464-11ea-9a9f-362b9e155667'\n" +
+                "  when e.encounter_type_id = 283 then '16238574-0464-11ea-9a9f-362b9e155667'\n" +
+                "  when e.encounter_type_id = 21 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
+                "  when e.encounter_type_id = 220 then '5cf00d9e-09da-11ea-8d71-362b9e155667'\n" +
+                "  when e.encounter_type_id = 214 then '5cf0124e-09da-11ea-8d71-362b9e155667'\n" +
+                "  when e.encounter_type_id = 282 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
+                "  when e.encounter_type_id = 3 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+                "  when e.encounter_type_id = 15 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+                "  when e.encounter_type_id = 80 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
+                "  when e.encounter_type_id = 4 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 67 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 162 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 10 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 44 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 125 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 11 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 47 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 46 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 266 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 267 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id = 111 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
+                "  when e.encounter_type_id = 34 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+                "  when e.encounter_type_id =133 then '706a8b12-c4ce-40e4-aec3-258b989bf6d3'\n" +
+                "  when e.encounter_type_id = 263 then 'c4a2be28-6673-4c36-b886-ea89b0a42116'\n" +
+                "  when e.encounter_type_id = 263 then '706a8b12-c4ce-40e4-aec3-258b989bf6d3'\n" +
+                "  when e.encounter_type_id = 262 then '291c0828-a216-11e9-a2a3-2a2ae2dbcce4'\n" +
+                "  when e.encounter_type_id = 134 then 'c4a2be28-6673-4c36-b886-ea89b0a42116'\n" +
+                "  when e.encounter_type_id = 117 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 176 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 116 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
+                "  when e.encounter_type_id = 119 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 221 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
+                "  when e.encounter_type_id = 158 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 281 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
+                "  when e.encounter_type_id = 105 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+                "  when e.encounter_type_id = 106 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 163 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+                "  when e.encounter_type_id = 137 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+                "  end kenyaem_encounter_uuid\n" +
+                " from  amrs.encounter_type e\n" +
+                " -- order by e.encounter_id desc";
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String encounterTypeId = rs.getString("encounter_type_id");
+            String kenyaemEncounterId = rs.getString("kenyaem_encounter_id");
+            String kenyaemEncounterUuid = rs.getString("kenyaem_encounter_uuid");
+
+            List<AMRSEncountersMapping> amList = amrsEncounterMappingService.getByAmrsID(encounterTypeId);
+            if(amList.size()>0){
+                AMRSEncountersMapping am = amList.get(0);
+                am.setAmrsEncounterTypeId(encounterTypeId);
+                am.setKenyaemrEncounterTypeId(kenyaemEncounterId);
+                am.setKenyaemrEncounterTypeUuid(kenyaemEncounterUuid);
+                amrsEncounterMappingService.save(am);
+            }else {
+
+                AMRSEncountersMapping am = new AMRSEncountersMapping();
+                am.setAmrsEncounterTypeId(encounterTypeId);
+                am.setKenyaemrEncounterTypeId(kenyaemEncounterId);
+                am.setKenyaemrEncounterTypeUuid(kenyaemEncounterUuid);
+                amrsEncounterMappingService.save(am);
+            }
+
+        }
+
+
+    }
 
 
 
 
 
 
-  }
+
+    }
