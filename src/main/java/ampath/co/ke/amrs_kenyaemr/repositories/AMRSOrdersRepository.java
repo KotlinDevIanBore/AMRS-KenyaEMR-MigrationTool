@@ -14,5 +14,6 @@ public interface AMRSOrdersRepository extends JpaRepository<AMRSOrders, Long> {
      * @return
      */
     List<AMRSOrders>  findByUuid(String uuid);
+    List<AMRSOrders> findAll();
 
 }

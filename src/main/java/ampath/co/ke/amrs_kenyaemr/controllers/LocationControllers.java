@@ -56,10 +56,10 @@ public class LocationControllers {
     private AMRSConceptMappingService amrsConceptMappingService;
     @Autowired
     private AMRSVisitService amrsVisitService;
-  @Autowired
-  private AMRSTriageService amrsTriageService;
+
     @Autowired
     private AMRSOrderService amrsOrderService;
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView Locations(){
       //  System.out.println("url " + server + " pass " + username + "Password " + password);
@@ -164,7 +164,7 @@ public class LocationControllers {
         // MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,OpenMRSURL,auth);
         //Relationships
         //Programs
-      //   MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
+        // MigrateCareData.programs(server,username,password,locationId,parentUuid,amrsProgramService,amrsPatientServices,OpenMRSURL,auth);
          //Enrollments
         // MigrateCareData.enrollments(server,username,password,locationId,parentUuid,amrsEnrollmentService,amrsPatientServices,OpenMRSURL,auth);
         // Orders
@@ -173,9 +173,10 @@ public class LocationControllers {
         //MigrateCareData.encounters(server,username,password,locationId,parentUuid,amrsEncounterService,amrsPatientServices, amrsConceptMappingService,OpenMRSURL,auth);
 
         //visits
-         MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
-        //Triage
-      MigrateCareData.triage(server,username,password,locationId,parentUuid, amrsTriageService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
+         //MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
+
+        //Orders
+        MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService,  amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
         System.out.println("AMRS Locations "+locationId);
 
