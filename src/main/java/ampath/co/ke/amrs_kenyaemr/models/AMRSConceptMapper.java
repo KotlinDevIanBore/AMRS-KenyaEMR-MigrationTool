@@ -15,7 +15,7 @@ public class AMRSConceptMapper {
     private String amrsLabel;
     @Column(name = "amrs_concept_uuid")
     private String amrsConceptUUID;
-    @Column(name = "amrs_cocepts_id")
+    @Column(name = "amrs_concept_id")
     private String amrsConceptID;
     @Column(name = "amrs_concept_type")
     private String amrsConceptType;
