@@ -15,7 +15,7 @@ import java.util.List;
 public class VisitsPayload {
     public static void visits(AMRSVisitService amrsVisitService, AMRSPatientServices amrsPatientServices, String auth, String url) throws JSONException, ParseException, IOException {
 
-        List<AMRSVisits> amrsVisits = amrsVisitService.getAll();
+        List<AMRSVisits> amrsVisits = amrsVisitService.findByResponseCodeIsNull();
         if(amrsVisits.size() > 0) {
 
             for (int x = 0; x < amrsVisits.size(); x++) {
@@ -64,7 +64,10 @@ public class VisitsPayload {
                             }
                         }else{
                             System.out.println("Patient is Missing");
+                            av.setKenyaemrPatientUuid("Patient is Missing");
+                            av.setResponseCode("400");
                         }
+                        amrsVisitService.save(av);
                     }
                 }else{
                     System.out.println("Visist Information exists");

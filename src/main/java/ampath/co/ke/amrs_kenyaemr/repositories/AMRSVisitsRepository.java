@@ -12,4 +12,5 @@ public interface AMRSVisitsRepository extends JpaRepository<AMRSVisits, Long> {
     List<AMRSVisits> findAll();
     List<AMRSVisits> findByVisitId(String visitId);
     List<AMRSVisits> findFirstByOrderByIdDesc();
+    List<AMRSVisits> findByResponseCodeIsNull();
 }

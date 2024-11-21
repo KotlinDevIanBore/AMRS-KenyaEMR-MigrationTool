@@ -24,7 +24,7 @@ public class AMRSPrograms {
     private String dateCompleted;
     private String parentLocationUuid;
     private int migrated;
-    private int responseCode;
+    private String responseCode;
 
     private int programID;
 
@@ -124,11 +124,11 @@ public class AMRSPrograms {
         this.migrated = migrated;
     }
 
-    public int getResponseCode() {
+    public String getResponseCode() {
         return responseCode;
     }
 
-    public void setResponseCode(int responseCode) {
+    public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
     }
 
