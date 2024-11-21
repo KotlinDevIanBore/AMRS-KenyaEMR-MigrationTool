@@ -353,7 +353,6 @@ public class MigrateCareData {
                 String kenyaemr_uuid="";
                 AMRSOrders ao = new AMRSOrders();
                 List<AMRSConceptMapper> ac = amrsConceptMappingService.findByAmrsConceptID(conceptId);
-                System.out.println("ac" + ac);
                 if(!ac.isEmpty()) {
                     kenyaemr_uuid = ac.get(0).getKenyaemrConceptUUID();
                 }else{
