@@ -12,6 +12,7 @@ public class AMRSTriage {
     private Integer Id;
     private String locationUuid;
     private String patientId;
+    private String provider;
     private String encounterID;
     private String encounterDateTime;
     private String encounterType;
@@ -102,6 +103,14 @@ public class AMRSTriage {
 
   public String getConceptValue() {
     return conceptValue;
+  }
+
+  public String getProvider() {
+    return provider;
+  }
+
+  public void setProvider(String provider) {
+    this.provider = provider;
   }
 
   public void setConceptValue(String conceptValue) {

@@ -663,6 +663,7 @@ public class MigrateCareData {
   public static void triage (String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
     String sql = "select\n" +
       "\tl.uuid as location_uuid,\n" +
+      "\to.creator as provider,\n" +
       "\to.person_id,\n" +
       "\te.encounter_id,\n" +
       "\te.encounter_datetime,\n" +
@@ -695,11 +696,12 @@ public class MigrateCareData {
       "where\n" +
       "\te.encounter_type in (110)\n" +
       "\tand o.concept_id in (5088, 5085, 5086, 5087, 5092, 5090, 5089, 980, 1342)\n" +
-      "\tand e.location_id in (339)\n" +
+      "\tand e.location_id in (2, 98, 339)\n" +
       "\tand e.voided = 0\n" +
       "\tand p.voided = 0\n" +
       "\tand cd.name <> 'N/A'\n" +
-      "limit 10;";
+      "\torder by\n" +
+      "o.person_id asc limit 1000;";
     System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
@@ -710,7 +712,8 @@ public class MigrateCareData {
     x = rs.getRow();
     rs.beforeFirst();
     while (rs.next()) {
-      String patientId = rs.getString("patient_id");
+      String patientId = rs.getString("person_id");
+      String provider = rs.getString("provider");
       String conceptId = rs.getString("concept_id");
       String encounterID = rs.getString("encounter_id");
       String locationUuid = rs.getString("location_uuid");
@@ -729,7 +732,9 @@ public class MigrateCareData {
       if(amrsTriageList.isEmpty()){
         AMRSTriage at = new AMRSTriage();
         at.setPatientId(patientId);
+        at.setProvider(provider);
         at.setConceptId(conceptId);
+        at.setEncounterID(encounterID);
         at.setLocationUuid(locationUuid);
         at.setEncounterDateTime(encounterDatetime);
         at.setEncounterType(encounterType);
@@ -740,13 +745,14 @@ public class MigrateCareData {
         at.setDataTypeId(datatypeId);
         at.setEncounterName(encounterName);
         at.setCategory(category);
-        at.setKenyaemrConceptUuid(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(conceptId)));
-       if(datatypeId.equals("1")||datatypeId.equals("2")){
-         at.setKenyaemrValue(value);
-       }else {
-         at.setKenyaemrValue(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(value)));
-       }
-
+        if(!amrsConceptMappingService.findByAmrsConceptID(conceptId).isEmpty()) {
+          at.setKenyaemrConceptUuid(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(conceptId)));
+        }
+        if(datatypeId.equals("1")||datatypeId.equals("2")){
+          at.setKenyaemrValue(value);
+        }else {
+          at.setKenyaemrValue(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(value)));
+        }
        amrsTriageService.save(at);
        // CareOpenMRSPayload.triage(amrsTriageService, parentUUID, locations, auth, url);
 
