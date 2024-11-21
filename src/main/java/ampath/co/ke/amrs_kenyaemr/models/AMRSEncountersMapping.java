@@ -13,14 +13,12 @@ public class AMRSEncountersMapping {
     @Column(nullable = false)
     private Integer Id;
 
-    @Column(name="amrs_encounter_type_id")
-    private Integer AMRS_Encounter_Type_ID;
+    private Integer amrsEncounterTypeId;
 
-    @Column(name="kenyaemr_encounter_type_id")
-    private Integer KenyaEMR_Encounter_Type_ID;
 
-    @Column(name="kenyaemr_encounter_type_uuid")
-    private String KenyaEMR_Encounter_Type_UUID;
+    private Integer kenyaemrEncounterTypeId;
+
+    private String kenyaemrEncounterTypeUuid;
 
     public Integer getId() {
         return Id;
@@ -30,27 +28,27 @@ public class AMRSEncountersMapping {
         Id = id;
     }
 
-    public Integer getAMRS_Encounter_Type_ID() {
-        return AMRS_Encounter_Type_ID;
+    public Integer getAmrsEncounterTypeId() {
+        return amrsEncounterTypeId;
     }
 
-    public void setAMRS_Encounter_Type_ID(Integer AMRS_Encounter_Type_ID) {
-        this.AMRS_Encounter_Type_ID = AMRS_Encounter_Type_ID;
+    public void setAmrsEncounterTypeId(Integer amrsEncounterTypeId) {
+        this.amrsEncounterTypeId = amrsEncounterTypeId;
     }
 
-    public Integer getKenyaEMR_Encounter_Type_ID() {
-        return KenyaEMR_Encounter_Type_ID;
+    public Integer getKenyaemrEncounterTypeId() {
+        return kenyaemrEncounterTypeId;
     }
 
-    public void setKenyaEMR_Encounter_Type_ID(Integer kenyaEMR_Encounter_Type_ID) {
-        KenyaEMR_Encounter_Type_ID = kenyaEMR_Encounter_Type_ID;
+    public void setKenyaemrEncounterTypeId(Integer kenyaemrEncounterTypeId) {
+        this.kenyaemrEncounterTypeId = kenyaemrEncounterTypeId;
     }
 
-    public String getKenyaEMR_Encounter_Type_UUID() {
-        return KenyaEMR_Encounter_Type_UUID;
+    public String getKenyaemrEncounterTypeUuid() {
+        return kenyaemrEncounterTypeUuid;
     }
 
-    public void setKenyaEMR_Encounter_Type_UUID(String kenyaEMR_Encounter_Type_UUID) {
-        KenyaEMR_Encounter_Type_UUID = kenyaEMR_Encounter_Type_UUID;
+    public void setKenyaemrEncounterTypeUuid(String kenyaemrEncounterTypeUuid) {
+        this.kenyaemrEncounterTypeUuid = kenyaemrEncounterTypeUuid;
     }
 }
