@@ -13,10 +13,13 @@ public class AMRSEncountersMapping {
     @Column(nullable = false)
     private Integer Id;
 
+    @Column(name="amrs_encounter_type_id")
     private Integer AMRS_Encounter_Type_ID;
 
+    @Column(name="kenyaemr_encounter_type_id")
     private Integer KenyaEMR_Encounter_Type_ID;
 
+    @Column(name="kenyaemr_encounter_type_uuid")
     private String KenyaEMR_Encounter_Type_UUID;
 
     public Integer getId() {
