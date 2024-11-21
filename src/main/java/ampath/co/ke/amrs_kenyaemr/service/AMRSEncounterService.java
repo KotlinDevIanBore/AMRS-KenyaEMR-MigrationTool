@@ -1,16 +1,17 @@
 package ampath.co.ke.amrs_kenyaemr.service;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSEncounters;
-import ampath.co.ke.amrs_kenyaemr.models.AMRSObs;
-import ampath.co.ke.amrs_kenyaemr.repositories.AMRSEncounterMappingRepository;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSIdentifiers;
 import ampath.co.ke.amrs_kenyaemr.repositories.AMRSEncountersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service("encounterService")
 public class AMRSEncounterService {
+    Date nowDate = new Date();
 
     private AMRSEncountersRepository amrsEncountersRepository;
     @Autowired
@@ -24,7 +25,13 @@ public class AMRSEncounterService {
     public List<AMRSEncounters> findFirstByOrderByIdDesc() {
         return amrsEncountersRepository.findFirstByOrderByIdDesc();
     }
-
-    public void save(AMRSEncounters ae) {
+    public List<AMRSEncounters> findByResponseCodeIsNull() {
+        return amrsEncountersRepository.findByResponseCodeIsNullOrderByIdAsc();
     }
+
+    public AMRSEncounters save(AMRSEncounters dataset) {
+        return amrsEncountersRepository.save(dataset);
+    }
+
+
 }

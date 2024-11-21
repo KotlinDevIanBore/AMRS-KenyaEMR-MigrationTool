@@ -90,6 +90,9 @@ public class RegisterOpenMRSPayload {
                 .addHeader("Content-Type", "application/json")
                 .build();
         Response response = client.newCall(request).execute();
+        String responseBody = response.body().string(); // Get the response as a string
+        System.out.println("Response ndo hii " + responseBody + " More message " + response.message() + " reponse code " + response.code());
+        JSONObject jsonObject = new JSONObject(responseBody);
 
        // System.out.println("Response ndo hii " + jsonUser.toString());
         System.out.println("Response ndo hii " + response);

@@ -10,11 +10,11 @@ public class AMRSEncounters {
     @Column(nullable = false)
     private Integer Id;
     private String patientId;
-    //    private String amrsUUID;
     private String encounterId;
     private String kenyaemrEncounterUuid;
     private String encounterTypeId;
     private String encounterName;
+    private String encounterDateTime;
     private String locationId;
     private String visitId;
     private String kenyaemrEncounterTypeId;
@@ -26,7 +26,7 @@ public class AMRSEncounters {
     }
 
     public void setId(Integer id) {
-        this.Id = id;
+        Id = id;
     }
 
     public String getPatientId() {
@@ -37,20 +37,20 @@ public class AMRSEncounters {
         this.patientId = patientId;
     }
 
-//    public String getAmrsUUID() {
-//        return amrsUUID;
-//    }
-//
-//    public void setAmrsUUID(String amrsUUID) {
-//        this.amrsUUID = amrsUUID;
-//    }
-
     public String getEncounterId() {
         return encounterId;
     }
 
     public void setEncounterId(String encounterId) {
         this.encounterId = encounterId;
+    }
+
+    public String getKenyaemrEncounterUuid() {
+        return kenyaemrEncounterUuid;
+    }
+
+    public void setKenyaemrEncounterUuid(String kenyaemrEncounterUuid) {
+        this.kenyaemrEncounterUuid = kenyaemrEncounterUuid;
     }
 
     public String getEncounterTypeId() {
@@ -85,14 +85,6 @@ public class AMRSEncounters {
         this.visitId = visitId;
     }
 
-    public String getKenyaemrEncountyUuid() {
-        return kenyaemrEncounterUuid;
-    }
-
-    public void setKenyaemrEncountyUuid(String kenyaemrEncountyUuid) {
-        this.kenyaemrEncounterUuid = kenyaemrEncountyUuid;
-    }
-
     public String getKenyaemrEncounterTypeId() {
         return kenyaemrEncounterTypeId;
     }
@@ -109,19 +101,19 @@ public class AMRSEncounters {
         this.kenyaemrEncounterTypeUuid = kenyaemrEncounterTypeUuid;
     }
 
-    public String getKenyaemrEncounterUuid() {
-        return kenyaemrEncounterUuid;
-    }
-
-    public void setKenyaemrEncounterUuid(String kenyaemrEncounterUuid) {
-        this.kenyaemrEncounterUuid = kenyaemrEncounterUuid;
-    }
-
     public String getResponseCode() {
         return responseCode;
     }
 
     public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public String getEncounterDateTime() {
+        return encounterDateTime;
+    }
+
+    public void setEncounterDateTime(String encounterDateTime) {
+        this.encounterDateTime = encounterDateTime;
     }
 }

@@ -8,7 +8,8 @@ import java.util.UUID;
 @Entity
 
 public class AMRSEncountersMapping {
-    @jakarta.persistence.Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Integer Id;
