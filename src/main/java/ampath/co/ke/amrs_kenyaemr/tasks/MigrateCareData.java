@@ -661,47 +661,97 @@ public class MigrateCareData {
         }
     }
   public static void triage (String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-    String sql = "select\n" +
-      "\tl.uuid as location_uuid,\n" +
-      "\to.creator as provider,\n" +
-      "\to.person_id,\n" +
-      "\te.encounter_id,\n" +
-      "\te.encounter_datetime,\n" +
-      "\te.encounter_type,\n" +
-      "\to.concept_id,\n" +
-      "\tcn.name as concept_name,\n" +
-      "\to.obs_datetime,\n" +
-      "\tCOALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
-      "\tcd.name as value_type,\n" +
-      "\tc.datatype_id,\n" +
-      "\tet.name as encounterName,\n" +
-      "\t\"Triage\" as Category\n" +
-      "from\n" +
-      "\tamrs.obs o\n" +
-      "inner join amrs.encounter e on\n" +
-      "\t(o.encounter_id = e.encounter_id)\n" +
-      "inner join amrs.person p on\n" +
-      "\tp.person_id = o.person_id\n" +
-      "inner join amrs.encounter_type et on\n" +
-      "\tet.encounter_type_id = e.encounter_type\n" +
-      "inner join amrs.location l \n" +
-      "\ton\n" +
-      "\tl.location_id = o.location_id\n" +
-      "inner join amrs.concept_name cn on\n" +
-      "\tcn.concept_id = o.concept_id\n" +
-      "inner join amrs.concept c on\n" +
-      "\tc.concept_id = o.concept_id\n" +
-      "inner join amrs.concept_datatype cd on\n" +
-      "\tcd.concept_datatype_id = c.datatype_id\n" +
-      "where\n" +
-      "\te.encounter_type in (110)\n" +
-      "\tand o.concept_id in (5088, 5085, 5086, 5087, 5092, 5090, 5089, 980, 1342)\n" +
-      "\tand e.location_id in (2, 98, 339)\n" +
-      "\tand e.voided = 0\n" +
-      "\tand p.voided = 0\n" +
-      "\tand cd.name <> 'N/A'\n" +
-      "\torder by\n" +
-      "o.person_id asc limit 1000;";
+    String sql = "";
+    List<AMRSTriage> amrsTriageList = amrsTriageService.findFirstByOrderByIdDesc();
+    String encounterID=amrsTriageList.get(0).getEncounterID();
+
+    if(amrsTriageList.size()>0) {
+      sql = "select\n" +
+        "\tl.uuid as location_uuid,\n" +
+        "\to.creator as provider,\n" +
+        "\to.person_id,\n" +
+        "\te.encounter_id,\n" +
+        "\te.encounter_datetime,\n" +
+        "\te.encounter_type,\n" +
+        "\to.concept_id,\n" +
+        "\tcn.name as concept_name,\n" +
+        "\to.obs_datetime,\n" +
+        "\tCOALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
+        "\tcd.name as value_type,\n" +
+        "\tc.datatype_id,\n" +
+        "\tet.name as encounterName,\n" +
+        "\t\"Triage\" as Category\n" +
+        "from\n" +
+        "\tamrs.obs o\n" +
+        "inner join amrs.encounter e on\n" +
+        "\t(o.encounter_id = e.encounter_id)\n" +
+        "inner join amrs.person p on\n" +
+        "\tp.person_id = o.person_id\n" +
+        "inner join amrs.encounter_type et on\n" +
+        "\tet.encounter_type_id = e.encounter_type\n" +
+        "inner join amrs.location l \n" +
+        "\ton\n" +
+        "\tl.location_id = o.location_id\n" +
+        "inner join amrs.concept_name cn on\n" +
+        "\tcn.concept_id = o.concept_id\n" +
+        "inner join amrs.concept c on\n" +
+        "\tc.concept_id = o.concept_id\n" +
+        "inner join amrs.concept_datatype cd on\n" +
+        "\tcd.concept_datatype_id = c.datatype_id\n" +
+        "where\n" +
+        "\te.encounter_type in (110)\n" +
+        "\tand o.concept_id in (5088, 5085, 5086, 5087, 5092, 5090, 5089, 980, 1342)\n" +
+        "\tand e.location_id in (2, 98, 339)\n" +
+        "\tand e.voided = 0\n" +
+        "\tand p.voided = 0\n" +
+        "\tand cd.name <> 'N/A'\n" +
+        "\torder by\n" +
+        "o.person_id asc limit 1000;";
+    } else{
+      sql = "select\n" +
+        "\tl.uuid as location_uuid,\n" +
+        "\to.creator as provider,\n" +
+        "\to.person_id,\n" +
+        "\te.encounter_id,\n" +
+        "\te.encounter_datetime,\n" +
+        "\te.encounter_type,\n" +
+        "\to.concept_id,\n" +
+        "\tcn.name as concept_name,\n" +
+        "\to.obs_datetime,\n" +
+        "\tCOALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
+        "\tcd.name as value_type,\n" +
+        "\tc.datatype_id,\n" +
+        "\tet.name as encounterName,\n" +
+        "\t\"Triage\" as Category\n" +
+        "from\n" +
+        "\tamrs.obs o\n" +
+        "inner join amrs.encounter e on\n" +
+        "\t(o.encounter_id = e.encounter_id)\n" +
+        "inner join amrs.person p on\n" +
+        "\tp.person_id = o.person_id\n" +
+        "inner join amrs.encounter_type et on\n" +
+        "\tet.encounter_type_id = e.encounter_type\n" +
+        "inner join amrs.location l \n" +
+        "\ton\n" +
+        "\tl.location_id = o.location_id\n" +
+        "inner join amrs.concept_name cn on\n" +
+        "\tcn.concept_id = o.concept_id\n" +
+        "inner join amrs.concept c on\n" +
+        "\tc.concept_id = o.concept_id\n" +
+        "inner join amrs.concept_datatype cd on\n" +
+        "\tcd.concept_datatype_id = c.datatype_id\n" +
+        "where\n" +
+        "\te.encounter_type in (110)\n" +
+        "AND e.encounter_id > "+ encounterID +"" +
+        "\tand o.concept_id in (5088, 5085, 5086, 5087, 5092, 5090, 5089, 980, 1342)\n" +
+        "\tand e.location_id in (2, 98, 339)\n" +
+        "\tand e.voided = 0\n" +
+        "\tand p.voided = 0\n" +
+        "\tand cd.name <> 'N/A'\n" +
+        "\torder by\n" +
+        "o.person_id asc limit 1000;";
+    }
+
     System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
