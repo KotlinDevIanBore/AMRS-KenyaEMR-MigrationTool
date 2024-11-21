@@ -661,10 +661,15 @@ public class MigrateCareData {
         }
     }
   public static void triage (String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-    String sql ="";
+    
+    String prevEncounterID = null; // Declare the variable
     List<AMRSTriage> amrsTriages = amrsTriageService.findFirstByOrderByIdDesc();
-    String prevEncounterID=amrsTriages.get(0).getEncounterID();
-    if(amrsTriages.size()>0) {
+    if (amrsTriages != null && !amrsTriages.isEmpty()) {
+        prevEncounterID = amrsTriages.get(0).getEncounterID();
+    }
+
+    String sql ="";
+    if (amrsTriages == null || amrsTriages.isEmpty()) {
       sql = "select\n" +
         "\tl.uuid as location_uuid,\n" +
         "\to.creator as provider,\n" +
@@ -704,8 +709,7 @@ public class MigrateCareData {
         "\tand e.voided = 0\n" +
         "\tand p.voided = 0\n" +
         "\tand cd.name <> 'N/A'\n" +
-        "\torder by\n" +
-        "o.person_id asc limit 1000;";
+        "limit 100;";
     } else{
       sql = "select\n" +
         "\tl.uuid as location_uuid,\n" +
@@ -747,10 +751,9 @@ public class MigrateCareData {
         "\tand e.voided = 0\n" +
         "\tand p.voided = 0\n" +
         "\tand cd.name <> 'N/A'\n" +
-        "\torder by\n" +
-        "o.person_id asc limit 1000;";
+        "limit 100;";
     }
-
+    
     System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
