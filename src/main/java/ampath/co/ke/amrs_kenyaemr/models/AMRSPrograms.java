@@ -13,26 +13,16 @@ public class AMRSPrograms {
     private String UUID;
     private String patientId;
     private String amrsPatientProgramID;
-
     private String patientKenyaemrUuid;
-
     private String kenyaemrProgramUuid;
-
     private String programName;
     private String programUUID;
-
     private String locationId;
-
     private String locationUUID;
-
     private String conceptId;
-
     private String dateEnrolled;
-
     private String dateCompleted;
-
     private String parentLocationUuid;
-
     private int migrated;
     private int responseCode;
 

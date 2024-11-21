@@ -8,9 +8,8 @@ import java.util.List;
 public interface AMRSEncounterMappingRepository extends JpaRepository<AMRSEncountersMapping, Long> {
 
     AMRSEncountersMapping findById(int pid);
-
-    List<AMRSEncountersMapping> findByAMRSEncounterTypeID(int AMRS_Encounter_Type_ID);
-    List<AMRSEncountersMapping> findByKenyaEMREncounterTypeID(int KenyaEMR_Encounter_Type_ID);
-    List<AMRSEncountersMapping> findByKenyaEMREncounterTypeUUID(String KenyaEMR_Encounter_Type_UUID);
+    List<AMRSEncountersMapping> findByAmrsEncounterTypeId(String AMRS_Encounter_Type_ID);
+    List<AMRSEncountersMapping> findByKenyaemrEncounterTypeId(String KenyaEMR_Encounter_Type_ID);
+    List<AMRSEncountersMapping> findByKenyaemrEncounterTypeUuid(String KenyaEMR_Encounter_Type_UUID);
 
 }

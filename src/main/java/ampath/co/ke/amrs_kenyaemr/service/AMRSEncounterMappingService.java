@@ -22,19 +22,19 @@ public class AMRSEncounterMappingService {
         return amrsEncounterMappingRepository.save(dataset);
     }
 
-    public List<AMRSEncountersMapping> getByAmrsID(int id){
-        return amrsEncounterMappingRepository.findByAMRSEncounterTypeID(id);
+    public List<AMRSEncountersMapping> getByAmrsID(String id){
+        return amrsEncounterMappingRepository.findByAmrsEncounterTypeId(id);
     }
 
     public AMRSEncountersMapping getById(int id){
         return amrsEncounterMappingRepository.findById(id);
     }
 
-    public List<AMRSEncountersMapping> getByKenyaemrID(int id){
-        return amrsEncounterMappingRepository.findByKenyaEMREncounterTypeID(id);
+    public List<AMRSEncountersMapping> getByKenyaemrID(String id){
+        return amrsEncounterMappingRepository.findByKenyaemrEncounterTypeId(id);
     }
 
     public List<AMRSEncountersMapping> getByKenyaemrUUID(String uuid){
-        return amrsEncounterMappingRepository.findByKenyaEMREncounterTypeUUID(uuid);
+        return amrsEncounterMappingRepository.findByKenyaemrEncounterTypeUuid(uuid);
     }
 }

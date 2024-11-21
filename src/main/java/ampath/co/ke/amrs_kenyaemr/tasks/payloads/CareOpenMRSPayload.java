@@ -1,6 +1,7 @@
 package ampath.co.ke.amrs_kenyaemr.tasks.payloads;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPrograms;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSTriage;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSProgramService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSTriageService;
 import ampath.co.ke.amrs_kenyaemr.tasks.Mappers;
@@ -8,6 +9,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,9 +28,9 @@ public class CareOpenMRSPayload {
             int pid = amrsProgramsList.get(x).getProgramID();
             AMRSPrograms ap = amrsProgramsList.get(x);
 
-            if (ap.getResponseCode() != 201) {
+           // if (ap.getResponseCode() != 201) {
 
-                if (!programms.equals("")) {
+                if (!programms.equals("") || ap.getPatientKenyaemrUuid() != null) {
 
                     jsonProgram.put("patient", ap.getPatientKenyaemrUuid());
                     jsonProgram.put("program", ap.getKenyaemrProgramUuid());
@@ -61,17 +63,29 @@ public class CareOpenMRSPayload {
                     ap.setResponseCode(rescode);
                     System.out.println("Imefika Hapa na data " + rescode);
                 } else {
-                    ap.setResponseCode(6000);
+                    //ap.setResponseCode();
                 }
                 amrsProgramService.save(ap);
 
-            }
+           // }
         }
 
        }
     }
   public static void triage(AMRSTriageService amrsTriageService, String locations, String parentUUID, String url, String auth ) throws JSONException, IOException {
+     // List<AMRSPrograms> amrsProgramsList = amrsTriageService.findByParentLocationUuid(parentUUID);
 
+     /* JSONArray jsonObservations = new JSONArray();
+      JSONObject jsonObservation = new JSONObject();
+      AMRSTriage amrsTriage = amrsTriageService.
+      // String puuid="a32d8e5e-fb75-419a-88aa-c2d5f37dd244";
+      String pruuid="901218e9-dfc7-4afb-94cb-b32e551e4f76";
+      String conceptuuid="1246AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+      jsonObservation.put("person",puuid);//"60168b73-60f1-4044-9dc6-84fdcbc1962c");
+      jsonObservation.put("concept",conceptuuid);///String.valueOf(conceptsetId));
+      jsonObservation.put("value", value);
+
+      */
   }
 
   }
