@@ -323,7 +323,7 @@ public class MigrateCareData {
     }
 
     public static void order (String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-        String sql ="SELECT *, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid, NULL AS kenyaemr_order_id FROM amrs.orders where patient_id in (7870) and order_reason is not null limit 50";
+        String sql ="SELECT *, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid, NULL AS kenyaemr_order_id FROM amrs.orders where order_reason is not null limit 20";
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -335,31 +335,53 @@ public class MigrateCareData {
         rs.beforeFirst();
         while (rs.next()) {
             String patientId = rs.getString("patient_id");
-           // String patientId = rs.getString(2);
+            String orderId = rs.getString("order_id");
+            String orderTypeId = rs.getString("order_type_id");
+            String orderer = rs.getString("orderer");
+            String encounterId = rs.getString("encounter_id");
+            String instructions = rs.getString("instructions");
             String conceptId = rs.getString("concept_id");
-            String amrs_uuid = rs.getString("uuid");
+            String amrsOrderUuid = rs.getString("uuid");
             String justification = rs.getString("order_reason");
+            String order_reason_non_coded = rs.getString("order_reason_non_coded");
+            String urgency = rs.getString("urgency");
+            String orderNumber = rs.getString("order_number");
+            String orderAction = rs.getString("order_action");
 
-            List<AMRSOrders> amrsOrders = amrsOrderService.findByUuid(amrs_uuid);
-            if(amrsOrders.size()==0){
+            List<AMRSOrders> amrsOrders = amrsOrderService.findByUuid(amrsOrderUuid);
+            if(amrsOrders.isEmpty()){
                 String kenyaemr_uuid="";
                 AMRSOrders ao = new AMRSOrders();
                 List<AMRSConceptMapper> ac = amrsConceptMappingService.findByAmrsConceptID(conceptId);
-                if(ac.size()!=0) {
+                System.out.println("ac" + ac);
+                if(!ac.isEmpty()) {
                     kenyaemr_uuid = ac.get(0).getKenyaemrConceptUUID();
+                }else{
+                    kenyaemr_uuid="";
+
+                }
                     ao.setConceptId(Integer.valueOf(conceptId));
                     ao.setPatientId(patientId);
+                    ao.setOrderId(Integer.valueOf(orderId));
+                    ao.setOrderer(orderer);
+                    ao.setOrderTypeId(Integer.valueOf(orderTypeId));
+                    ao.setEncounterId(Integer.valueOf(encounterId));
+                    ao.setInstructions(instructions);
+                    ao.setOrderReasonNonCoded(order_reason_non_coded);
+                    ao.setUrgency(urgency);
+                    ao.setOrderNumber(orderNumber);
+                    ao.setOrderAction(orderAction);
                     List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
                     String kenyaemr_patient_uuid = "";
-                    if (amrsPatients.size() != 0) {
+                    if (!amrsPatients.isEmpty()) {
                         kenyaemr_patient_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
                     } else {
-                        kenyaemr_patient_uuid = "Not Found"; // add logic for missing patient
+                        kenyaemr_patient_uuid = "Not Found"; // add logic for missing patientkenyaemr_patient_uuid
                     }
                     String justificationcode ="";
-                    if(!justification.equals("")){
+                    if(!justification.isEmpty()){
                         List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(justification);
-                        if(amrsConceptMapper.size()>0){
+                        if(!amrsConceptMapper.isEmpty()){
                             justificationcode = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
 
                         }
@@ -367,13 +389,9 @@ public class MigrateCareData {
 
                     System.out.println("Patient " + kenyaemr_patient_uuid + " concept " + conceptId + " kenyaemr_concept_id " + kenyaemr_uuid +" justification" + justification +"Kenyaemr justicafiation "+ justificationcode);
 
-                }else{
-                    System.out.println("No mapping for  " + conceptId );
 
 
-                }
-
-               //amrsOrderService.save(ao);
+               amrsOrderService.save(ao);
 
             }
             // orders

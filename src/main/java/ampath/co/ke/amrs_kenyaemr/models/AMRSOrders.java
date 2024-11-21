@@ -30,9 +30,6 @@ public class AMRSOrders {
     @Column(name = "encounter_id")
     private Integer encounterId;
 
-    @Column(name = "uuid")
-    private Integer encounterUuid;
-
     @Column(name = "instructions")
     private String instructions;
 
@@ -297,14 +294,6 @@ public class AMRSOrders {
 
     public void setUrgency(String urgency) {
         this.urgency = urgency;
-    }
-
-    public Integer getEncounterUuid() {
-        return encounterUuid;
-    }
-
-    public void setEncounterUuid(Integer encounterUuid) {
-        this.encounterUuid = encounterUuid;
     }
 
     public String getOrderNumber() {

@@ -26,7 +26,7 @@ public class OrdersPayload {
                         Integer orderType = amrsOrders.get(x).getOrderTypeId();
                         String urgency = amrsOrders.get(x).getUrgency();
                         String orderer = amrsOrders.get(x).getOrderer();
-                        Integer encounterUuid = amrsOrders.get(x).getEncounterUuid();
+                        Integer amrs_uuid = Integer.valueOf(amrsOrders.get(x).getUuid());
                         String careSettings = amrsOrders.get(x).getCareSetting();
                         String orderReason = amrsOrders.get(x).getOrderReason();
 
@@ -38,7 +38,7 @@ public class OrdersPayload {
                         jsonOrder.put("urgency", urgency);
                         jsonOrder.put("orderer", orderer);
                         jsonOrder.put("orderReason", orderReason);
-                        jsonOrder.put("encounterUuid", encounterUuid);
+                        jsonOrder.put("amrs_uuid", amrs_uuid);
                         jsonOrder.put("careSettings", "OUTPATIENT");
 
                         OkHttpClient client = new OkHttpClient();
