@@ -1,5 +1,6 @@
 package ampath.co.ke.amrs_kenyaemr.service;
 
+import ampath.co.ke.amrs_kenyaemr.models.AMRSPrograms;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSVisits;
 import ampath.co.ke.amrs_kenyaemr.repositories.AMRSUsersRepository;
@@ -27,4 +28,8 @@ public class AMRSVisitService {
     public AMRSVisits save(AMRSVisits dataset) {
         return amrsVisitsRepository.save(dataset);
     }
+    public List<AMRSVisits> findFirstByOrderByIdDesc() {
+        return amrsVisitsRepository.findFirstByOrderByIdDesc();
+    }
+
 }

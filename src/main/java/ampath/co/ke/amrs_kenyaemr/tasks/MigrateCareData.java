@@ -19,8 +19,8 @@ public class MigrateCareData {
        List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
         String sql="";
         if(amrsProgramss.size()>0){
-            int pid = Integer.parseInt(amrsProgramss.get(0).getPatientId());
-            sql = "select  pp.patient_id, \n" +
+            int ppid = Integer.parseInt(amrsProgramss.get(0).getAmrsPatientProgramID());
+            sql = "select pp.patient_program_id, pp.patient_id, \n" +
                     "       p.name,\n" +
                     "       p.uuid program_uuid,\n" +
                     "       pp.location_id,\n" +
@@ -33,13 +33,12 @@ public class MigrateCareData {
                     "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
                     "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                     "       inner join amrs.location l on l.location_id = e.location_id\n" +
-                    "       and l.uuid in (" + locations + ") and e.patient_id>="+pid +"  \n" + //and e. patient_id in ('1224605,1222698')
-                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_id asc";
+                    "       and l.uuid in (" + locations + ") and pp.patient_program_id>="+ppid +"  \n" + //and e. patient_id in ('1224605,1222698')
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc";
 
         }else {
 
-
-            sql = "select  pp.patient_id, \n" +
+            sql = "select pp.patient_program_id, pp.patient_id, \n" +
                     "       p.name,\n" +
                     "       p.uuid program_uuid,\n" +
                     "       pp.location_id,\n" +
@@ -53,7 +52,7 @@ public class MigrateCareData {
                     "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                     "       inner join amrs.location l on l.location_id = e.location_id\n" +
                     "       and l.uuid in (" + locations + ") \n" + //and e. patient_id in ('1224605,1222698')
-                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_id asc";
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc";
         }
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
@@ -75,12 +74,9 @@ public class MigrateCareData {
             String dateEnrolled = rs.getString("date_enrolled");
             String dateCompleted = rs.getString("date_completed");
             String programId = rs.getString("program_id");
-
+            String patientProgramId = rs.getString("patient_program_id");
 
            // List<AMRSPrograms> patientsList = amrsProgramService.getprogramByLocation(rs.getString(2),parentUUID);
-
-            //if (patientsList.size()==0) {
-
                 List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
                 String person_id=patientId;
                 List<AMRSPrograms> amrsPrograms = amrsProgramService.findByPatientIdAndProgramID(patientId, Integer.parseInt(programId));
@@ -99,6 +95,7 @@ public class MigrateCareData {
                    ae.setDateCompleted(dateCompleted);
                    ae.setPatientKenyaemrUuid(amrsPatients.get(0).getKenyaemrpatientUUID());
                    ae.setKenyaemrProgramUuid(Mappers.programs(programUuid));
+                   ae.setAmrsPatientProgramID(patientProgramId);
                    amrsProgramService.save(ae);
                }
 
@@ -245,20 +242,40 @@ public class MigrateCareData {
 
 
     public static void visits (String server, String username, String password, String locations, String parentUUID, AMRSVisitService amrsVisitService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-      String sql ="select v.visit_id,\n" +
-              "       e.patient_id,\n" +
-              "\t     visit_type_id,\n" +
-              "       date_started,\n" +
-              "       e.location_id,\n" +
-              "\t     date_stopped,\n" +
-              "       encounter_type,\n" +
-              "       v.voided \n" +
-              "              from amrs.visit v\n" +
-              "              inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
-              "              inner join amrs.location l on l.location_id=e.location_id\n" +
-              "              where l.uuid in ("+ locations +")\n" +
-              "              and v.voided=0\n" +
-              "              group by  v.visit_id order by e.patient_id asc ";
+        String sql="";
+        List<AMRSVisits> amrsVisitsList = amrsVisitService.findFirstByOrderByIdDesc();
+            if(amrsVisitsList.size()>0){
+                sql = "select v.visit_id,\n" +
+                        "       e.patient_id,\n" +
+                        "\t     visit_type_id,\n" +
+                        "       date_started,\n" +
+                        "       e.location_id,\n" +
+                        "\t     date_stopped,\n" +
+                        "       encounter_type,\n" +
+                        "       v.voided \n" +
+                        "              from amrs.visit v\n" +
+                        "              inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
+                        "              inner join amrs.location l on l.location_id=e.location_id\n" +
+                        "              where l.uuid in (" + locations + ") and v.visit_id>"+ amrsVisitsList.get(0).getVisitId() +"\n" +
+                        "              and v.voided=0\n" +
+                        "              group by  v.visit_id order by v.visit_id asc ";
+            }else {
+
+                sql = "select v.visit_id,\n" +
+                        "       e.patient_id,\n" +
+                        "\t     visit_type_id,\n" +
+                        "       date_started,\n" +
+                        "       e.location_id,\n" +
+                        "\t     date_stopped,\n" +
+                        "       encounter_type,\n" +
+                        "       v.voided \n" +
+                        "              from amrs.visit v\n" +
+                        "              inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
+                        "              inner join amrs.location l on l.location_id=e.location_id\n" +
+                        "              where l.uuid in (" + locations + ")\n" +
+                        "              and v.voided=0\n" +
+                        "              group by  v.visit_id order by v.visit_id asc ";
+            }
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         System.out.println("locations " +sql);
