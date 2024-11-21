@@ -8,11 +8,11 @@ public class AMRSEncounters {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Integer id;
+    private Integer Id;
     private String patientId;
-    private String amrsUUID;
+    //    private String amrsUUID;
     private String encounterId;
-    private String kenyaemrEncountyUuid;
+    private String kenyaemrEncounterUuid;
     private String encounterTypeId;
     private String encounterName;
     private String locationId;
@@ -22,11 +22,11 @@ public class AMRSEncounters {
     private int responseCode;
 
     public Integer getId() {
-        return id;
+        return Id;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.Id = id;
     }
 
     public String getPatientId() {
@@ -37,13 +37,13 @@ public class AMRSEncounters {
         this.patientId = patientId;
     }
 
-    public String getAmrsUUID() {
-        return amrsUUID;
-    }
-
-    public void setAmrsUUID(String amrsUUID) {
-        this.amrsUUID = amrsUUID;
-    }
+//    public String getAmrsUUID() {
+//        return amrsUUID;
+//    }
+//
+//    public void setAmrsUUID(String amrsUUID) {
+//        this.amrsUUID = amrsUUID;
+//    }
 
     public String getEncounterId() {
         return encounterId;
@@ -94,11 +94,11 @@ public class AMRSEncounters {
     }
 
     public String getKenyaemrEncountyUuid() {
-        return kenyaemrEncountyUuid;
+        return kenyaemrEncounterUuid;
     }
 
     public void setKenyaemrEncountyUuid(String kenyaemrEncountyUuid) {
-        this.kenyaemrEncountyUuid = kenyaemrEncountyUuid;
+        this.kenyaemrEncounterUuid = kenyaemrEncountyUuid;
     }
 
     public String getKenyaemrEncounterTypeId() {
