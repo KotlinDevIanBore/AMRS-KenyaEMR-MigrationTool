@@ -12,14 +12,14 @@ public class AMRSEncounters {
     private String patientId;
     private String amrsUUID;
     private String encounterId;
-    private String kenyaemrUUID;
+    private String kenyaemrEncountyUuid;
     private String encounterTypeId;
     private String encounterName;
     private String locationId;
     private String visitId;
-
+    private String kenyaemrEncounterTypeId;
+    private String kenyaemrEncounterTypeUuid;
     private int responseCode;
-
 
     public Integer getId() {
         return id;
@@ -51,14 +51,6 @@ public class AMRSEncounters {
 
     public void setEncounterId(String encounterId) {
         this.encounterId = encounterId;
-    }
-
-    public String getKenyaemrUUID() {
-        return kenyaemrUUID;
-    }
-
-    public void setKenyaemrUUID(String kenyaemrUUID) {
-        this.kenyaemrUUID = kenyaemrUUID;
     }
 
     public String getEncounterTypeId() {
@@ -99,5 +91,29 @@ public class AMRSEncounters {
 
     public void setResponseCode(int responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public String getKenyaemrEncountyUuid() {
+        return kenyaemrEncountyUuid;
+    }
+
+    public void setKenyaemrEncountyUuid(String kenyaemrEncountyUuid) {
+        this.kenyaemrEncountyUuid = kenyaemrEncountyUuid;
+    }
+
+    public String getKenyaemrEncounterTypeId() {
+        return kenyaemrEncounterTypeId;
+    }
+
+    public void setKenyaemrEncounterTypeId(String kenyaemrEncounterTypeId) {
+        this.kenyaemrEncounterTypeId = kenyaemrEncounterTypeId;
+    }
+
+    public String getKenyaemrEncounterTypeUuid() {
+        return kenyaemrEncounterTypeUuid;
+    }
+
+    public void setKenyaemrEncounterTypeUuid(String kenyaemrEncounterTypeUuid) {
+        this.kenyaemrEncounterTypeUuid = kenyaemrEncounterTypeUuid;
     }
 }
