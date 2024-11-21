@@ -56,7 +56,8 @@ public class LocationControllers {
     private AMRSConceptMappingService amrsConceptMappingService;
     @Autowired
     private AMRSVisitService amrsVisitService;
-
+    @Autowired
+    private AMRSTriageService amrsTriageService;
     @Autowired
     private AMRSHIVEnrollmentService amrsHIVEnrollmentService;
     @Autowired
