@@ -1021,88 +1021,103 @@ public class MigrateCareData {
 
         String sql = "";
         if (amrsTriages == null || amrsTriages.isEmpty()) {
-            sql = "select\n" +
-                    "\tl.uuid as location_uuid,\n" +
-                    "\to.creator as provider,\n" +
-                    "\to.person_id,\n" +
-                    "\te.encounter_id,\n" +
-                    "\te.encounter_datetime,\n" +
-                    "\te.encounter_type,\n" +
-                    "\to.concept_id,\n" +
-                    "\tcn.name as concept_name,\n" +
-                    "\to.obs_datetime,\n" +
-                    "\tCOALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
-                    "\tcd.name as value_type,\n" +
-                    "\tc.datatype_id,\n" +
-                    "\tet.name as encounterName,\n" +
-                    "\t\"Triage\" as Category\n" +
-                    "from\n" +
-                    "\tamrs.obs o\n" +
-                    "inner join amrs.encounter e on\n" +
-                    "\t(o.encounter_id = e.encounter_id)\n" +
-                    "inner join amrs.person p on\n" +
-                    "\tp.person_id = o.person_id\n" +
-                    "inner join amrs.encounter_type et on\n" +
-                    "\tet.encounter_type_id = e.encounter_type\n" +
-                    "inner join amrs.location l \n" +
-                    "\ton\n" +
-                    "\tl.location_id = o.location_id\n" +
-                    "inner join amrs.concept_name cn on\n" +
-                    "\tcn.concept_id = o.concept_id\n" +
-                    "inner join amrs.concept c on\n" +
-                    "\tc.concept_id = o.concept_id\n" +
-                    "inner join amrs.concept_datatype cd on\n" +
-                    "\tcd.concept_datatype_id = c.datatype_id\n" +
-                    "where\n" +
-                    "\te.encounter_type in (110)\n" +
-                    "\tand o.concept_id in (5088, 5085, 5086, 5087, 5092, 5090, 5089, 980, 1342)\n" +
-                    "\tand e.location_id in (2, 98, 339)\n" +
-                    "\tand e.voided = 0\n" +
-                    "\tand p.voided = 0\n" +
-                    "\tand cd.name <> 'N/A'\n" +
-                    "limit 100;";
+            sql = "WITH cte_vitals_concepts as (\n" +
+                    "SELECT \n" +
+                    "    concept_id, uuid\n" +
+                    "FROM\n" +
+                    "    amrs.concept\n" +
+                    "WHERE\n" +
+                    "    uuid IN (\n" +
+                    "\t\t'a8a65d5a-1350-11df-a1f1-0026b9348838', \n" +
+                    "        'a8a65e36-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a65f12-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a6f71a-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a65fee-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a660ca-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a6619c-1350-11df-a1f1-0026b9348838',\n" +
+                    "        '5099d8a8-36c1-4574-a568-9bc49c15c08c',\n" +
+                    "        '507f48e7-26fc-490b-a521-35d7c5aa8e9f',\n" +
+                    "        'a8a66354-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a89c60c0-1350-11df-a1f1-0026b9348838',\n" +
+                    "        '9061e5d5-8478-4d16-be44-bfec05b6705a',\n" +
+                    "        'a89c6188-1350-11df-a1f1-0026b9348838')\n" +
+                    ")\n" +
+                    "\n" +
+                    "SELECT \n" +
+                    "o.person_id,\n" +
+                    "o.encounter_id, \n" +
+                    "e.encounter_datetime,\n" +
+                    "e.visit_id,\n" +
+                    "o.location_id,\n" +
+                    "max(o.obs_datetime) as obs_datetime,\n" +
+                    "max(case when o.concept_id = 9816 then o.value_numeric end) as height_age_zscore,\n" +
+                    "max(case when o.concept_id = 8238 then o.value_numeric end) as weight_height_zscore,\n" +
+                    "max(case when o.concept_id = 8239 then o.value_numeric end) as bmi_age_zscore,\n" +
+                    "max(case when o.concept_id = 1342 then o.value_numeric end) as bmi,\n" +
+                    "max(case when o.concept_id = 1343 then o.value_numeric end) as muac_mm,\n" +
+                    "max(case when o.concept_id = 5085 then o.value_numeric end) as systolic_bp,\n" +
+                    "max(case when o.concept_id = 5086 then o.value_numeric end) as diastolic_bp,\n" +
+                    "max(case when o.concept_id = 5087 then o.value_numeric end) as pulse,\n" +
+                    "max(case when o.concept_id = 5088 then o.value_numeric end) as temperature,\n" +
+                    "max(case when o.concept_id = 5092 then o.value_numeric end) as spo2,\n" +
+                    "max(case when o.concept_id = 5242 then o.value_numeric end) as rr,\n" +
+                    "max(case when o.concept_id = 5089 then o.value_numeric end) as weight,\n" +
+                    "max(case when o.concept_id = 5090 then o.value_numeric end) as height\n" +
+                    "FROM amrs.obs o \n" +
+                    "INNER JOIN amrs.encounter e using(encounter_id)\n" +
+                    "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
+                    "AND o.location_id IN(2, 339) \n" +
+                    " AND o.person_id = 1225788\n" +
+                    "GROUP BY o.person_id, o.encounter_id limit 10";
         } else {
-            sql = "select\n" +
-                    "\tl.uuid as location_uuid,\n" +
-                    "\to.creator as provider,\n" +
-                    "\to.person_id,\n" +
-                    "\te.encounter_id,\n" +
-                    "\te.encounter_datetime,\n" +
-                    "\te.encounter_type,\n" +
-                    "\to.concept_id,\n" +
-                    "\tcn.name as concept_name,\n" +
-                    "\to.obs_datetime,\n" +
-                    "\tCOALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
-                    "\tcd.name as value_type,\n" +
-                    "\tc.datatype_id,\n" +
-                    "\tet.name as encounterName,\n" +
-                    "\t\"Triage\" as Category\n" +
-                    "from\n" +
-                    "\tamrs.obs o\n" +
-                    "inner join amrs.encounter e on\n" +
-                    "\t(o.encounter_id = e.encounter_id)\n" +
-                    "inner join amrs.person p on\n" +
-                    "\tp.person_id = o.person_id\n" +
-                    "inner join amrs.encounter_type et on\n" +
-                    "\tet.encounter_type_id = e.encounter_type\n" +
-                    "inner join amrs.location l \n" +
-                    "\ton\n" +
-                    "\tl.location_id = o.location_id\n" +
-                    "inner join amrs.concept_name cn on\n" +
-                    "\tcn.concept_id = o.concept_id\n" +
-                    "inner join amrs.concept c on\n" +
-                    "\tc.concept_id = o.concept_id\n" +
-                    "inner join amrs.concept_datatype cd on\n" +
-                    "\tcd.concept_datatype_id = c.datatype_id\n" +
-                    "where\n" +
-                    "\te.encounter_type in (110)\n" +
-                    "\tAND e.encounter_id > " + prevEncounterID + "\n" +
-                    "\tand o.concept_id in (5088, 5085, 5086, 5087, 5092, 5090, 5089, 980, 1342)\n" +
-                    "\tand e.location_id in (2, 98, 339)\n" +
-                    "\tand e.voided = 0\n" +
-                    "\tand p.voided = 0\n" +
-                    "\tand cd.name <> 'N/A'\n" +
-                    "limit 100;";
+            sql = "WITH cte_vitals_concepts as (\n" +
+                    "SELECT \n" +
+                    "    concept_id, uuid\n" +
+                    "FROM\n" +
+                    "    amrs.concept\n" +
+                    "WHERE\n" +
+                    "    uuid IN (\n" +
+                    "\t\t'a8a65d5a-1350-11df-a1f1-0026b9348838', \n" +
+                    "        'a8a65e36-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a65f12-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a6f71a-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a65fee-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a660ca-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a8a6619c-1350-11df-a1f1-0026b9348838',\n" +
+                    "        '5099d8a8-36c1-4574-a568-9bc49c15c08c',\n" +
+                    "        '507f48e7-26fc-490b-a521-35d7c5aa8e9f',\n" +
+                    "        'a8a66354-1350-11df-a1f1-0026b9348838',\n" +
+                    "        'a89c60c0-1350-11df-a1f1-0026b9348838',\n" +
+                    "        '9061e5d5-8478-4d16-be44-bfec05b6705a',\n" +
+                    "        'a89c6188-1350-11df-a1f1-0026b9348838')\n" +
+                    ")\n" +
+                    "\n" +
+                    "SELECT \n" +
+                    "o.person_id,\n" +
+                    "o.encounter_id, \n" +
+                    "e.encounter_datetime,\n" +
+                    "e.visit_id,\n" +
+                    "o.location_id,\n" +
+                    "max(o.obs_datetime) as obs_datetime,\n" +
+                    "max(case when o.concept_id = 9816 then o.value_numeric end) as height_age_zscore,\n" +
+                    "max(case when o.concept_id = 8238 then o.value_numeric end) as weight_height_zscore,\n" +
+                    "max(case when o.concept_id = 8239 then o.value_numeric end) as bmi_age_zscore,\n" +
+                    "max(case when o.concept_id = 1342 then o.value_numeric end) as bmi,\n" +
+                    "max(case when o.concept_id = 1343 then o.value_numeric end) as muac_mm,\n" +
+                    "max(case when o.concept_id = 5085 then o.value_numeric end) as systolic_bp,\n" +
+                    "max(case when o.concept_id = 5086 then o.value_numeric end) as diastolic_bp,\n" +
+                    "max(case when o.concept_id = 5087 then o.value_numeric end) as pulse,\n" +
+                    "max(case when o.concept_id = 5088 then o.value_numeric end) as temperature,\n" +
+                    "max(case when o.concept_id = 5092 then o.value_numeric end) as spo2,\n" +
+                    "max(case when o.concept_id = 5242 then o.value_numeric end) as rr,\n" +
+                    "max(case when o.concept_id = 5089 then o.value_numeric end) as weight,\n" +
+                    "max(case when o.concept_id = 5090 then o.value_numeric end) as height\n" +
+                    "FROM amrs.obs o \n" +
+                    "INNER JOIN amrs.encounter e using(encounter_id)\n" +
+                    "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
+                    "AND o.location_id IN(2, 339) \n" +
+                    " AND o.person_id = 1225788\n" +
+                    "GROUP BY o.person_id, o.encounter_id limit 10";
         }
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
@@ -1115,48 +1130,50 @@ public class MigrateCareData {
         x = rs.getRow();
         rs.beforeFirst();
         while (rs.next()) {
-            String patientId = rs.getString("person_id");
-            String provider = rs.getString("provider");
-            String conceptId = rs.getString("concept_id");
-            String encounterID = rs.getString("encounter_id");
-            String locationUuid = rs.getString("location_uuid");
-            String encounterDatetime = rs.getString("encounter_datetime");
-            String encounterType = rs.getString("encounter_type");
-            String conceptName = rs.getString("concept_name");
-            String obsDatetime = rs.getString("obs_datetime");
-            String value = rs.getString("value");
-            String valueType = rs.getString("value_type");
-            String datatypeId = rs.getString("datatype_id");
-            String encounterName = rs.getString("encounterName");
-            String category = rs.getString("Category");
+             String patientId = rs.getString("person_id");
+             String encounterID = rs.getString("encounter_id");
+             String encounterDateTime = rs.getString("encounter_datetime");
+             String visitId = rs.getString("visit_date");
+             String locationId = rs.getString("location_id");
+             String obsDateTime = rs.getString("obs_datetime");
+             String heightAgeZscore = rs.getString("height_age_zscore");
+             String weightHeightZscore = rs.getString("weight_height_zscore");
+             String bmiAgeZscore = rs.getString("bmi_age_zscore");
+             String bmi = rs.getString("bmi");
+             String muacMm = rs.getString("muac_mm");
+             String systolicBp = rs.getString("systolic_bp");
+             String diastolicBp = rs.getString("diastolic_bp");
+             String pulse = rs.getString("pulse");
+             String temperature = rs.getString("temperature");
+             String spo2 = rs.getString("spo2");
+             String rr = rs.getString("rr");
+             String weight = rs.getString("weight");
+             String height = rs.getString("height");
 
-            List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID, conceptId);
+            List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterId(patientId, encounterID);
             if (amrsTriageList.isEmpty()) {
                 AMRSTriage at = new AMRSTriage();
                 at.setPatientId(patientId);
-                at.setProvider(provider);
-                at.setConceptId(conceptId);
-                at.setEncounterID(encounterID);
-                at.setLocationUuid(locationUuid);
-                at.setEncounterDateTime(encounterDatetime);
-                at.setEncounterType(encounterType);
-                at.setConceptName(conceptName);
-                at.setObsDateTime(obsDatetime);
-                at.setConceptValue(value);
-                at.setValueDataType(valueType);
-                at.setDataTypeId(datatypeId);
-                at.setEncounterName(encounterName);
-                at.setCategory(category);
-                if (!amrsConceptMappingService.findByAmrsConceptID(conceptId).isEmpty()) {
-                    at.setKenyaemrConceptUuid(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(conceptId)));
-                }
-                if (datatypeId.equals("1") || datatypeId.equals("2")) {
-                    at.setKenyaemrValue(value);
-                } else {
-                    at.setKenyaemrValue(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(value)));
-                }
+                at.setEncounterDateTime(encounterDateTime);
+                at.setVisitId(visitId);
+                at.setLocationId(locationId);
+                at.setObsDateTime(obsDateTime);
+                at.setHeightAgeZscore(heightAgeZscore);
+                at.setWeightHeightZscore(weightHeightZscore);
+                at.setBmiAgeZscore(bmiAgeZscore);
+                at.setBmi(bmi);
+                at.setMuacMm(muacMm);
+                at.setSystolicBp(systolicBp);
+                at.setDiastolicBp(diastolicBp);
+                at.setPulse(pulse);
+                at.setTemperature(temperature);
+                at.setSpo2(spo2);
+                at.setRr(rr);
+                at.setWeight(weight);
+                at.setHeight(height);
+//
                 amrsTriageService.save(at);
-                // CareOpenMRSPayload.triage(amrsTriageService, parentUUID, locations, auth, url);
+                 CareOpenMRSPayload.triage(amrsTriageService, parentUUID, locations, auth, url);
 
 
             }

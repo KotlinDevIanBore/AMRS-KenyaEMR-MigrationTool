@@ -20,8 +20,8 @@ public class AMRSTriageService {
   public AMRSTriageService(AMRSTriageRepository amrsTriageRepository) {
     this.amrsTriageRepository = amrsTriageRepository;
   }
-  public List<AMRSTriage> findByPatientIdAndEncounterIdAndConceptId(String pid,String eid, String cid) {
-    return amrsTriageRepository.findByPatientIdAndEncounterIDAndConceptId(pid,eid,cid);
+  public List<AMRSTriage> findByPatientIdAndEncounterId(String pid,String eid) {
+    return amrsTriageRepository.findByPatientIdAndEncounterID(pid,eid);
   }
 
   public List<AMRSTriage> findFirstByOrderByIdDesc() {
