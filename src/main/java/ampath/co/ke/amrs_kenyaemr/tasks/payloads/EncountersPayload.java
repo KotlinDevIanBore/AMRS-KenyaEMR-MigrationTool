@@ -25,6 +25,7 @@ public class EncountersPayload {
     public  static void encounters(AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, String url, String auth) throws JSONException, IOException {
         List<AMRSEncounters> amrsEncountersList = amrsEncounterService.findByResponseCodeIsNull();
         if(amrsEncountersList.size()>0){
+
             for(int x=0;x<amrsEncountersList.size();x++){
                 AMRSEncounters ae = amrsEncountersList.get(x);
                 String patientId = amrsEncountersList.get(x).getPatientId();
@@ -39,6 +40,7 @@ public class EncountersPayload {
                             jsonEncounter.put("encounterType", ae.getKenyaemrEncounterUuid());
                             jsonEncounter.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
                             jsonEncounter.put("encounterDatetime", ae.getEncounterDateTime());
+                            jsonEncounter.put("encounterType",ae.getKenyaemrEncounterTypeUuid());
                             jsonEncounter.put("visit", amrsVisits.get(0).getKenyaemrVisitUuid());
 
                         }
@@ -48,6 +50,7 @@ public class EncountersPayload {
                         jsonEncounter.put("patient", patientsList.get(0).getKenyaemrpatientUUID());
                         jsonEncounter.put("encounterType", ae.getKenyaemrEncounterUuid());
                         jsonEncounter.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+                        jsonEncounter.put("encounterType",ae.getKenyaemrEncounterTypeUuid());
                         jsonEncounter.put("encounterDatetime", ae.getEncounterDateTime());
                     }
 
@@ -63,6 +66,9 @@ public class EncountersPayload {
                     Response response = client.newCall(request).execute();
 
                     String resBody = response.request().toString();
+
+                    System.out.println("System logs "+ resBody );
+                    System.out.println("System Payload "+ jsonEncounter.toString() );
                     int rescode = response.code();
                     ae.setResponseCode(String.valueOf(rescode));
                     System.out.println("Imefika Hapa na data "+ rescode);

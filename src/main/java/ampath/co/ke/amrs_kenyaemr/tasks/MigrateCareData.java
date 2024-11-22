@@ -125,11 +125,14 @@ public class MigrateCareData {
     public static void encounters(String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         List<AMRSEncounters> amrsEncounters = amrsEncounterService.findFirstByOrderByIdDesc();
+
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss ="";
         for(int y=0;y<amrsPatientsList.size();y++){
             pidss += amrsPatientsList.get(y).getPersonId()+",";
         }
+        String pid = pidss.substring(0, pidss.length() - 1);
+        System.out.println("PtientIDs "+ pid);
 
         String sql = "";
         if (amrsEncounters.size() > 0) {
@@ -429,9 +432,8 @@ public class MigrateCareData {
                     " from amrs.encounter e\n" +
                     " inner join amrs.encounter_type et on  e.encounter_type=et.encounter_type_id \n" +
                     " inner join amrs.location l on  e.location_id=l.location_id\n" +
-                    " where e.voided =0 and l.uuid in ("+ locations  +") and e.encounter_id>" + EncounterID + "  \n" +
-                    " order by e.encounter_id asc " +
-                    "limit 100;";
+                    " where e.voided =0 and l.uuid in ("+ locations  +") and e.encounter_id>" + EncounterID + " and e.patient_id in ("+ pid +")  \n" +
+                    " order by e.encounter_id asc ";
 
 
         } else {
@@ -730,9 +732,9 @@ public class MigrateCareData {
                     " from amrs.encounter e\n" +
                     " inner join amrs.encounter_type et on  e.encounter_type=et.encounter_type_id\n" +
                     " inner join amrs.location l on  e.location_id=l.location_id\n" +
-                    " where e.voided =0 and l.uuid in ("+ locations  +")  \n" +
-                    " order by e.encounter_id asc " +
-                    "limit 100;";
+                    " where e.voided =0 and l.uuid in ("+ locations  +") and e.patient_id in ("+ pid +")  \n" +
+                    " order by e.encounter_id asc "
+                    ;
         }
         // System.out.println("Sql "+ sql);
 
