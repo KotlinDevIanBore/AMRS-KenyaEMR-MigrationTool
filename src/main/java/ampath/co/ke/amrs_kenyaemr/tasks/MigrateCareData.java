@@ -1021,6 +1021,14 @@ public class MigrateCareData {
             prevEncounterID = amrsTriages.get(0).getEncounterID();
         }
 
+        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+        String pidss ="";
+        for(int y=0;y<amrsPatientsList.size();y++){
+            pidss += amrsPatientsList.get(y).getPersonId()+",";
+        }
+        String pid = pidss.substring(0, pidss.length() - 1);
+        System.out.println("PtientIDs "+ pid);
+
         String sql = "";
         if (amrsTriages == null || amrsTriages.isEmpty()) {
             sql = "WITH cte_vitals_concepts as (\n" +
@@ -1067,9 +1075,10 @@ public class MigrateCareData {
                     "max(case when o.concept_id = 5090 then o.value_numeric end) as height\n" +
                     "FROM amrs.obs o \n" +
                     "INNER JOIN amrs.encounter e using(encounter_id)\n" +
+                    "INNER JOIN amrs.location l on l.location_id = o.location_id \n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
-                    "AND o.location_id IN(2, 339) \n" +
-                    " AND o.person_id = 1225788\n" +
+                    "AND l.uuid IN("+ locations +") \n" +
+                    " AND o.person_id in ( "+pid+" )\n" +
                     "GROUP BY o.person_id, o.encounter_id limit 10";
         } else {
             sql = "WITH cte_vitals_concepts as (\n" +
@@ -1116,9 +1125,10 @@ public class MigrateCareData {
                     "max(case when o.concept_id = 5090 then o.value_numeric end) as height\n" +
                     "FROM amrs.obs o \n" +
                     "INNER JOIN amrs.encounter e using(encounter_id)\n" +
+                    "INNER JOIN amrs.location l on l.location_id = o.location_id \n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
-                    "AND o.location_id IN(2, 339) \n" +
-                    " AND o.person_id = 1225788\n" +
+                    " AND l.uuid IN ("+ locations +") \n" +
+                    " AND o.person_id  in ("+ pid +")  \n" +
                     "GROUP BY o.person_id, o.encounter_id limit 10";
         }
 
@@ -1135,7 +1145,7 @@ public class MigrateCareData {
              String patientId = rs.getString("person_id");
              String encounterID = rs.getString("encounter_id");
              String encounterDateTime = rs.getString("encounter_datetime");
-             String visitId = rs.getString("visit_date");
+             String visitId = rs.getString("visit_id");
              String locationId = rs.getString("location_id");
              String obsDateTime = rs.getString("obs_datetime");
              String heightAgeZscore = rs.getString("height_age_zscore");
@@ -1173,9 +1183,9 @@ public class MigrateCareData {
                 at.setRr(rr);
                 at.setWeight(weight);
                 at.setHeight(height);
-//
+                at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
                 amrsTriageService.save(at);
-                 CareOpenMRSPayload.triage(amrsTriageService, parentUUID, locations, auth, url);
+                 CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices,amrse parentUUID, locations, auth, url);
 
 
             }

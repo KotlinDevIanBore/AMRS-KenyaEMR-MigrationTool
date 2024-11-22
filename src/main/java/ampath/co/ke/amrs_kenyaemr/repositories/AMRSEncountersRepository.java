@@ -11,5 +11,6 @@ public interface AMRSEncountersRepository extends JpaRepository<AMRSEncounters, 
     List<AMRSEncounters> findFirstByOrderByIdDesc();
     List<AMRSEncounters> findByPatientIdAndEncounterId(String pid, String encid);
     List<AMRSEncounters> findByResponseCodeIsNullOrderByIdAsc();
+    List<AMRSEncounters> findByEncounterId(String encid);
 
 }

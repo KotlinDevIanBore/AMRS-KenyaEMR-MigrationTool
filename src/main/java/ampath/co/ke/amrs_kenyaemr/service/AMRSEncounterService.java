@@ -21,6 +21,9 @@ public class AMRSEncounterService {
     public List<AMRSEncounters> findByPatientIdAndEncounterId(String pid, String encid) {
         return amrsEncountersRepository.findByPatientIdAndEncounterId(pid, encid);
     }
+    public List<AMRSEncounters> findByEncounterId(String encid) {
+        return amrsEncountersRepository.findByEncounterId(encid);
+    }
 
     public List<AMRSEncounters> findFirstByOrderByIdDesc() {
         return amrsEncountersRepository.findFirstByOrderByIdDesc();
