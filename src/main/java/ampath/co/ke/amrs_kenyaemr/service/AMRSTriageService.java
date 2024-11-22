@@ -27,7 +27,9 @@ public class AMRSTriageService {
   public List<AMRSTriage> findFirstByOrderByIdDesc() {
     return amrsTriageRepository.findFirstByOrderByIdDesc();
   }
-
+  public List<AMRSTriage> findByResponseCodeIsNull() {
+    return amrsTriageRepository.findByResponseCodeIsNull();
+  }
   public AMRSTriage save(AMRSTriage dataset) {
     return amrsTriageRepository.save(dataset);
   }

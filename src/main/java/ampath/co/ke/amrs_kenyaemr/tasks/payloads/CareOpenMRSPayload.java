@@ -1,7 +1,11 @@
 package ampath.co.ke.amrs_kenyaemr.tasks.payloads;
 
+import ampath.co.ke.amrs_kenyaemr.models.AMRSEncounters;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPrograms;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSTriage;
+import ampath.co.ke.amrs_kenyaemr.service.AMRSEncounterService;
+import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSProgramService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSTriageService;
 import ampath.co.ke.amrs_kenyaemr.tasks.Mappers;
@@ -67,7 +71,18 @@ public class CareOpenMRSPayload {
 
        }
     }
-  public static void triage(AMRSTriageService amrsTriageService, String locations, String parentUUID, String url, String auth ) throws JSONException, IOException {
+  public static void triage(AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, String locations, String parentUUID, String url, String auth ) throws JSONException, IOException {
+
+    List<AMRSTriage> amrsTriages = amrsTriageService.findByResponseCodeIsNull();
+    if(amrsTriages.size()>0){
+        for(int x=0;x< amrsTriages.size();x++){
+            AMRSTriage at = amrsTriages.get(x);
+            List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(at.getPatientId());
+            List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(at.getPatientId());
+        }
+
+
+    }
      // List<AMRSPrograms> amrsProgramsList = amrsTriageService.findByParentLocationUuid(parentUUID);
 
      /* JSONArray jsonObservations = new JSONArray();
