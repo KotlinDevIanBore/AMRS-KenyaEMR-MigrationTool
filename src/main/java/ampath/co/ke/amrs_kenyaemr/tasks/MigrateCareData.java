@@ -782,6 +782,8 @@ public class MigrateCareData {
     }
 
     public static void enrollments(String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+
         String sql = "select person_id,encounter_id,enrollment_date,hiv_start_date,death_date,transfer_out,transfer_out_date from etl.flat_hiv_summary_v15b  \n" +
                 "where is_clinical_encounter = 1 and next_clinical_datetime_hiv is null\n" +
                 "and location_id in (339,2,98,379)";
@@ -795,25 +797,87 @@ public class MigrateCareData {
         x = rs.getRow();
         rs.beforeFirst();
         while (rs.next()) {
-            String patientId = rs.getString("person_id");
-            String encounterId = rs.getString("encounter_id");
-            String edate = rs.getString("enrollment_date");
-            String startDate = rs.getString("hiv_start_date");
-            String to = rs.getString("transfer_out");
-            String tod = rs.getString("transfer_out_date");
-            String uuid = rs.getString("hiv_start_date");
+             String patientId = rs.getString("person_id");
+             String encounterId = rs.getString("encounter_id");
+             String encounterDatetime = rs.getString("encounter_datetime");
+             String formId = rs.getString("form_id");
+             String formName = rs.getString("Form_Name");
+             String patientType= rs.getString("Patient_Type");
+             String entryPoint = rs.getString("Entry_point");
+             String tiFacility = rs.getString("TI_Facility");
+             String dateFirstEnrolledInCare = rs.getString("Date_first_enrolled_in_care");
+             String transferInDate = rs.getString("Transfer_in_date");
+             String dateStartedArtAtTransferringFacility = rs.getString("");
+             String dateConfirmedHivPositive = rs.getString("");
+             String facilityConfirmedHivPositive = rs.getString("");
+             String baselineArvUse = rs.getString("");
+             String purposeOfBaselineArvUse = rs.getString("");
+             String baselineArvRegimen = rs.getString("");
+             String baselineArvRegimenLine = rs.getString("");
+             String baselineArvDateLastUsed = rs.getString("");
+             String baselineWhoStage = rs.getString("");
+             String baselineCd4Results = rs.getString("");
+             String baselineCd4Date = rs.getString("");
+             String baselineVlResults = rs.getString("");
+             String baselineVlDate = rs.getString("");
+             String baselineVlLdlResults = rs.getString("");
+             String baselineVlLdlDate = rs.getString("");
+             String baselineHbvInfected = rs.getString("");
+             String baselineTbInfected = rs.getString("");
+             String baselinePregnant = rs.getString("");
+             String baselineBreastFeeding = rs.getString("");
+             String baselineWeight = rs.getString("");
+             String baselineHeight = rs.getString("");
+             String baselineBMI = rs.getString("");
+             String nameOfTreatmentSupporter = rs.getString("");
+             String relationshipOfTreatmentSupporter = rs.getString("");
+             String treatmentSupporterTelephone = rs.getString("");
+             String treatmentSupporterAddress = rs.getString("");
 
             List<AMRSEnrollments> enrollmentsList = amrsEnrollmentService.getByPatientID(patientId);
             if (enrollmentsList.size() == 0) {
                 AMRSEnrollments ae = new AMRSEnrollments();
-                ae.setPersonId(patientId);
-                ae.setEnrollmentDate(edate);
-                ae.setFormID("");
-                ae.setEncounterType("");
+                ae.setPatientId(patientId);
+                ae.setEncounterId(encounterId);
+                ae.setEncounterDatetime(encounterDatetime);
+                ae.setFormId(formId);
+                ae.setFormName(formName);
+                ae.setPatientType(patientType);
+                ae.setEntryPoint(entryPoint);
+                ae.setTiFacility(tiFacility);
+                ae.setDateFirstEnrolledInCare(dateFirstEnrolledInCare);
+                ae.setTransferInDate(transferInDate);
+                ae.setDateStartedArtAtTransferringFacility(dateStartedArtAtTransferringFacility);
+                ae.setDateConfirmedHivPositive(dateConfirmedHivPositive);
+                ae.setFacilityConfirmedHivPositive(facilityConfirmedHivPositive);
+                ae.setBaselineArvUse(baselineArvUse);
+                ae.setPurposeOfBaselineArvUse(purposeOfBaselineArvUse);
+                ae.setBaselineArvRegimen(baselineArvRegimen);
+                ae.setBaselineArvRegimenLine(baselineArvRegimenLine);
+                ae.setBaselineArvDateLastUsed(baselineArvDateLastUsed);
+                ae.setBaselineWhoStage(baselineWhoStage);
+                ae.setBaselineCd4Results(baselineCd4Results);
+                ae.setBaselineCd4Date(baselineCd4Date);
+                ae.setBaselineVlResults(baselineVlResults);
+                ae.setBaselineVlDate(baselineVlDate);
+                ae.setBaselineVlLdlResults(baselineVlLdlResults);
+                ae.setBaselineVlLdlDate(baselineVlLdlDate);
+                ae.setBaselineHbvInfected(baselineHbvInfected);
+                ae.setBaselineTbInfected(baselineTbInfected);
+                ae.setBaselinePregnant(baselinePregnant);
+                ae.setBaselineBreastFeeding(baselineBreastFeeding);
+                ae.setBaselineWeight(baselineWeight);
+                ae.setBaselineHeight(baselineHeight);
+                ae.setBaselineBMI(baselineBMI);
+                ae.setNameOfTreatmentSupporter(nameOfTreatmentSupporter);
+                ae.setRelationshipOfTreatmentSupporter(relationshipOfTreatmentSupporter);
+                ae.setTreatmentSupporterTelephone(treatmentSupporterTelephone);
+                ae.setTreatmentSupporterAddress(treatmentSupporterAddress);
 
-            } else {
+                amrsEnrollmentService.save(ae);
 
             }
+
 
 
         }

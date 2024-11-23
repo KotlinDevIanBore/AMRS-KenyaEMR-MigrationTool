@@ -26,4 +26,6 @@ public class AMRSEnrollmentService {
         return amrsEnrollmentsRepository.findByPersonId(pid);
     }
 
+    public void save(AMRSEnrollments ae) {
+    }
 }
