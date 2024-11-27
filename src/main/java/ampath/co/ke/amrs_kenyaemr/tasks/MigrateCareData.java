@@ -984,13 +984,22 @@ public class MigrateCareData {
 
 
     public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+        String pidss ="";
+        for(int y=0;y<amrsPatientsList.size();y++){
+            pidss += amrsPatientsList.get(y).getPersonId()+",";
+        }
+        String pid = pidss.substring(0, pidss.length() - 1);
+System.out.println("Patient Id "+ pid);
         String sql = "SELECT o.*, et.encounter_type_id, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid,\n" +
                 " NULL AS kenyaemr_order_id FROM amrs.orders o \n" +
                 " inner join amrs.encounter e on (e.encounter_id = o.encounter_id)\n" +
                 " inner join amrs.encounter_type et on (et.encounter_type_id = e.encounter_type)\n" +
-                " where  o.order_reason order by o.date_created ASC limit 100";
+                " where  o.order_reason order by o.date_created ASC  limit 100 "; //and e.patient_id in ("+ pid +" )
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
+
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -1001,13 +1010,11 @@ public class MigrateCareData {
         rs.beforeFirst();
         while (rs.next()) {
             String patientId = rs.getString("patient_id");
-
             String orderId = rs.getString("order_id");
             String orderTypeId = rs.getString("order_type_id");
             String orderer = rs.getString("orderer");
             String encounterId = rs.getString("encounter_id");
             String instructions = rs.getString("instructions");
-
             String conceptId = rs.getString("concept_id");
             String amrsOrderUuid = rs.getString("uuid");
             String amrsEncounterTypeId = rs.getString("encounter_type_id");
@@ -1017,8 +1024,6 @@ public class MigrateCareData {
             String urgency = rs.getString("urgency");
             String orderNumber = rs.getString("order_number");
             String orderAction = rs.getString("order_action");
-
-
             List<AMRSOrders> amrsOrders = amrsOrderService.findByUuid(amrsOrderUuid);
             if (amrsOrders.isEmpty()) {
                 String kenyaemr_uuid = "";
@@ -1058,7 +1063,6 @@ public class MigrateCareData {
                 if (!justification.isEmpty()) {
                     List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(justification);
                     if (!amrsConceptMapper.isEmpty()) {
-
                         justificationcode = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
 
                     }
@@ -1072,17 +1076,17 @@ public class MigrateCareData {
 
             }
             // orders
-            // OrdersPayload.orders(amrsOrderService, amrsPatientServices, auth, url);
+             OrdersPayload.orders(amrsOrderService, amrsPatientServices,  url,auth);
 
         }
     }
 
-    public static void triage(String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void triage(String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices,AMRSEncounterService amrsEncounterService ,AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         String prevEncounterID = null; // Declare the variable
         List<AMRSTriage> amrsTriages = amrsTriageService.findFirstByOrderByIdDesc();
         if (amrsTriages != null && !amrsTriages.isEmpty()) {
-            prevEncounterID = amrsTriages.get(0).getEncounterID();
+            prevEncounterID = amrsTriages.get(0).getEncounterId();
         }
 
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
@@ -1142,7 +1146,7 @@ public class MigrateCareData {
                     "INNER JOIN amrs.location l on l.location_id = o.location_id \n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
                     "AND l.uuid IN("+ locations +") \n" +
-                    " AND o.person_id in ( "+pid+" )\n" +
+                    " AND o.person_id in ( "+ pid +" )\n" +
                     "GROUP BY o.person_id, o.encounter_id limit 10";
         } else {
             sql = "WITH cte_vitals_concepts as (\n" +
@@ -1192,7 +1196,8 @@ public class MigrateCareData {
                     "INNER JOIN amrs.location l on l.location_id = o.location_id \n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
                     " AND l.uuid IN ("+ locations +") \n" +
-                    " AND o.person_id  in ("+ pid +")  \n" +
+                    " AND o.person_id  in ("+ pid +") \n" +
+                    " AND o.encounter_id > "+ prevEncounterID +"  \n" +
                     "GROUP BY o.person_id, o.encounter_id limit 10";
         }
 
@@ -1232,6 +1237,7 @@ public class MigrateCareData {
                 at.setPatientId(patientId);
                 at.setEncounterDateTime(encounterDateTime);
                 at.setVisitId(visitId);
+                at.setEncounterId(encounterID);
                 at.setLocationId(locationId);
                 at.setObsDateTime(obsDateTime);
                 at.setHeightAgeZscore(heightAgeZscore);
@@ -1249,8 +1255,7 @@ public class MigrateCareData {
                 at.setHeight(height);
                 at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
                 amrsTriageService.save(at);
-                 CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices,amrse parentUUID, locations, auth, url);
-
+                 CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices,amrsEncounterService,url,auth);
 
             }
 

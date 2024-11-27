@@ -31,7 +31,6 @@ public class EncountersPayload {
                 String patientId = amrsEncountersList.get(x).getPatientId();
                 List<AMRSPatients> patientsList = amrsPatientServices.getByPatientID(patientId);
                 if(patientsList.size()>0){
-
                     JSONObject jsonEncounter = new JSONObject();
                     if(ae.getVisitId()!=null){
                         List<AMRSVisits> amrsVisits = amrsVisitService.findByVisitID(ae.getVisitId());
@@ -53,7 +52,6 @@ public class EncountersPayload {
                         jsonEncounter.put("encounterType",ae.getKenyaemrEncounterTypeUuid());
                         jsonEncounter.put("encounterDatetime", ae.getEncounterDateTime());
                     }
-
                     OkHttpClient client = new OkHttpClient();
                     MediaType mediaType = MediaType.parse("application/json");
                     okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
@@ -64,18 +62,24 @@ public class EncountersPayload {
                             .addHeader("Content-Type", "application/json")
                             .build();
                     Response response = client.newCall(request).execute();
-
                     String resBody = response.request().toString();
-
+                    String responseBody = response.body().string();
                     System.out.println("System logs "+ resBody );
                     System.out.println("System Payload "+ jsonEncounter.toString() );
+                    JSONObject jsonObject = new JSONObject(responseBody);
                     int rescode = response.code();
-                    ae.setResponseCode(String.valueOf(rescode));
+                    if (response.code() == 201) {
+                        String encounterUuid = jsonObject.getString("uuid");
+                        ae.setKenyaemrEncounterUuid(encounterUuid);
+                        ae.setResponseCode(String.valueOf(response.code()));
+                    }else{
+                        ae.setResponseCode("400");
+                        //ae.setKenyaemrEncounterUuid();
+                    }
+
                     System.out.println("Imefika Hapa na data "+ rescode);
                     amrsEncounterService.save(ae);
-
                 }
-
             }
         }
     }

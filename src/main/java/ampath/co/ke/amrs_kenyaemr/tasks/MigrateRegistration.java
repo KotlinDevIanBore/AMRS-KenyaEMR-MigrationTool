@@ -150,7 +150,7 @@ public class MigrateRegistration {
                  "inner join amrs.location l on e.location_id=l.location_id\n" +
                  "where l.uuid in (" + locations + ") \n" +
                  "group by pt.patient_id\n" +
-                 "order by e.patient_id desc limit 100 ";
+                 "order by e.patient_id desc limit 2000 ";
      }else {
          String pid = patientsListt.get(0).getPersonId();
          System.out.println("Person ID is "+ pid);
@@ -181,7 +181,7 @@ public class MigrateRegistration {
                  "inner join amrs.location l on e.location_id=l.location_id\n" +
                  "where l.uuid in (" + locations + ") and p.person_id <"+ pid +"\n" +
                  "group by pt.patient_id\n" +
-                 "order by e.patient_id desc";
+                 "order by e.patient_id desc limit 2000";
      }
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);

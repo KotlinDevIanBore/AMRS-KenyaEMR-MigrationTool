@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface AMRSEnrollmentsRepository extends JpaRepository<AMRSEnrollments, Long> {
     AMRSEnrollments findById(int pid);
-    List<AMRSEnrollments> findByPersonId(String pid);
-    List<AMRSEnrollments> findByUUID(String uuid);
+    List<AMRSEnrollments> findByPatientId(String pid);
+    //List<AMRSEnrollments> findByUUID(String uuid);
     List<AMRSEnrollments> findAll();
    // List<AMRSEnrollments> findByUUIDAndParentlocationUUID(String uuid,String location);
     List<AMRSEnrollments> findFirstByOrderByIdDesc();

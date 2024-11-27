@@ -2,7 +2,7 @@ package ampath.co.ke.amrs_kenyaemr.models;
 
 import jakarta.persistence.*;
 
-@Table(name = "triage")
+@Table(name = "amrs_triage")
 @Entity
 public class AMRSTriage {
     @Id
@@ -11,7 +11,7 @@ public class AMRSTriage {
 
     private Integer Id;
     private String patientId;
-    private String encounterID;
+    private String encounterId;
     private String encounterDateTime;
     private String visitId;
     private String locationId;
@@ -50,12 +50,12 @@ public class AMRSTriage {
     this.patientId = patientId;
   }
 
-  public String getEncounterID() {
-    return encounterID;
+  public String getEncounterId() {
+    return encounterId;
   }
 
-  public void setEncounterID(String encounterID) {
-    this.encounterID = encounterID;
+  public void setEncounterId(String encounterId) {
+    this.encounterId = encounterId;
   }
 
   public String getEncounterDateTime() {

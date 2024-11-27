@@ -17,9 +17,6 @@ public class AMRSHIVEnrollment
     private String encounterType;
     private String conceptId;
     private String conceptName;
-
-
-
     private String conceptValue;
     private String obsDateTime;
     private String value;

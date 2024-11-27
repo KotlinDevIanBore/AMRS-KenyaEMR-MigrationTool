@@ -56,7 +56,6 @@ public class OrdersPayload {
                         String responseBody = response.body().string(); // Get the response as a string
                         System.out.println("Response ndo hii " + responseBody + " More message " + response.message() + " reponse code " + response.code());
                         JSONObject jsonObject = new JSONObject(responseBody);
-
                         // System.out.println("Response ndo hii " + jsonUser.toString());
                         System.out.println("Response ndo hii " + response);
                         System.out.println("Response Payload " + jsonOrder.toString());
