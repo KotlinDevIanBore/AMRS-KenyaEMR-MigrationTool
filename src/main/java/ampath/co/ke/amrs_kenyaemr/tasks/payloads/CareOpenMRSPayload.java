@@ -21,17 +21,17 @@ import java.io.IOException;
 import java.util.List;
 
 public class CareOpenMRSPayload {
-    public static void programs(AMRSProgramService amrsProgramService, String locations, String parentUUID,String url, String auth ) throws JSONException, IOException {
-       //List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
+    public static void programs(AMRSProgramService amrsProgramService, String locations, String parentUUID, String url, String auth) throws JSONException, IOException {
+        //List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
         List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByResponseCodeIsNull();
-       if(amrsProgramsList.size()>0) {
-       JSONObject jsonProgram = new JSONObject();
-        for(int x=0;x<amrsProgramsList.size();x++) {
+        if (amrsProgramsList.size() > 0) {
+            JSONObject jsonProgram = new JSONObject();
+            for (int x = 0; x < amrsProgramsList.size(); x++) {
 
-            String programms = Mappers.programs(String.valueOf(amrsProgramsList.get(x).getProgramUUID()));
-            System.out.println("Program UUID is here " + programms + " amrs UUID " + amrsProgramsList.get(x).getProgramUUID());
-            int pid = amrsProgramsList.get(x).getProgramID();
-            AMRSPrograms ap = amrsProgramsList.get(x);
+                String programms = Mappers.programs(String.valueOf(amrsProgramsList.get(x).getProgramUUID()));
+                System.out.println("Program UUID is here " + programms + " amrs UUID " + amrsProgramsList.get(x).getProgramUUID());
+                int pid = amrsProgramsList.get(x).getProgramID();
+                AMRSPrograms ap = amrsProgramsList.get(x);
 
                 if (!programms.equals("") || ap.getPatientKenyaemrUuid() != null) {
 
@@ -67,23 +67,81 @@ public class CareOpenMRSPayload {
                     ap.setResponseCode(String.valueOf(400));
                 }
                 amrsProgramService.save(ap);
+            }
+
         }
-
-       }
     }
-  public static void triage(AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, String locations, String parentUUID, String url, String auth ) throws JSONException, IOException {
 
-    List<AMRSTriage> amrsTriages = amrsTriageService.findByResponseCodeIsNull();
-    if(amrsTriages.size()>0){
-        for(int x=0;x< amrsTriages.size();x++){
-            AMRSTriage at = amrsTriages.get(x);
-            List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(at.getPatientId());
-            List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(at.getPatientId());
-        }
+    public static void triage(AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, String url, String auth) throws JSONException, IOException {
+
+        List<AMRSTriage> amrsTriages = amrsTriageService.findByResponseCodeIsNull();
+        if (amrsTriages.size() > 0) {
+            JSONArray jsonObservations = new JSONArray();
+            for (int x = 0; x < amrsTriages.size(); x++) {
+                AMRSTriage at = amrsTriages.get(x);
+                List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(at.getPatientId());
+                List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(at.getEncounterId());
+                System.out.println("Patient ID " + amrsPatients.get(0).getPersonId() +" Encounter Id "+ at.getEncounterId());
+                //Height
+                //wight,tempdbp,sbp,bmi,pulse,rr,sop,
+
+              /*  JSONObject jsonObservationBMI = new JSONObject();
+                jsonObservationBMI.put("person",amrsPatients.get(0).getKenyaemrpatientUUID());
+                jsonObservationBMI.put("concept",conceptuuid);///String.valueOf(conceptsetId));
+                jsonObservationBMI.put("value", at.getBmi());
+                */
+                JSONObject jsonEncounter = new JSONObject();
+                jsonEncounter.put("form",at.getKenyaemrFormUuid());
+
+                JSONObject jsonObservationTEMP = new JSONObject();
+                jsonObservationTEMP.put("concept","5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");///String.valueOf(conceptsetId));
+                jsonObservationTEMP.put("value", at.getTemperature());
+                jsonObservations.put(jsonObservationTEMP);
+
+                JSONObject jsonObservationW = new JSONObject();
+               // jsonObservationW.put("person",amrsPatients.get(0).getKenyaemrpatientUUID());
+                jsonObservationW.put("concept","5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");///String.valueOf(conceptsetId));
+                jsonObservationW.put("value", at.getWeight());
+                jsonObservations.put(jsonObservationW);
+
+                JSONObject jsonObservationH = new JSONObject();
+                jsonObservationH.put("concept","5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");///String.valueOf(conceptsetId));
+                jsonObservationH.put("value", at.getHeight());
+                jsonObservations.put(jsonObservationH);
+
+                jsonEncounter.put("obs",jsonObservations);
 
 
-    }
-     // List<AMRSPrograms> amrsProgramsList = amrsTriageService.findByParentLocationUuid(parentUUID);
+                System.out.println("Payload for is here " + jsonEncounter.toString());
+                System.out.println("URL is here " + url + "encounter/"+amrsEncounters.get(0).getKenyaemrEncounterUuid());
+                OkHttpClient client = new OkHttpClient();
+                MediaType mediaType = MediaType.parse("application/json");
+                okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
+                //RequestBody body = RequestBody.create(mediaType, jsonEncounter.toString());
+                Request request = new Request.Builder()
+                        .url(url + "encounter/"+amrsEncounters.get(0).getKenyaemrEncounterUuid())
+                        .method("POST", body)
+                        .addHeader("Authorization", "Basic " + auth)
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+                Response response = client.newCall(request).execute();
+                String responseBody = response.body().string(); // Get the response as a string
+                System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
+
+                // String resBody = response.request().toString();
+                int rescode = response.code();
+                at.setResponseCode(String.valueOf(rescode));
+                System.out.println("Imefika Hapa na data " + rescode);
+
+                amrsTriageService.save(at);
+
+
+
+                if(amrsEncounters.size()>0) {
+                    System.out.println("Encounter ID " + amrsEncounters.get(0).getEncounterId() + " Visit ID " + at.getVisitId());
+                }
+            }
+            // List<AMRSPrograms> amrsProgramsList = amrsTriageService.findByParentLocationUuid(parentUUID);
 
      /* JSONArray jsonObservations = new JSONArray();
       JSONObject jsonObservation = new JSONObject();
@@ -96,6 +154,6 @@ public class CareOpenMRSPayload {
       jsonObservation.put("value", value);
 
       */
-  }
-
-  }
+        }
+    }
+}

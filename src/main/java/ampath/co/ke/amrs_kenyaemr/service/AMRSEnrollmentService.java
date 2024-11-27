@@ -23,7 +23,7 @@ public class AMRSEnrollmentService {
     }
 
     public List<AMRSEnrollments> getByPatientID(String pid) {
-        return amrsEnrollmentsRepository.findByPersonId(pid);
+        return amrsEnrollmentsRepository.findByPatientId(pid);
     }
 
     public void save(AMRSEnrollments ae) {

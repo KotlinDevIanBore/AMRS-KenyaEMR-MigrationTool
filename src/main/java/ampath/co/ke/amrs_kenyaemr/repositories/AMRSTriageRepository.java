@@ -9,7 +9,7 @@ import java.util.List;
 public interface AMRSTriageRepository extends JpaRepository<AMRSTriage, Long> {
   AMRSTriage findById(int pid);
   //List<AMRSTriage> findByUuid(String cuuid);
-  List<AMRSTriage> findByPatientIdAndEncounterID(String pid,String encid);
+  List<AMRSTriage> findByPatientIdAndEncounterId(String pid,String encid);
   List<AMRSTriage> findFirstByOrderByIdDesc();
   List<AMRSTriage> findByResponseCodeIsNull();
 }
