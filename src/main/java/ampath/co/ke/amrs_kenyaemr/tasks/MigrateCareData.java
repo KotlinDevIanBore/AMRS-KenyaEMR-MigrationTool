@@ -1690,6 +1690,94 @@ System.out.println("Patient Id "+ pid);
         }
     }
 
+    public static void obs(String server, String username, String password, String locations, String parentUUID, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices, AMRSMappingService amrsMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+        String pidss ="";
+        for(int y=0;y<amrsPatientsList.size();y++){
+            pidss += amrsPatientsList.get(y).getPersonId()+",";
+        }
+        String pid = pidss.substring(0, pidss.length() - 1);
+        System.out.println("Patient Id "+ pid);
+        String sql = "SELECT \n" +
+                "    o.obs_id,\n" +
+                "    o.concept_id,\n" +
+                "    o.obs_datetime,\n" +
+                "    o.encounter_id,\n" +
+                "         CASE \n" +
+                "        WHEN o.value_numeric IS NOT NULL THEN 'Value Numeric'\n" +
+                "        WHEN o.value_coded IS NOT NULL THEN 'Value Coded'\n" +
+                "        WHEN o.value_text IS NOT NULL THEN 'Value Text'\n" +
+                "        ELSE 'null'\n" +
+                "    END AS value_type,\n" +
+                "       CASE \n" +
+                "        WHEN o.value_numeric IS NOT NULL THEN o.value_numeric\n" +
+                "        WHEN o.value_coded IS NOT NULL THEN o.value_coded\n" +
+                "        WHEN o.value_text IS NOT NULL THEN o.value_text\n" +
+                "         WHEN o.value_datetime IS NOT NULL THEN o.value_datetime\n" +
+                "        ELSE 'null'\n" +
+                "    END AS value,\n" +
+                "    e.encounter_datetime,\n" +
+                "    et.name AS encounter_type,\n" +
+                "    COALESCE(cn_answer.name, '') as value_coded_name,\n" +
+                "    COALESCE(drug.name, '') as drug_name\n" +
+                "FROM \n" +
+                "    amrs.obs o\n" +
+                "    INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+                "        AND cn.locale = 'en' \n" +
+                "        -- AND cn.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                "    LEFT JOIN amrs.encounter e ON o.encounter_id = e.encounter_id\n" +
+                "    LEFT JOIN amrs.encounter_type et ON e.encounter_type = et.encounter_type_id\n" +
+                "    LEFT JOIN amrs.location l ON e.location_id = l.location_id\n" +
+                "    LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id \n" +
+                "        AND cn_answer.locale = 'en' \n" +
+                "        -- AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                "    LEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
+                "WHERE \n" +
+                "     o.person_id in ("+pid+")\n" +
+                "    AND o.voided = 0\n" +
+                "ORDER BY \n" +
+                "    o.obs_datetime DESC";
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String obsDatetime = rs.getString("obs_datetime");
+            String conceptId = rs.getString("concept_id");
+            String encounterId = rs.getString("encounter_id");
+            String value = rs.getString("value");
+            String valueType = rs.getString("value_type");
+            String encounterType = rs.getString("encounter_type");
+            String encounterDatetime = rs.getString("encounter_datetime");
+
+
+            List<AMRSObs> amrsObsList = amrsObsService.findByPatientIdAndEncounterIDAndConceptId(pid, encounterId, conceptId);
+            if (amrsObsList.isEmpty()) {
+               AMRSObs ao = new AMRSObs();
+               ao.setConceptId(conceptId);
+               ao.setEncounterID(encounterId);
+               ao.setValueType(valueType);
+               ao.setEncounterType(encounterType);
+               ao.setEncounterDatetime(encounterDatetime);
+               ao.setObsDatetime(obsDatetime);
+               ao.setDataType(value);
+
+               System.out.println("Amrs obs: " + ao );
+                amrsObsService.save(ao);
+            }
+        }
+
+//        EncountersPayload.encounters(amrsEncounterService, amrsPatientServices, amrsVisitService,url,auth);
+
+    }
+
 
 
 
