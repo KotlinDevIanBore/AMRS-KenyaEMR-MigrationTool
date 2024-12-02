@@ -477,6 +477,8 @@ public class MigrateRegistration {
                             apt.setPatientId(rsPA.getString("person_id"));
                             apt.setPersonAttributeTypeId(rsPA.getString("person_attribute_type_id"));
                             apt.setPersonAttributeName(rsPA.getString("name"));
+
+
                             apt.setPersonAttributeValue(rsPA.getString("value"));
                             apt.setKenyaemrAttributeUuid(rsPA.getString("kenyaemruuid"));
                             amrsPersonAtrributesService.save(apt);
