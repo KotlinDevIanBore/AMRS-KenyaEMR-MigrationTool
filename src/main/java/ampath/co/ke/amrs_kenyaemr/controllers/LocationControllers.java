@@ -65,6 +65,8 @@ public class LocationControllers {
 
     @Autowired
     private AMRSEncounterMappingService amrsEncounterMappingService;
+    @Autowired
+    private AMRSMappingService amrsMappingService;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView Locations(){
@@ -183,13 +185,15 @@ public class LocationControllers {
          //MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
         //Orders
-        MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService,  amrsPatientServices, amrsEncounterMappingService,  amrsConceptMappingService, OpenMRSURL,auth);
+        // MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService,  amrsPatientServices, amrsEncounterMappingService,  amrsConceptMappingService, OpenMRSURL,auth);
 
 
       //HIVEnrollment
-        MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
+       // MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
-        System.out.println("AMRS Locations "+locationId);
+        //obs
+//        MigrateCareData.obs(server, username, password, locationId, parentUuid, amrsObsService, amrsPatientServices, amrsMappingService, OpenMRSURL,auth);
+//        System.out.println("AMRS Locations "+locationId);
 
         return locationId;
 

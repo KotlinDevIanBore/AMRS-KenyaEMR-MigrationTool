@@ -1,7 +1,9 @@
 package ampath.co.ke.amrs_kenyaemr.controllers;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSConceptMapper;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSMappings;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSConceptMappingService;
+import ampath.co.ke.amrs_kenyaemr.service.AMRSMappingService;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -23,6 +25,8 @@ import java.sql.SQLException;
 public class MappingsControllers {
     @Autowired
     AMRSConceptMappingService amrsConceptMappingService;
+    @Autowired
+    AMRSMappingService amrsMappingService;
     @RequestMapping(value = "/load", method = RequestMethod.GET)
     public ModelAndView encounters(HttpSession session) throws IOException, SQLException {
        // String filePath = "data.csv"; // Path to your CSV file
@@ -63,6 +67,32 @@ public class MappingsControllers {
     } catch (Exception e) {
         e.printStackTrace();
     }
+        return null;
+    }
+
+    @RequestMapping(value = "/concepts", method = RequestMethod.GET)
+    public ModelAndView loadAllConcepts(HttpSession session) throws IOException, SQLException {
+        // String filePath = "data.csv"; // Path to your CSV file
+        ClassPathResource resource = new ClassPathResource("new_concepts.csv");
+        Reader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+        try{
+            // Parse and process the CSV
+            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord());
+            for (CSVRecord record : csvParser) {
+                String amrs_concept_id = record.get("amrs_concept_id");
+                String kenyaemr_concept_uuid = record.get("kenyaemr_concept_uuid");
+
+                // Process the record (e.g., print it)
+                AMRSMappings anc = new AMRSMappings();
+                anc.setAmrsConceptId(amrs_concept_id);
+                anc.setKenyaemrConceptUuid(kenyaemr_concept_uuid);
+                System.out.println("anc is here" + anc);
+                 amrsMappingService.save(anc);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }
