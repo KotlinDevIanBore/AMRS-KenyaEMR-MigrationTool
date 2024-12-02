@@ -18,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.*;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 @Transactional
@@ -78,16 +80,29 @@ public class MappingsControllers {
         try{
             // Parse and process the CSV
             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord());
+            // Maintain a set to track processed entries
+            Set<String> processedEntries = new HashSet<>();
             for (CSVRecord record : csvParser) {
                 String amrs_concept_id = record.get("amrs_concept_id");
                 String kenyaemr_concept_uuid = record.get("kenyaemr_concept_uuid");
+
+                // Create a unique key to identify duplicates
+                String uniqueKey = amrs_concept_id + ":" + kenyaemr_concept_uuid;
+
+                // Check if the entry has already been processed
+                if (processedEntries.contains(uniqueKey)) {
+                    continue; // Skip duplicate
+                }
 
                 // Process the record (e.g., print it)
                 AMRSMappings anc = new AMRSMappings();
                 anc.setAmrsConceptId(amrs_concept_id);
                 anc.setKenyaemrConceptUuid(kenyaemr_concept_uuid);
                 System.out.println("anc is here" + anc);
-                 amrsMappingService.save(anc);
+                  amrsMappingService.save(anc);
+
+                // Add to processed entries
+                processedEntries.add(uniqueKey);
 
             }
         } catch (Exception e) {
