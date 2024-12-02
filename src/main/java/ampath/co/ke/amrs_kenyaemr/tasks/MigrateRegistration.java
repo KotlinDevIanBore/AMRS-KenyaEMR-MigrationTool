@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
+
+import static org.thymeleaf.util.StringUtils.substring;
 
 public class MigrateRegistration {
 
@@ -121,6 +124,31 @@ public class MigrateRegistration {
     //Patients
     public static void patients (String server, String username, String password, String locations, String parentUUID, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,AMRSPersonAtrributesService amrsPersonAtrributesService,String url,String auth) throws SQLException, JSONException, ParseException, IOException {
       List<AMRSPatients> patientsListt = amrsPatientServices.findFirstByOrderByIdDesc();
+        List<Integer> numbers = Arrays.asList(
+                1187467, 1207817, 1212603, 1216267, 1225187, 1140933, 1185368,
+                1177985, 1189238, 1191232, 1199830, 1170791, 1174464, 1206185,
+                1176830, 1182705, 1209127, 1177104, 1177467, 1184252, 1192270,
+                1204250, 1212823, 1193179, 1177270, 1191005, 1198509, 1167355,
+                1178369, 1184092, 1189326, 1191369, 1203354, 1203531, 1209140,
+                1226657, 1172517, 1186701, 1195760, 1169969, 1178748, 1206865,
+                1215595, 1180696, 1186078, 1195200, 1177704, 1212906, 1209159,
+                1202124, 1205268, 1208071, 1211667, 1212173, 1220342, 1176467,
+                1178456, 1176379, 1177933, 1179157, 1185422, 1198117, 1203972,
+                1211635, 1185861, 1188709, 1192374, 1194786, 1200228, 1212351,
+                1222698, 198492, 1178019, 1187425, 1176820, 1170115, 1175708,
+                1153475, 1153527,1153618, 1153684, 1153703,1153725, 1153811,
+                1153922, 1153931, 1166345, 1167167, 1168996, 1174041, 1174884,
+                1177493, 1180808, 1182235, 1182433, 1187031, 1188132, 1190631,
+                1192399, 1193816, 1196144, 1196454, 1197444, 1199916, 1201312,
+                1202111, 1203658, 1207799, 1207926, 1207939, 1209301, 1226630, 1188938, 827082,
+                33052, 104614, 161550, 839201, 1161908, 1188870, 1170159, 1212828
+        );
+
+        String pist = numbers.toString();
+        String result = pist.substring(1, pist.length() - 1);
+
+        System.out.println("SQL ID is "+ pist);
+
         String sql="";
      if(patientsListt.size()==0){
          sql = "select  \n" +
@@ -207,115 +235,16 @@ public class MigrateRegistration {
                  "                   inner join amrs.person_name pn on pn.person_id=p.person_id \n" +
                  "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 \n" +
                  "                   inner join amrs.location l on e.location_id=l.location_id \n" +
-                 "                   where l.uuid in ( "+ locations +" )  and p.person_id in (1171851,\n" +
-                 "1180830,\n" +
-                 "1167167,\n" +
-                 "1187468,\n" +
-                 "1210762,\n" +
-                 "1211677,\n" +
-                 "1205381,\n" +
-                 "1178556,\n" +
-                 "1177079,\n" +
-                 "1177856,\n" +
-                 "1198638,\n" +
-                 "1211883,\n" +
-                 "1191727,\n" +
-                 "1191862,\n" +
-                 "1176796,\n" +
-                 "1210716,\n" +
-                 "1212684,\n" +
-                 "1223669,\n" +
-                 "1182300,\n" +
-                 "1188506,\n" +
-                 "765546,\n" +
-                 "1187467,\n" +
-                 "1207817,\n" +
-                 "1212603,\n" +
-                 "1216267,\n" +
-                 "1225187,\n" +
-                 "1140933,\n" +
-                 "1185368,\n" +
-                 "1177985,\n" +
-                 "1189238,\n" +
-                 "1191232,\n" +
-                 "1199830,\n" +
-                 "1170791,\n" +
-                 "1174464,\n" +
-                 "1206185,\n" +
-                 "1176830,\n" +
-                 "1182705,\n" +
-                 "1209127,\n" +
-                 "1177104,\n" +
-                 "1177467,\n" +
-                 "1184252,\n" +
-                 "1192270,\n" +
-                 "1204250,\n" +
-                 "1212823,\n" +
-                 "1193179,\n" +
-                 "1177270,\n" +
-                 "1191005,\n" +
-                 "1198509,\n" +
-                 "1167355,\n" +
-                 "1178369,\n" +
-                 "1184092,\n" +
-                 "1189326,\n" +
-                 "1191369,\n" +
-                 "1203354,\n" +
-                 "1203531,\n" +
-                 "1209140,\n" +
-                 "1226657,\n" +
-                 "1172517,\n" +
-                 "1186701,\n" +
-                 "1195760,\n" +
-                 "1169969,\n" +
-                 "1178748,\n" +
-                 "1206865,\n" +
-                 "1215595,\n" +
-                 "1180696,\n" +
-                 "1186078,\n" +
-                 "1195200,\n" +
-                 "1177704,\n" +
-                 "1212906,\n" +
-                 "1209159,\n" +
-                 "1202124,\n" +
-                 "1205268,\n" +
-                 "1208071,\n" +
-                 "1211667,\n" +
-                 "1212173,\n" +
-                 "1220342,\n" +
-                 "1176467,\n" +
-                 "1178456,\n" +
-                 "1176379,\n" +
-                 "1177933,\n" +
-                 "1179157,\n" +
-                 "1185422,\n" +
-                 "1198117,\n" +
-                 "1203972,\n" +
-                 "1211635,\n" +
-                 "1185861,\n" +
-                 "1188709,\n" +
-                 "1192374,\n" +
-                 "1194786,\n" +
-                 "1200228,\n" +
-                 "1212351,\n" +
-                 "1222698,\n" +
-                 "198492,\n" +
-                 "1178019,\n" +
-                 "1187425,\n" +
-                 "1176820,\n" +
-                 "1170115,\n" +
-                 "1175708,\n" +
-                 "1188938,\n" +
-                 "827082) -- and p.person_id >  + pid +    \n" +
+                 "                   where l.uuid in ( "+ locations +" )  and p.person_id in ( "+ result +") -- and p.person_id >  + pid +    \n" +
                  "                   group by pt.patient_id \n" +
-                 "                   order by e.patient_id ";
-        // System.out.println("SQL ID is "+ sql);
+                 "                   order by e.patient_id asc ";
+        System.out.println("SQL ID is "+ sql);
      }else {
          String pid = patientsListt.get(0).getPersonId();
          System.out.println("Person ID is "+ pid);
          System.out.println("SQL ID is "+ sql);
 
-      /*   sql = "select  \n" +
+        sql = "select  \n" +
                  "                   p.uuid, \n" +
                  "                   p.person_id, \n" +
                  "                   pn.given_name, \n" +
@@ -406,12 +335,11 @@ public class MigrateRegistration {
                  "                   inner join amrs.person_name pn on pn.person_id=p.person_id \n" +
                  "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 \n" +
                  "                   inner join amrs.location l on e.location_id=l.location_id \n" +
-                 "where l.uuid in (" + locations + ") and ppp.person_id >"+ pid +"\n" +
+                 "where l.uuid in (" + locations + ") and p.person_id in ("+ result +") and p.person_id >"+ pid +"\n" +
                  "group by pt.patient_id\n" +
-                 "order by e.patient_id asc limit 10";
-         */
-     }
+                 "order by e.patient_id asc";
 
+     }
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         //System.out.println("SQL "+ sql);
         Connection con = DriverManager.getConnection(server, username, password);
@@ -517,6 +445,22 @@ public class MigrateRegistration {
                                     "when pt.person_attribute_type_id =25 then '342a1d39-c541-4b29-8818-930916f4c2dc' -- contact\n" +
                                     "when pt.person_attribute_type_id =0 then '7cf22bec-d90a-46ad-9f48-035952261294' -- Kin Address\n" +
                                     " when pt.person_attribute_type_id =0 then '94614350-84c8-41e0-ac29-86bc107069be' -- alternative phone\n" +
+                                            "WHEN pt.person_attribute_type_id = 10 THEN 'b2c38640-2603-4629-aebd-3b54f33f1e3a'\n" + "       " +
+                                            " WHEN pt.person_attribute_type_id = 12 THEN '830bef6d-b01f-449d-9f8d-ac0fede8dbd3'\n" +
+                                            "        WHEN pt.person_attribute_type_id = 25 THEN '342a1d39-c541-4b29-8818-930916f4c2dc'\n" +
+                                            "        WHEN pt.person_attribute_type_id = 0 THEN '7cf22bec-d90a-46ad-9f48-035952261294' \n" +
+                                            "        WHEN pt.person_attribute_type_id = 40 THEN '94614350-84c8-41e0-ac29-86bc107069be'\n" +
+                                            "\t\tWHEN pt.person_attribute_type_id = 163 THEN 'accb7273-ef29-11ed-8ec5-70b5e8686cf7'\n" +
+                                            "        WHEN pt.person_attribute_type_id = 2 THEN '8d8718c2-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                            "        WHEN pt.person_attribute_type_id = 3 THEN '8d871afc-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                            "        WHEN pt.person_attribute_type_id = 5 THEN '8d871f2a-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                            "        WHEN pt.person_attribute_type_id = 60 THEN 'b8d0b331-1d2d-4a9a-b741-1816f498bdb6'\n" +
+                                            "        when pt.person_attribute_type_id = 7  then '8d87236c-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                            "        when pt.person_attribute_type_id = 59  then 'd0aa9fd1-2ac5-45d8-9c5e-4317c622c8f5'\n" +
+                                            "        when pt.person_attribute_type_id = 165  then '752a0331-5293-4aa5-bf46-4d51aaf2cdc5'\n" +
+                                            "        when pt.person_attribute_type_id = 164  then '869f623a-f78e-4ace-9202-0bed481822f5'\n" +
+                                            "        when pt.person_attribute_type_id = 4  then '8d871d18-c2cc-11de-8d13-0010c6dffd0f' \n" +
+                                              "      when pt.person_attribute_type_id = 1  then  '8d871386-c2cc-11de-8d13-0010c6dffd0f'\n" +
                                     "else null end as kenyaemruuid\n" +
                                     " from amrs.person_attribute pa\n" +
                                     " inner join amrs.person_attribute_type pt on pa.person_attribute_type_id = pt.person_attribute_type_id\n" +
@@ -534,6 +478,8 @@ public class MigrateRegistration {
                             apt.setPatientId(rsPA.getString("person_id"));
                             apt.setPersonAttributeTypeId(rsPA.getString("person_attribute_type_id"));
                             apt.setPersonAttributeName(rsPA.getString("name"));
+
+
                             apt.setPersonAttributeValue(rsPA.getString("value"));
                             apt.setKenyaemrAttributeUuid(rsPA.getString("kenyaemruuid"));
                             amrsPersonAtrributesService.save(apt);

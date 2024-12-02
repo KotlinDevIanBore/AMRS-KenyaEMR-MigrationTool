@@ -4,10 +4,7 @@ import ampath.co.ke.amrs_kenyaemr.models.AMRSEncounters;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPrograms;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSTriage;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSEncounterService;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSProgramService;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSTriageService;
+import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.Mappers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -155,5 +152,8 @@ public class CareOpenMRSPayload {
 
       */
         }
+    }
+
+    public static void amrsProgramSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, String parentUUID, String locations, String auth, String url) {
     }
 }
