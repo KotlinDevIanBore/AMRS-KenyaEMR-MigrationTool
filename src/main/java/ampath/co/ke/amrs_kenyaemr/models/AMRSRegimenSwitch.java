@@ -11,24 +11,17 @@ public class AMRSRegimenSwitch {
     @Column(nullable = false)
 
     private Integer Id;
-    private String locationUuid;
     private String patientId;
-    private String provider;
-    private String encounterID;
-    private String encounterDateTime;
-    private String encounterType;
+    private String encounterId;
     private String conceptId;
-    private String conceptName;
-    private String obsDateTime;
-    private String conceptValue;
-    private String valueDataType;
-    private String dataTypeId;
-    private String encounterName;
-    private String Category;
+    private String valueCoded;
+    private String encounterDatetime;
+    private String regimen;
+    private String reasonForChange;
     private String kenyaemrEncounterUuid;
     private String kenyaemrConceptUuid;
     private String kenyaemrValue;
-    private int responseCode;
+    private String responseCode;
 
     public Integer getId() {
         return Id;
@@ -36,14 +29,6 @@ public class AMRSRegimenSwitch {
 
     public void setId(Integer id) {
         Id = id;
-    }
-
-    public String getLocationUuid() {
-        return locationUuid;
-    }
-
-    public void setLocationUuid(String locationUuid) {
-        this.locationUuid = locationUuid;
     }
 
     public String getPatientId() {
@@ -54,68 +39,12 @@ public class AMRSRegimenSwitch {
         this.patientId = patientId;
     }
 
-    public String getProvider() {
-        return provider;
+    public String getEncounterId() {
+        return encounterId;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
-
-    public String getEncounterID() {
-        return encounterID;
-    }
-
-    public void setEncounterID(String encounterID) {
-        this.encounterID = encounterID;
-    }
-
-    public String getEncounterName() {
-        return encounterName;
-    }
-
-    public void setEncounterName(String encounterName) {
-        this.encounterName = encounterName;
-    }
-
-    public String getDataTypeId() {
-        return dataTypeId;
-    }
-
-    public void setDataTypeId(String dataTypeId) {
-        this.dataTypeId = dataTypeId;
-    }
-
-    public String getValueDataType() {
-        return valueDataType;
-    }
-
-    public void setValueDataType(String valueDataType) {
-        this.valueDataType = valueDataType;
-    }
-
-    public String getObsDateTime() {
-        return obsDateTime;
-    }
-
-    public void setObsDateTime(String obsDateTime) {
-        this.obsDateTime = obsDateTime;
-    }
-
-    public String getConceptValue() {
-        return conceptValue;
-    }
-
-    public void setConceptValue(String conceptValue) {
-        this.conceptValue = conceptValue;
-    }
-
-    public String getConceptName() {
-        return conceptName;
-    }
-
-    public void setConceptName(String conceptName) {
-        this.conceptName = conceptName;
+    public void setEncounterId(String encounterId) {
+        this.encounterId = encounterId;
     }
 
     public String getConceptId() {
@@ -126,36 +55,36 @@ public class AMRSRegimenSwitch {
         this.conceptId = conceptId;
     }
 
-    public String getEncounterType() {
-        return encounterType;
+    public String getValueCoded() {
+        return valueCoded;
     }
 
-    public void setEncounterType(String encounterType) {
-        this.encounterType = encounterType;
+    public void setValueCoded(String valueCoded) {
+        this.valueCoded = valueCoded;
     }
 
-    public String getEncounterDateTime() {
-        return encounterDateTime;
+    public String getEncounterDatetime() {
+        return encounterDatetime;
     }
 
-    public void setEncounterDateTime(String encounterDateTime) {
-        this.encounterDateTime = encounterDateTime;
+    public void setEncounterDatetime(String encounterDatetime) {
+        this.encounterDatetime = encounterDatetime;
     }
 
-    public String getCategory() {
-        return Category;
+    public String getRegimen() {
+        return regimen;
     }
 
-    public void setCategory(String category) {
-        Category = category;
+    public void setRegimen(String regimen) {
+        this.regimen = regimen;
     }
 
-    public String getKenyaemrConceptUuid() {
-        return kenyaemrConceptUuid;
+    public String getReasonForChange() {
+        return reasonForChange;
     }
 
-    public void setKenyaemrConceptUuid(String kenyaemrConceptUuid) {
-        this.kenyaemrConceptUuid = kenyaemrConceptUuid;
+    public void setReasonForChange(String reasonForChange) {
+        this.reasonForChange = reasonForChange;
     }
 
     public String getKenyaemrEncounterUuid() {
@@ -166,6 +95,14 @@ public class AMRSRegimenSwitch {
         this.kenyaemrEncounterUuid = kenyaemrEncounterUuid;
     }
 
+    public String getKenyaemrConceptUuid() {
+        return kenyaemrConceptUuid;
+    }
+
+    public void setKenyaemrConceptUuid(String kenyaemrConceptUuid) {
+        this.kenyaemrConceptUuid = kenyaemrConceptUuid;
+    }
+
     public String getKenyaemrValue() {
         return kenyaemrValue;
     }
@@ -174,11 +111,11 @@ public class AMRSRegimenSwitch {
         this.kenyaemrValue = kenyaemrValue;
     }
 
-    public int getResponseCode() {
+    public String getResponseCode() {
         return responseCode;
     }
 
-    public void setResponseCode(int responseCode) {
+    public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
     }
 }

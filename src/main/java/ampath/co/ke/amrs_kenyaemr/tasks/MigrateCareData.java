@@ -1,9 +1,11 @@
 package ampath.co.ke.amrs_kenyaemr.tasks;
 
+import ampath.co.ke.amrs_kenyaemr.methods.AMRSConceptReader;
 import ampath.co.ke.amrs_kenyaemr.models.*;
 import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.*;
 import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.sql.*;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class MigrateCareData {
+
 
     public static void programs(String server, String username, String password, String locations, String parentUUID, AMRSProgramService amrsProgramService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
@@ -1779,8 +1782,118 @@ System.out.println("Patient Id "+ pid);
     }
 
 
+    public static void programSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+        AMRSConceptReader amrsConceptReader = new AMRSConceptReader();
+
+        String sql = "";
+        List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findFirstByOrderByIdDesc();
+        String nextEncounterID = "";
+        if (amrsRegimenSwitchList.isEmpty()) {
+
+            sql = "SELECT patient_id,MIN(regimen_data.enc_id) AS Encounter_ID, \n" +
+                    "concept_id,value_coded,Encounter_Date,GROUP_CONCAT(concept_name SEPARATOR \",\") as Regimen,Reason_for_Change FROM \n" +
+                    "(\n" +
+                    "\tSELECT o.person_id as patient_id,o.encounter_id as enc_id,o.concept_id,o.value_coded,o.voided,e.encounter_datetime AS Encounter_Date, cn.name as concept_name  \n" +
+                    "\t\tfrom amrs.obs o\n" +
+                    "\t\tINNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and cn.locale='en' and cn.concept_name_type='FULLY_SPECIFIED' \n" +
+                    "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
+                    "\twhere o.concept_id=1088 and o.voided=0 \n" +
+                    "    and o.location_id in (339)\n" +
+                    "    and o.person_id in(704258,1171851,1180830,1167167)\n" +
+                    "\tGROUP BY patient_id, o.value_coded \n" +
+                    ")\n" +
+                    " as regimen_data\n" +
+                    " LEFT OUTER JOIN (\n" +
+                    "\t SELECT encounter_id,cn.name AS Reason_for_Change\n" +
+                    "\t\t FROM amrs.obs o \n" +
+                    "\t\t INNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and o.voided=0 \n" +
+                    "\t AND o.concept_id in (1252, 1262, 1266,1269) and cn.locale='en'  and cn.concept_name_type='FULLY_SPECIFIED' \n" +
+                    "\t GROUP BY encounter_id \n" +
+                    " ) as reg_fail \n" +
+                    " ON regimen_data.enc_id=reg_fail.encounter_id\n" +
+                    " \n" +
+                    " GROUP BY enc_id, patient_id ORDER BY patient_id ASC,Encounter_Date ASC \n";
+        } else {
+            System.out.println("List" + amrsRegimenSwitchList);
+//            nextEncounterID = amrsRegimenSwitchList.get(0).getEncounterID();
+            sql = "SELECT patient_id,MIN(regimen_data.enc_id) AS Encounter_ID, \n" +
+                    "concept_id,value_coded,Encounter_Date,GROUP_CONCAT(concept_name SEPARATOR \",\") as Regimen,Reason_for_Change FROM \n" +
+                    "(\n" +
+                    "\tSELECT o.person_id as patient_id,o.encounter_id as enc_id,o.concept_id,o.value_coded,o.voided,e.encounter_datetime AS Encounter_Date, cn.name as concept_name  \n" +
+                    "\t\tfrom amrs.obs o\n" +
+                    "\t\tINNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and cn.locale='en' and cn.concept_name_type='FULLY_SPECIFIED' \n" +
+                    "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
+                    "\twhere o.concept_id=1088 and o.voided=0 \n" +
+                    "    and o.location_id in (339)\n" +
+                    "    and o.person_id in(704258,1171851,1180830,1167167)\n" +
+                    "\tGROUP BY patient_id, o.value_coded \n" +
+                    ")\n" +
+                    " as regimen_data\n" +
+                    " LEFT OUTER JOIN (\n" +
+                    "\t SELECT encounter_id,cn.name AS Reason_for_Change\n" +
+                    "\t\t FROM amrs.obs o \n" +
+                    "\t\t INNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and o.voided=0 \n" +
+                    "\t AND o.concept_id in (1252, 1262, 1266,1269) and cn.locale='en'  and cn.concept_name_type='FULLY_SPECIFIED' \n" +
+                    "\t GROUP BY encounter_id \n" +
+                    " ) as reg_fail \n" +
+                    " ON regimen_data.enc_id=reg_fail.encounter_id\n" +
+                    " \n" +
+                    " GROUP BY enc_id, patient_id ORDER BY patient_id ASC,Encounter_Date ASC \n";
+        }
+        System.out.println("regimenSwitchList" + sql);
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String patientId = rs.getString("patient_id");
+            String encounterId = rs.getString("Encounter_ID");
+            String conceptId = rs.getString("concept_id");
+            String valueCoded = rs.getString("value_coded");
+            String encounterDatetime = rs.getString("Encounter_Date");
+            String regimen = rs.getString("Regimen");
+            String reasonForChange = rs.getString("Reason_for_Change");
+            //String kenyaemrEncounterUuid = rs.getString("");
+            //String kenyaemrConceptUuid = rs.getString("");
+            //String kenyaemrValue = rs.getString("");
 
 
 
-}
+
+            if (amrsRegimenSwitchList.isEmpty()) {
+                AMRSRegimenSwitch ar = new AMRSRegimenSwitch();
+                ar.setPatientId(patientId);
+                ar.setEncounterId(encounterId);
+                ar.setConceptId(conceptId);
+                ar.setValueCoded(valueCoded);
+                ar.setEncounterDatetime(encounterDatetime);
+                ar.setRegimen(regimen);
+                ar.setReasonForChange(reasonForChange);
+//                ar.setKenyaemrEncounterUuid();
+                ar.setKenyaemrConceptUuid(amrsConceptReader.translater(conceptId));
+                ar.setKenyaemrValue(amrsConceptReader.translater(valueCoded));
+
+                ar.setKenyaemrConceptUuid(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(conceptId)));
+
+                System.out.println("Tumefika Hapa!!!" + parentUUID);
+                amrsRegimenSwitchService.save(ar);
+//                CareOpenMRSPayload.amrsProgramSwitch(amrsRegimenSwitchService, parentUUID, locations, auth, url);
+
+
+            }
+
+            System.out.println("Patient_id" + patientId);
+        }
+
+
+
+
+
+}}
 
