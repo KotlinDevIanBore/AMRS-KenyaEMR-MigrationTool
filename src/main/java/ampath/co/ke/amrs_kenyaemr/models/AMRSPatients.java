@@ -23,10 +23,18 @@ public class AMRSPatients {
     private String gender;
     @Column(name="birthdate")
     private String birthdate;
-    @Column(name="address1")
+    @Column(name="address1") //county
     private String address1;
+    @Column(name="address2") //Sub_county
+    private String address2;
+    @Column(name="address3") //landmark
+    private String address3;
+    @Column(name="city_village")
+    private String cityVillage;
     @Column(name="county_district")
     private String county_district;
+    @Column(name="state_province")
+    private String stateProvince;
     @Column(name="address4")
     private String address4;
     @Column(name="address5")
@@ -35,23 +43,42 @@ public class AMRSPatients {
     private String address6;
     @Column(name="dead")
     private String dead;
+    @Column(name="cause_of_dead")
+    private String causeOfDead;
+
+    @Column(name="death_date")
+    private String deathDate;
+
+    @Column(name="kenyaemr_cause_of_dead")
+    private String kenyaemrCauseOfDead;
+    @Column(name="kenyaemr_cause_of_dead_uuid")
+    private String kenyaemrCauseOfDeadUuid;
     @Column(name="birthdate_estimated")
     private String birthdate_estimated;
     @Column(name="voided")
     private String voided;
     @Column(name="location_id")
     private String location_id;
-
     @Column(name="kenyaemr_patient_id")
     private String kenyaemrpatientId;
 
     @Column(name="kenyaemr_patient_uuid")
     private String kenyaemrpatientUUID;
-    @Column(name="name")
-    private String name;
 
     @Column(name = "parent_location_uuid")
     private String parentlocationuuid;
+
+    @Column(name = "county")
+    private String county;
+    @Column(name = "subcounty")
+    private String subcounty;
+    @Column(name = "village")
+    private String village;
+
+    @Column(name = "landmark")
+    private String landmark;
+
+
 
     @Column(name = "migrated")
     private int migrated;
@@ -190,13 +217,6 @@ public class AMRSPatients {
         this.location_id = location_id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
     public int getMigrated() {
         return migrated;
     }
@@ -243,5 +263,101 @@ public class AMRSPatients {
 
     public void setPersonId(String personId) {
         this.personId = personId;
+    }
+
+    public String getAddress2() {
+        return address2;
+    }
+
+    public void setAddress2(String address2) {
+        this.address2 = address2;
+    }
+
+    public String getAddress3() {
+        return address3;
+    }
+
+    public void setAddress3(String address3) {
+        this.address3 = address3;
+    }
+
+    public String getCityVillage() {
+        return cityVillage;
+    }
+
+    public void setCityVillage(String cityVillage) {
+        this.cityVillage = cityVillage;
+    }
+
+    public String getStateProvince() {
+        return stateProvince;
+    }
+
+    public void setStateProvince(String stateProvince) {
+        this.stateProvince = stateProvince;
+    }
+
+    public String getCauseOfDead() {
+        return causeOfDead;
+    }
+
+    public void setCauseOfDead(String causeOfDead) {
+        this.causeOfDead = causeOfDead;
+    }
+
+    public String getKenyaemrCauseOfDead() {
+        return kenyaemrCauseOfDead;
+    }
+
+    public void setKenyaemrCauseOfDead(String kenyaemrCauseOfDead) {
+        this.kenyaemrCauseOfDead = kenyaemrCauseOfDead;
+    }
+
+    public String getKenyaemrCauseOfDeadUuid() {
+        return kenyaemrCauseOfDeadUuid;
+    }
+
+    public void setKenyaemrCauseOfDeadUuid(String kenyaemrCauseOfDeadUuid) {
+        this.kenyaemrCauseOfDeadUuid = kenyaemrCauseOfDeadUuid;
+    }
+
+    public String getDeathDate() {
+        return deathDate;
+    }
+
+    public void setDeathDate(String deathDate) {
+        this.deathDate = deathDate;
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
+    }
+
+    public String getSubcounty() {
+        return subcounty;
+    }
+
+    public void setSubcounty(String subcounty) {
+        this.subcounty = subcounty;
+    }
+
+    public String getVillage() {
+        return village;
+    }
+
+    public void setVillage(String village) {
+        this.village = village;
+    }
+
+    public String getLandmark() {
+        return landmark;
+    }
+
+    public void setLandmark(String landmark) {
+        this.landmark = landmark;
     }
 }

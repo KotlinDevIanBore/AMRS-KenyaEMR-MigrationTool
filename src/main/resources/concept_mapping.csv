@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+<<<<<<< HEAD,,,,,,,,,
 amrs_parent,amrs_label,amrs_concept,amrs_concept_id,concept_type,CIEL,kemr_parent,kemr_label,kemr_concept,kemr_concept_id
 ,"If non-AMPATH, specify:",a8a06fc6-1350-11df-a1f1-0026b9348838,1915,Question,160632,,Other Entry point,160632AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,160632
 42ad95d4-ad13-49cb-a870-d3208e339e36,Other,a8aaf3e2-1350-11df-a1f1-0026b9348838,5622,Answer,5622,160540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,Other(eg STI),5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,5622
@@ -425,7 +425,7 @@ a89c2420-1350-11df-a1f1-0026b9348838,Other,a8aaf3e2-1350-11df-a1f1-0026b9348838,
 ,,,,,,,,c55d1bcf-5e79-44f3-ac8c-de99cb7bebc3,
 ,,,,,,,,cd04e0c7-a99a-4ab8-a10c-3facef3c2ecf,
 ,,,,,,,,164371AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,
-=======
+=======,,,,,,,,,
 amrs_parent,amrs_label,amrs_concept,amrs_concept_id,concept_type,CIEL,kemr_parent,kemr_label,kemr_concept,kemr_concept_id
 ,"If non-AMPATH, specify:",a8a06fc6-1350-11df-a1f1-0026b9348838,1915,Question,160632,,Other Entry point,160632AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,160632
 42ad95d4-ad13-49cb-a870-d3208e339e36,Other,a8aaf3e2-1350-11df-a1f1-0026b9348838,5622,Answer,5622,160540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,Other(eg STI),5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,5622
@@ -703,4 +703,4 @@ a89c2420-1350-11df-a1f1-0026b9348838,Other,a8aaf3e2-1350-11df-a1f1-0026b9348838,
 ,,,5622,,,,,5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,
 ,,,,,,,,,
 ,,,,,,,,,
->>>>>>> 4357582 (HIV_Enrollment CM4)
+>>>>>>> 4357582 (HIV_Enrollment CM4),,,,,,,,,

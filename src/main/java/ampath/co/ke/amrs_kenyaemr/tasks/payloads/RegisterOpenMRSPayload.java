@@ -1,10 +1,12 @@
 package ampath.co.ke.amrs_kenyaemr.tasks.payloads;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSIdentifiers;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSPatientAttributes;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSIdentifiersService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
+import ampath.co.ke.amrs_kenyaemr.service.AMRSPersonAtrributesService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSUserServices;
 import ampath.co.ke.amrs_kenyaemr.tasks.IdentifierGenerator;
 import ampath.co.ke.amrs_kenyaemr.tasks.Mappers;
@@ -20,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class RegisterOpenMRSPayload {
-    public static void users(AMRSUsers amrsUsers, AMRSUserServices amrsUserServices,String url,String auth ) throws JSONException, ParseException, IOException {
+    public static void users(AMRSUsers amrsUsers, AMRSUserServices amrsUserServices, String url, String auth ) throws JSONException, ParseException, IOException {
         //OpenMRS Payload
         //Addresses
         JSONArray jsonAddressesArray = new JSONArray();
@@ -103,11 +105,12 @@ public class RegisterOpenMRSPayload {
 
     }
 
-    public static void patient(AMRSPatients amrsPatients, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,String url,String auth) throws JSONException, ParseException, IOException {
+    public static void patient(AMRSPatients amrsPatients, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,AMRSPersonAtrributesService amrsPersonAtrributesService,String url,String auth) throws JSONException, ParseException, IOException {
         //OpenMRS Payload
         //identifier
         List<AMRSIdentifiers> identifiers = amrsIdentifiersService.getByPatientID(amrsPatients.getPersonId());
         JSONArray Identifierarray = new JSONArray();
+        JSONArray PersonAttribute = new JSONArray();
         String OpenMRSID = IdentifierGenerator.generateIdentifier(url, auth);
 
         //Add OpenmrsID
@@ -145,6 +148,19 @@ public class RegisterOpenMRSPayload {
                 }
             }
         }
+        //Attributes
+        List<AMRSPatientAttributes> amrsPatientAttributes = amrsPersonAtrributesService.getByPatientID(amrsPatients.getPersonId());
+        if(amrsPatientAttributes.size()>0){
+            for(int x=0;x<amrsPatientAttributes.size();x++){
+               if(amrsPatientAttributes.get(x).getKenyaemrAttributeUuid() != null){
+                   JSONObject jsonAttribute = new JSONObject();
+                   jsonAttribute.put("attributeType", amrsPatientAttributes.get(x).getKenyaemrAttributeUuid());
+                   jsonAttribute.put("value", amrsPatientAttributes.get(x).getPersonAttributeValue());
+                   PersonAttribute.put(jsonAttribute);
+               }
+
+            }
+        }
         //Start of Names
         JSONArray namearray = new JSONArray();
         JSONObject jsonNames = new JSONObject();
@@ -155,10 +171,16 @@ public class RegisterOpenMRSPayload {
         // End of dentifier
         JSONArray jsonAddressesArray = new JSONArray();
         JSONObject jsonAddresses = new JSONObject();
-        jsonAddresses.put("address1", amrsPatients.getAddress1());
-        jsonAddresses.put("address2", amrsPatients.getAddress1());
-        jsonAddresses.put("address3", amrsPatients.getAddress4());
-        jsonAddresses.put("address4", amrsPatients.getAddress4());
+        jsonAddresses.put("address1", amrsPatients.getCounty()); //County
+        jsonAddresses.put("address2", amrsPatients.getLandmark()); //Land Mark
+       // jsonAddresses.put("address3", amrsPatients.getAddress4());
+        jsonAddresses.put("address6", amrsPatients.getAddress6()); //Location
+        jsonAddresses.put("address5", amrsPatients.getAddress5()); //Sub Location
+        jsonAddresses.put("address4", amrsPatients.getAddress4()); //ward
+        jsonAddresses.put("cityVillage", amrsPatients.getCityVillage()); //Village
+        jsonAddresses.put("stateProvince", amrsPatients.getSubcounty()); //subcounty
+        jsonAddresses.put("countyDistrict",amrsPatients.getCounty_district());
+        jsonAddresses.put("country", "Kenya"); //subcounty
         jsonAddressesArray.put(jsonAddresses);
 
         //person
@@ -179,10 +201,15 @@ public class RegisterOpenMRSPayload {
             deadcheck = "false";
         } else {
             deadcheck = "true";
+            jsonPerson.put("deathDate", amrsPatients.getDeathDate());
+            jsonPerson.put("causeOfDeath", amrsPatients.getKenyaemrCauseOfDeadUuid());
+            jsonPerson.put("deathdateEstimated", "false");
+
         }
         jsonPerson.put("dead", deadcheck);
         jsonPerson.put("names", namearray);
         jsonPerson.put("addresses", jsonAddressesArray);
+        jsonPerson.put("attributes",PersonAttribute);
 
         JSONObject patientObject = new JSONObject();
         patientObject.put("identifiers", Identifierarray);
