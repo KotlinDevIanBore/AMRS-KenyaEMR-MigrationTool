@@ -1,5 +1,6 @@
 package ampath.co.ke.amrs_kenyaemr.controllers;
 
+import ampath.co.ke.amrs_kenyaemr.methods.AMRSConceptReader;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSLocations;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSVisits;
 import ampath.co.ke.amrs_kenyaemr.service.*;
@@ -67,6 +68,8 @@ public class LocationControllers {
     private AMRSEncounterMappingService amrsEncounterMappingService;
     @Autowired
     private AMRSMappingService amrsMappingService;
+    @Autowired
+    private AMRSConceptReader amrsConceptReader;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView Locations(){
@@ -192,8 +195,8 @@ public class LocationControllers {
        // MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
         //obs
-//        MigrateCareData.obs(server, username, password, locationId, parentUuid, amrsObsService, amrsPatientServices, amrsMappingService, OpenMRSURL,auth);
-//        System.out.println("AMRS Locations "+locationId);
+        MigrateCareData.obs(server, username, password, locationId, parentUuid, amrsObsService, amrsPatientServices, amrsConceptReader , OpenMRSURL,auth);
+        System.out.println("AMRS Locations "+locationId);
 
         return locationId;
 

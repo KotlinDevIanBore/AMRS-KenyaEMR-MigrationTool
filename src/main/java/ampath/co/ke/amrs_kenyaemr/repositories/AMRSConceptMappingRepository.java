@@ -10,4 +10,5 @@ import java.util.List;
 public interface AMRSConceptMappingRepository extends JpaRepository<AMRSConceptMapper, Long> {
     AMRSConceptMapper findById(int pid);
     List<AMRSConceptMapper> findByAmrsConceptID(String pid);
+    List<AMRSConceptMapper> findBykenyaemrConceptID(String pid);
 }

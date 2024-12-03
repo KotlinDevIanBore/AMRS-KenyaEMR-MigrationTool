@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service("amrsorderservice")
 public class AMRSOrderService {
@@ -19,10 +20,15 @@ public class AMRSOrderService {
     public List<AMRSOrders> getAll() {
         return amrsOrdersRepository.findAll();
     }
+
     public List<AMRSOrders> findByUuid(String uuid) {
         return amrsOrdersRepository.findByUuid(uuid);
     }
     public AMRSOrders save(AMRSOrders dataset) {
         return amrsOrdersRepository.save(dataset);
+    }
+
+    public List<AMRSOrders> findByResponseCodeIsNull(){
+       return amrsOrdersRepository.findByResponseCodeIsNull();
     }
 }
