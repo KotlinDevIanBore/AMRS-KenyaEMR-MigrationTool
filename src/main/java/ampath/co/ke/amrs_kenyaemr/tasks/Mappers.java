@@ -27,6 +27,9 @@ public class Mappers {
         else if(uuid.equals("ace5f7c7-c5f4-4e77-a077-5588a682a0d6")){
             //CPMIS
             kenyendidentifer="5065ae70-0b61-11ea-8d71-362b9e155667";}
+        else if(uuid.equals("7924e13b-131a-4da8-8efa-e294184a1b0d")){
+            //BirthCertificateBNo
+            kenyendidentifer="68449e5a-8829-44dd-bfef-c9c8cf2cb9b2";}
         return kenyendidentifer;
     }
     public static String programs(String uuid) {
