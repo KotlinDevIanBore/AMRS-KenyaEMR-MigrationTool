@@ -5,7 +5,6 @@ import ampath.co.ke.amrs_kenyaemr.models.*;
 import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.*;
 import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.sql.*;
@@ -46,12 +45,10 @@ public class MigrateCareData {
                     "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                     "       inner join amrs.location l on l.location_id = e.location_id\n" +
                     "       and l.uuid in (" + locations + ") and pp.patient_program_id>=" + ppid + " and e.patient_id in ("+ pid +")  \n" + //and e. patient_id in ('1224605,1222698')
-                    "       group by  pp.patient_idd,p.concept_id  order by pp.patient_program_id asc limit 100";
-            System.out.println("SQLs " + sql);
-
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc";
+           // System.out.println("SQLs " + sql);
 
         } else {
-
             sql = "select pp.patient_program_id, pp.patient_id, \n" +
                     "       p.name,\n" +
                     "       p.uuid program_uuid,\n" +
@@ -89,7 +86,6 @@ public class MigrateCareData {
             String dateCompleted = rs.getString("date_completed");
             String programId = rs.getString("program_id");
             String patientProgramId = rs.getString("patient_program_id");
-
 
             // List<AMRSPrograms> patientsList = amrsProgramService.getprogramByLocation(rs.getString(2),parentUUID);
             List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
@@ -1935,8 +1931,97 @@ System.out.println("Patient Id "+ pid);
         }
 
 
+}
 
 
+public static void patientStatus(String server, String username, String password, String locations, String parentUUID, AMRSPatientStatusService amrsPatientStatusService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-}}
+
+    String sql = "";
+    List<AMRSPatientStatus> amrsCivilStatusList = amrsPatientStatusService.findFirstByOrderByIdDesc();
+    String nextEncounterID = "";
+    if (amrsCivilStatusList.isEmpty()) {
+
+        sql = "SELECT \n" +
+                "    pa.person_id,\n" +
+                "    pt.person_attribute_type_id,\n" +
+                "    case when pt.person_attribute_type_id =5 then '1054'\n" +
+                "    when pt.person_attribute_type_id =42 then '1542'\n" +
+                "    when pt.person_attribute_type_id =73 then '1712'\n" +
+                "    end kenyaemr_concept,\n" +
+                "    pt.name,\n" +
+                "    pa.value\n" +
+                "    \n" +
+                "FROM\n" +
+                "    amrs.person_attribute pa\n" +
+                "        INNER JOIN\n" +
+                "    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5)\n" +
+                "    inner join amrs.concept c on c.concept_id = pa.value\n" +
+                "WHERE\n" +
+                "     pa.person_id IN (1220891,1191232, 1199830, 1170791, 1174464, 1206185)\n" +
+                "        AND \n" +
+                "        pa.voided = 0";
+    } else {
+        System.out.println("List" + amrsCivilStatusList);
+//            nextEncounterID = amrs.get(0).getEncounterID();
+        sql = "SELECT \n" +
+                "    pa.person_id,\n" +
+                "    pt.person_attribute_type_id,\n" +
+                "    case when pt.person_attribute_type_id =5 then '1054'\n" +
+                "    when pt.person_attribute_type_id =42 then '1542'\n" +
+                "    when pt.person_attribute_type_id =73 then '1712'\n" +
+                "    end kenyaemr_concept,\n" +
+                "    pt.name,\n" +
+                "    pa.value\n" +
+                "    \n" +
+                "FROM\n" +
+                "    amrs.person_attribute pa\n" +
+                "        INNER JOIN\n" +
+                "    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5)\n" +
+                "    inner join amrs.concept c on c.concept_id = pa.value\n" +
+                "WHERE\n" +
+                "     pa.person_id IN (1220891,1191232, 1199830, 1170791, 1174464, 1206185)\n" +
+                "        AND \n" +
+                "        pa.voided = 0";
+    }
+    System.out.println("regimenSwitchList" + sql);
+    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+        String personId = rs.getString("person_id");
+        String personAttributeTypeId = rs.getString("person_attribute_type_id");
+        String kenyaEmrConcept = rs.getString("kenyaemr_concept");
+        String name = rs.getString("name");
+        String value = rs.getString("value");
+
+
+        if (amrsCivilStatusList.isEmpty()) {
+            AMRSPatientStatus cs = new AMRSPatientStatus();
+            cs.setPersonId(personId);
+            cs.setPersonAttributeTypeId(personAttributeTypeId);
+            cs.setKenyaEmrConcept(kenyaEmrConcept);
+            cs.setName(name);
+            cs.setValue(value);
+
+
+            System.out.println("Tumefika Hapa!!!" + parentUUID);
+            amrsPatientStatusService.save(cs);
+            CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
+
+        }
+
+        System.out.println("Patient_id" + personId);
+    }
+
+
+}
+
+}
 

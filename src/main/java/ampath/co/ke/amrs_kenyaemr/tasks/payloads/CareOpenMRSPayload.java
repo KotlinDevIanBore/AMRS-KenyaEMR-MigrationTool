@@ -156,4 +156,7 @@ public class CareOpenMRSPayload {
 
     public static void amrsProgramSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, String parentUUID, String locations, String auth, String url) {
     }
+
+    public static void patientStatus(AMRSPatientStatusService amrsPatientStatusService, String parentUUID, String locations, String auth, String url) {
+    }
 }
