@@ -13,13 +13,13 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 
 public class MigrateCareData {
-
 
     public static void programs(String server, String username, String password, String locations, String parentUUID, AMRSProgramService amrsProgramService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
@@ -127,7 +127,6 @@ public class MigrateCareData {
         //Migate Programs
         CareOpenMRSPayload.programs(amrsProgramService, locations, parentUUID, url, auth);
     }
-
 
     public static void encounters(String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
@@ -891,7 +890,6 @@ public class MigrateCareData {
         EnrollmentsPayload.encounters(url, auth);
     }
 
-
     public static void visits(String server, String username, String password, String locations, String parentUUID, AMRSVisitService amrsVisitService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         String sql = "";
         List<AMRSVisits> amrsVisitsList = amrsVisitService.findFirstByOrderByIdDesc();
@@ -989,7 +987,9 @@ public class MigrateCareData {
     }
 
 
+
     public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService,AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
 
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss = "";
@@ -1902,7 +1902,6 @@ public class MigrateCareData {
         }
     }
 
-
     public static void programSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
 //        AMRSConceptReader amrsConceptReader = new AMRSConceptReader();
@@ -2009,6 +2008,314 @@ public class MigrateCareData {
 
             System.out.println("Patient_id" + patientId);
         }
+  }
+
+  public static void programEnrollments(String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+    AMRSConceptReader amrsConceptReader = new AMRSConceptReader();
+
+    String sql = "";
+    List<AMRSEnrollments> amrsEnrollmentsList = amrsEnrollmentService.getAll();
+    String nextEncounterID = "";
+
+    List<Integer> numbers = Arrays.asList(
+      1187467, 1207817, 1212603, 1216267, 1225187, 1140933, 1185368,
+      1177985, 1189238, 1191232, 1199830, 1170791, 1174464, 1206185,
+      1176830, 1182705, 1209127, 1177104, 1177467, 1184252, 1192270,
+      1204250, 1212823, 1193179, 1177270, 1191005, 1198509, 1167355,
+      1178369, 1184092, 1189326, 1191369, 1203354, 1203531, 1209140,
+      1226657, 1172517, 1186701, 1195760, 1169969, 1178748, 1206865,
+      1215595, 1180696, 1186078, 1195200, 1177704, 1212906, 1209159,
+      1202124, 1205268, 1208071, 1211667, 1212173, 1220342, 1176467,
+      1178456, 1176379, 1177933, 1179157, 1185422, 1198117, 1203972,
+      1211635, 1185861, 1188709, 1192374, 1194786, 1200228, 1212351,
+      1222698, 198492, 1178019, 1187425, 1176820, 1170115, 1175708,
+      1153475, 1153527,1153618, 1153684, 1153703,1153725, 1153811,
+      1153922, 1153931, 1166345, 1167167, 1168996, 1174041, 1174884,
+      1177493, 1180808, 1182235, 1182433, 1187031, 1188132, 1190631,
+      1192399, 1193816, 1196144, 1196454, 1197444, 1199916, 1201312,
+      1202111, 1203658, 1207799, 1207926, 1207939, 1209301, 1226630, 1188938, 827082,
+      33052, 104614, 161550, 839201, 1161908, 1188870, 1170159, 1212828
+    );
+
+    String pist = numbers.toString();
+    String result = pist.substring(1, pist.length() - 1);
+
+
+    if (amrsEnrollmentsList.isEmpty()) {
+
+      sql = "select\n" +
+        "\t-- e.*,\n" +
+        "\te.patient_id,\n" +
+        "\te.encounter_id,\n" +
+        "\te.encounter_datetime,\n" +
+        "\t-- e.form_id,\n" +
+        "\t-- f.name,\n" +
+        "\tmax(case f.form_id when '15' then 164144 -- New\n" +
+        "     when o.concept_id = 10194 then 160563 --  'Transfer-In'\n" +
+        "     when f.form_id then 164931 -- Transit\n" +
+        "     else NULL end) as Patient_Type,\n" +
+        "\tmax(case when o.concept_id = 2051 and o.value_coded = 2047 then 160539 -- 'VCT'\n" +
+        "     when o.concept_id = 2051 and o.value_coded = 2240 then 162050 -- 'ccc'\n" +
+        "      when o.concept_id = 2051 and o.value_coded = 2177 then 162050 -- 'PITC Mappend to CCC'\n" +
+        "     when 'Medical out patient' then 160542\n" +
+        "     when o.concept_id = 2051 and o.value_coded = 1965 then 160542 -- 'OPD'\n" +
+        "     when 'Inpatient Adult' then 160536\n" +
+        "     when 'Inpatient Child' then 160537\n" +
+        "     when o.concept_id = 2051 and o.value_coded = 1776 then 160536 -- 'PMTCT'\n" +
+        "     when 'Mother Child Health' then 159937\n" +
+        "     when 'TB Clinic' then 160541\n" +
+        "     when 'Unknown' then 162050\n" +
+        "     when 'Other' then 5622 else o.value_coded end) as Entry_point ,\n" +
+        "\t-- null as TI_Facility,\n" +
+        "\tmax(case when o.concept_id = 7013 then o.value_datetime else null end) Date_first_enrolled_in_care,\n" +
+        "    fhs.transfer_in_date,\n" +
+        "    fhs.hiv_start_date as Date_started_art_at_transferring_facility,\n" +
+        "    null as Date_confirmed_hiv_positive,\n" +
+        "    null as Facility_confirmed_hiv_positive,\n" +
+        "    etl.get_arv_names(fhs.cur_arv_meds) as Baseline_arv_use,\n" +
+        "    /*(ecase enr.Purpose_of_baseline_arv_use when 'PMTCT' then 1148\n" +
+        "     when 'PEP' then 1691\n" +
+        "     when 'ART' then 1181 else NULL end) as Purpose_of_baseline_arv_use,\n" +
+        "    (case enr.Baseline_arv_regimen when 'AF2D (TDF + 3TC + ATV/r)' then 164512\n" +
+        "     when 'AF2A (TDF + 3TC + NVP)' then 162565\n" +
+        "     when 'AF2B (TDF + 3TC + EFV)' then 164505\n" +
+        "     when 'AF1A (AZT + 3TC + NVP' then 1652\n" +
+        "     when 'AF1B (AZT + 3TC + EFV)' then 160124\n" +
+        "     when 'AF4B (ABC + 3TC + EFV)' then 162563\n" +
+        "     when 'AF4A (ABC + 3TC + NVP)' then 162199\n" +
+        "     when 'CF2A (ABC + 3TC + NVP)' then 162199\n" +
+        "     when 'CF2D (ABC + 3TC + LPV/r)' then 162200\n" +
+        "     when 'CF2B (ABC + 3TC + EFV)' then 162563 else NULL end) as Baseline_arv_regimen,*/\n" +
+        "    fhs.cur_who_stage  as Baseline_arv_regimen_line,\n" +
+        "    fhs.rtc_date as Baseline_arv_date_last_used,\n" +
+        "    case fhs.cur_who_stage when '1' then 1204\n" +
+        "     when '2' then 1205\n" +
+        "     when '3' then 1206\n" +
+        "     when '4' then 1207\n" +
+        "     when 'Unknown' then 1067 else NULL end as Baseline_who_stage,\n" +
+        "    case \n" +
+        "    \twhen fhs.cd4_2 is not null then fhs.cd4_2\n" +
+        "    \telse fhs.cd4_1\n" +
+        "    end as Baseline_cd4_results,\n" +
+        "    case \n" +
+        "    \twhen fhs.cd4_2_date is not null then fhs.cd4_2_date\n" +
+        "    \telse fhs.cd4_1_date\n" +
+        "    end as Baseline_cd4_date,\n" +
+        "    case \n" +
+        "    \twhen fhs.vl_2 is not null then fhs.vl_2 \n" +
+        "    \telse fhs.vl_1\n" +
+        "    end as Baseline_vl_results,\n" +
+        "    case \n" +
+        "    \twhen fhs.vl_2_date is not null then fhs.vl_2_date\n" +
+        "    \telse fhs.vl_1_date \n" +
+        "    end as Baseline_vl_date,\n" +
+        "    case \n" +
+        "\t    when fhs.vl_2 <=200 then fhs.vl_2 \n" +
+        "\t    when fhs.vl_1 <=200 then fhs.vl_1 \n" +
+        "\t    else null\t\n" +
+        "    end as Baseline_vl_ldl_results,\n" +
+        "    case \n" +
+        "\t    when fhs.vl_2_date <=200 then fhs.vl_2_date \n" +
+        "\t    when fhs.vl_1_date <=200 then fhs.vl_1_date \n" +
+        "\t    else null\n" +
+        "    end as Baseline_vl_ldl_date,\n" +
+        "    null as Baseline_HBV_Infected,\n" +
+        "    case \n" +
+        "    \twhen fhs.on_tb_tx = 1 then 1\n" +
+        "    \telse 0\n" +
+        "    end as Baseline_TB_Infected,\n" +
+        "    CASE\n" +
+        "    \twhen fhs.is_pregnant = 1 then 1 \n" +
+        "    \telse 0\n" +
+        "    END as Baseline_Pregnant,\n" +
+        "    case \n" +
+        "    \twhen fhs.is_mother_breastfeeding = 1 then 1\n" +
+        "    \telse 0\n" +
+        "    end as Baseline_Breastfeeding,\n" +
+        "    fhs.weight as Baseline_Weight,\n" +
+        "    fhs.height as Baseline_Height,\n" +
+        "\tnull as Baseline_BMI,\n" +
+        "    null as Name_of_treatment_supporter,\n" +
+        "    null as Relationship_of_treatment_supporter,\n" +
+        "    null as reatment_supporter_telephone,\n" +
+        "    null as Treatment_supporter_address\n" +
+        "from\n" +
+        "\tamrs.encounter e\n" +
+        "inner join etl.flat_hiv_summary_v15b fhs on (fhs.person_id = e.patient_id)\n" +
+        "inner join amrs.obs o on\n" +
+        "\te.encounter_id = o.encounter_id\n" +
+        "inner join amrs.form f on\n" +
+        "\tf.form_id = e.form_id\n" +
+        "where\n" +
+        "\te.encounter_type in (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266)\n" +
+        "\tand e.location_id in (2, 336, 98)\n" +
+        "\tand e.voided = 0\n" +
+        "\tand o.concept_id in (2051, 7013)\n" +
+        "\tand fhs.is_clinical_encounter = 1 and e.patient_id in ("+ result +")\n" +
+        "group by\n" +
+        "\te.patient_id";
+    } else {
+      System.out.println("List" + amrsEnrollmentsList);
+      //            nextEncounterID = amrsRegimenSwitchList.get(0).getEncounterID();
+      sql = "select\n" +
+        "\t-- e.*,\n" +
+        "\te.patient_id,\n" +
+        "\te.encounter_id,\n" +
+        "\te.encounter_datetime,\n" +
+        "\t-- e.form_id,\n" +
+        "\t-- f.name,\n" +
+        "\tmax(case f.form_id when '15' then 164144 -- New\n" +
+        "     when o.concept_id = 10194 then 160563 --  'Transfer-In'\n" +
+        "     when f.form_id then 164931 -- Transit\n" +
+        "     else NULL end) as Patient_Type,\n" +
+        "\tmax(case when o.concept_id = 2051 and o.value_coded = 2047 then 160539 -- 'VCT'\n" +
+        "     when o.concept_id = 2051 and o.value_coded = 2240 then 162050 -- 'ccc'\n" +
+        "      when o.concept_id = 2051 and o.value_coded = 2177 then 162050 -- 'PITC Mappend to CCC'\n" +
+        "     when 'Medical out patient' then 160542\n" +
+        "     when o.concept_id = 2051 and o.value_coded = 1965 then 160542 -- 'OPD'\n" +
+        "     when 'Inpatient Adult' then 160536\n" +
+        "     when 'Inpatient Child' then 160537\n" +
+        "     when o.concept_id = 2051 and o.value_coded = 1776 then 160536 -- 'PMTCT'\n" +
+        "     when 'Mother Child Health' then 159937\n" +
+        "     when 'TB Clinic' then 160541\n" +
+        "     when 'Unknown' then 162050\n" +
+        "     when 'Other' then 5622 else o.value_coded end) as Entry_point ,\n" +
+        "\t-- null as TI_Facility,\n" +
+        "\tmax(case when o.concept_id = 7013 then o.value_datetime else null end) Date_first_enrolled_in_care,\n" +
+        "    fhs.transfer_in_date,\n" +
+        "    fhs.hiv_start_date as Date_started_art_at_transferring_facility,\n" +
+        "    null as Date_confirmed_hiv_positive,\n" +
+        "    null as Facility_confirmed_hiv_positive,\n" +
+        "    etl.get_arv_names(fhs.cur_arv_meds) as Baseline_arv_use,\n" +
+        "    /*(ecase enr.Purpose_of_baseline_arv_use when 'PMTCT' then 1148\n" +
+        "     when 'PEP' then 1691\n" +
+        "     when 'ART' then 1181 else NULL end) as Purpose_of_baseline_arv_use,\n" +
+        "    (case enr.Baseline_arv_regimen when 'AF2D (TDF + 3TC + ATV/r)' then 164512\n" +
+        "     when 'AF2A (TDF + 3TC + NVP)' then 162565\n" +
+        "     when 'AF2B (TDF + 3TC + EFV)' then 164505\n" +
+        "     when 'AF1A (AZT + 3TC + NVP' then 1652\n" +
+        "     when 'AF1B (AZT + 3TC + EFV)' then 160124\n" +
+        "     when 'AF4B (ABC + 3TC + EFV)' then 162563\n" +
+        "     when 'AF4A (ABC + 3TC + NVP)' then 162199\n" +
+        "     when 'CF2A (ABC + 3TC + NVP)' then 162199\n" +
+        "     when 'CF2D (ABC + 3TC + LPV/r)' then 162200\n" +
+        "     when 'CF2B (ABC + 3TC + EFV)' then 162563 else NULL end) as Baseline_arv_regimen,*/\n" +
+        "    fhs.cur_who_stage  as Baseline_arv_regimen_line,\n" +
+        "    fhs.rtc_date as Baseline_arv_date_last_used,\n" +
+        "    case fhs.cur_who_stage when '1' then 1204\n" +
+        "     when '2' then 1205\n" +
+        "     when '3' then 1206\n" +
+        "     when '4' then 1207\n" +
+        "     when 'Unknown' then 1067 else NULL end as Baseline_who_stage,\n" +
+        "    case \n" +
+        "    \twhen fhs.cd4_2 is not null then fhs.cd4_2\n" +
+        "    \telse fhs.cd4_1\n" +
+        "    end as Baseline_cd4_results,\n" +
+        "    case \n" +
+        "    \twhen fhs.cd4_2_date is not null then fhs.cd4_2_date\n" +
+        "    \telse fhs.cd4_1_date\n" +
+        "    end as Baseline_cd4_date,\n" +
+        "    case \n" +
+        "    \twhen fhs.vl_2 is not null then fhs.vl_2 \n" +
+        "    \telse fhs.vl_1\n" +
+        "    end as Baseline_vl_results,\n" +
+        "    case \n" +
+        "    \twhen fhs.vl_2_date is not null then fhs.vl_2_date\n" +
+        "    \telse fhs.vl_1_date \n" +
+        "    end as Baseline_vl_date,\n" +
+        "    case \n" +
+        "\t    when fhs.vl_2 <=200 then fhs.vl_2 \n" +
+        "\t    when fhs.vl_1 <=200 then fhs.vl_1 \n" +
+        "\t    else null\t\n" +
+        "    end as Baseline_vl_ldl_results,\n" +
+        "    case \n" +
+        "\t    when fhs.vl_2_date <=200 then fhs.vl_2_date \n" +
+        "\t    when fhs.vl_1_date <=200 then fhs.vl_1_date \n" +
+        "\t    else null\n" +
+        "    end as Baseline_vl_ldl_date,\n" +
+        "    null as Baseline_HBV_Infected,\n" +
+        "    case \n" +
+        "    \twhen fhs.on_tb_tx = 1 then 1\n" +
+        "    \telse 0\n" +
+        "    end as Baseline_TB_Infected,\n" +
+        "    CASE\n" +
+        "    \twhen fhs.is_pregnant = 1 then 1 \n" +
+        "    \telse 0\n" +
+        "    END as Baseline_Pregnant,\n" +
+        "    case \n" +
+        "    \twhen fhs.is_mother_breastfeeding = 1 then 1\n" +
+        "    \telse 0\n" +
+        "    end as Baseline_Breastfeeding,\n" +
+        "    fhs.weight as Baseline_Weight,\n" +
+        "    fhs.height as Baseline_Height,\n" +
+        "\tnull as Baseline_BMI,\n" +
+        "    null as Name_of_treatment_supporter,\n" +
+        "    null as Relationship_of_treatment_supporter,\n" +
+        "    null as reatment_supporter_telephone,\n" +
+        "    null as Treatment_supporter_address\n" +
+        "from\n" +
+        "\tamrs.encounter e\n" +
+        "inner join etl.flat_hiv_summary_v15b fhs on (fhs.person_id = e.patient_id)\n" +
+        "inner join amrs.obs o on\n" +
+        "\te.encounter_id = o.encounter_id\n" +
+        "inner join amrs.form f on\n" +
+        "\tf.form_id = e.form_id\n" +
+        "where\n" +
+        "\te.encounter_type in (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266)\n" +
+        "\tand e.location_id in (2, 336, 98)\n" +
+        "\tand e.voided = 0\n" +
+        "\tand o.concept_id in (2051, 7013)\n" +
+        "\tand fhs.is_clinical_encounter = 1 and e.patient_id in ("+ result +")\n" +
+        "group by\n" +
+        "\te.patient_id";
+    }
+    System.out.println("regimenSwitchList" + sql);
+    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+      String patientId = rs.getString("patient_id");
+
+      if (amrsEnrollmentsList.isEmpty()) {
+
+        AMRSEnrollments ae = new AMRSEnrollments();
+
+        ae.setPatientId(rs.getString("patient_id"));
+        ae.setEncounterId(rs.getString("encounter_id"));
+        ae.setEncounterDatetime(rs.getString("encounter_datetime"));
+        ae.setPatientType(rs.getString("Patient_Type"));
+        ae.setEntryPoint(rs.getString("Entry_point"));
+        ae.setTransferInDate(rs.getString("transfer_in_date"));
+        ae.setDateStartedArtAtTransferringFacility(rs.getString("Date_started_art_at_transferring_facility"));
+        ae.setBaselineArvUse(rs.getString("Baseline_arv_use"));
+        ae.setBaselineArvRegimenLine(rs.getString("Baseline_arv_regimen_line"));
+        ae.setBaselineArvDateLastUsed(rs.getString("Baseline_arv_date_last_used"));
+        ae.setBaselineWhoStage(rs.getString("Baseline_who_stage"));
+        ae.setBaselineCd4Results(rs.getString("Baseline_cd4_results"));
+        ae.setBaselineCd4Date(rs.getString("Baseline_cd4_date"));
+        ae.setBaselineVlResults(rs.getString("Baseline_vl_results"));
+        ae.setBaselineVlDate(rs.getString("Baseline_vl_date"));
+        ae.setBaselineTbInfected(rs.getInt("Baseline_TB_Infected") == 1 ? "Yes" : "No");
+        ae.setBaselinePregnant(rs.getInt("Baseline_Pregnant") == 1 ? "Yes" : "No");
+        ae.setBaselineBreastFeeding(rs.getInt("Baseline_Breastfeeding") == 1 ? "Yes" : "No");
+        ae.setBaselineWeight(rs.getString("Baseline_Weight"));
+        ae.setBaselineHeight(rs.getString("Baseline_Height"));
+
+        amrsEnrollmentService.save(ae);
+
+        NewEnrollmentPayload.enrollments(amrsEnrollmentService, amrsEncounterService, url, auth);
+      }
+
+      System.out.println("Patient_id" + patientId);
+    }
+  }
 
 
     }
@@ -2100,9 +2407,6 @@ public static void patientStatus(String server, String username, String password
 
         System.out.println("Patient_id" + personId);
     }
-
-
-}
 
 }
 
