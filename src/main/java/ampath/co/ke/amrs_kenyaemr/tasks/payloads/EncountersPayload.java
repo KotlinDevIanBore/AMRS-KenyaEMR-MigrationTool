@@ -34,13 +34,15 @@ public class EncountersPayload {
                     JSONObject jsonEncounter = new JSONObject();
                     if(ae.getVisitId()!=null){
                         List<AMRSVisits> amrsVisits = amrsVisitService.findByVisitID(ae.getVisitId());
-                        if(amrsVisits.get(0).getResponseCode().equals("201")){
-                            jsonEncounter.put("patient", patientsList.get(0).getKenyaemrpatientUUID());
-                            jsonEncounter.put("encounterType", ae.getKenyaemrEncounterUuid());
-                            jsonEncounter.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
-                            jsonEncounter.put("encounterDatetime", ae.getEncounterDateTime());
-                            jsonEncounter.put("encounterType",ae.getKenyaemrEncounterTypeUuid());
-                            jsonEncounter.put("visit", amrsVisits.get(0).getKenyaemrVisitUuid());
+                        if(amrsVisits.size()>0){
+                            if(amrsVisits.get(0).getResponseCode().equals("201")) {
+                                jsonEncounter.put("patient", patientsList.get(0).getKenyaemrpatientUUID());
+                                jsonEncounter.put("encounterType", ae.getKenyaemrEncounterUuid());
+                                jsonEncounter.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+                                jsonEncounter.put("encounterDatetime", ae.getEncounterDateTime());
+                                jsonEncounter.put("encounterType", ae.getKenyaemrEncounterTypeUuid());
+                                jsonEncounter.put("visit", amrsVisits.get(0).getKenyaemrVisitUuid());
+                            }
 
                         }
 

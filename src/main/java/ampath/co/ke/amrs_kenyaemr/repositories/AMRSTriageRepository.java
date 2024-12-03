@@ -10,6 +10,8 @@ public interface AMRSTriageRepository extends JpaRepository<AMRSTriage, Long> {
   AMRSTriage findById(int pid);
   //List<AMRSTriage> findByUuid(String cuuid);
   List<AMRSTriage> findByPatientIdAndEncounterId(String pid,String encid);
+  List<AMRSTriage> findByPatientIdAndEncounterIdAndConceptId(String pid,String encid,String conceptid);
   List<AMRSTriage> findFirstByOrderByIdDesc();
   List<AMRSTriage> findByResponseCodeIsNull();
+  List<AMRSTriage> findByEncounterId(String encid);
 }

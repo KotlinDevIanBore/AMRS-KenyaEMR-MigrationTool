@@ -939,7 +939,7 @@ public class MigrateCareData {
 
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
-        System.out.println("locations " + sql);
+       // System.out.println("locations " + sql);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -1137,10 +1137,12 @@ public class MigrateCareData {
             prevEncounterID = amrsTriages.get(0).getEncounterId();
         }
 
+
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss = "";
         for (int y = 0; y < amrsPatientsList.size(); y++) {
             pidss += amrsPatientsList.get(y).getPersonId() + ",";
+
         }
         String pid = pidss.substring(0, pidss.length() - 1);
         System.out.println("PtientIDs " + pid);
@@ -1175,23 +1177,22 @@ public class MigrateCareData {
                     "e.encounter_datetime,\n" +
                     "e.visit_id,\n" +
                     "o.location_id,\n" +
-                    "max(o.obs_datetime) as obs_datetime,\n" +
-                    "max(case when o.concept_id = 9816 then o.value_numeric end) as height_age_zscore,\n" +
-                    "max(case when o.concept_id = 8238 then o.value_numeric end) as weight_height_zscore,\n" +
-                    "max(case when o.concept_id = 8239 then o.value_numeric end) as bmi_age_zscore,\n" +
-                    "max(case when o.concept_id = 1342 then o.value_numeric end) as bmi,\n" +
-                    "max(case when o.concept_id = 1343 then o.value_numeric end) as muac_mm,\n" +
-                    "max(case when o.concept_id = 5085 then o.value_numeric end) as systolic_bp,\n" +
-                    "max(case when o.concept_id = 5086 then o.value_numeric end) as diastolic_bp,\n" +
-                    "max(case when o.concept_id = 5087 then o.value_numeric end) as pulse,\n" +
-                    "max(case when o.concept_id = 5088 then o.value_numeric end) as temperature,\n" +
-                    "max(case when o.concept_id = 5092 then o.value_numeric end) as spo2,\n" +
-                    "max(case when o.concept_id = 5242 then o.value_numeric end) as rr,\n" +
-                    "max(case when o.concept_id = 5089 then o.value_numeric end) as weight,\n" +
-                    "max(case when o.concept_id = 5090 then o.value_numeric end) as height\n" +
+                    "o.concept_id,\n" +
+                    "case  when o.concept_id=1342 then '1342AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=1343 then '1343AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5085 then '5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5086 then '5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5087 then '5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5088 then '5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5089 then '5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5090 then '5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5092 then '5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5242 then '5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    " end  kenyaemr_uuid,\n" +
+                    "o.obs_datetime,\n" +
+                    "o.value_numeric\n" +
                     "FROM amrs.obs o \n" +
                     "INNER JOIN amrs.encounter e using(encounter_id)\n" +
-                    "INNER JOIN amrs.location l on l.location_id = o.location_id \n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
                     "AND l.uuid IN(" + locations + ") \n" +
                     " AND o.person_id in ( " + pid + " )\n" +
@@ -1225,28 +1226,29 @@ public class MigrateCareData {
                     "e.encounter_datetime,\n" +
                     "e.visit_id,\n" +
                     "o.location_id,\n" +
-                    "max(o.obs_datetime) as obs_datetime,\n" +
-                    "max(case when o.concept_id = 9816 then o.value_numeric end) as height_age_zscore,\n" +
-                    "max(case when o.concept_id = 8238 then o.value_numeric end) as weight_height_zscore,\n" +
-                    "max(case when o.concept_id = 8239 then o.value_numeric end) as bmi_age_zscore,\n" +
-                    "max(case when o.concept_id = 1342 then o.value_numeric end) as bmi,\n" +
-                    "max(case when o.concept_id = 1343 then o.value_numeric end) as muac_mm,\n" +
-                    "max(case when o.concept_id = 5085 then o.value_numeric end) as systolic_bp,\n" +
-                    "max(case when o.concept_id = 5086 then o.value_numeric end) as diastolic_bp,\n" +
-                    "max(case when o.concept_id = 5087 then o.value_numeric end) as pulse,\n" +
-                    "max(case when o.concept_id = 5088 then o.value_numeric end) as temperature,\n" +
-                    "max(case when o.concept_id = 5092 then o.value_numeric end) as spo2,\n" +
-                    "max(case when o.concept_id = 5242 then o.value_numeric end) as rr,\n" +
-                    "max(case when o.concept_id = 5089 then o.value_numeric end) as weight,\n" +
-                    "max(case when o.concept_id = 5090 then o.value_numeric end) as height\n" +
+                    "o.concept_id,\n" +
+                    "case  when o.concept_id=1342 then '1342AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=1343 then '1343AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5085 then '5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5086 then '5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5087 then '5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5088 then '5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5089 then '5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5090 then '5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5092 then '5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "  when o.concept_id=5242 then '5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    " end  kenyaemr_uuid,\n" +
+                    "o.obs_datetime,\n" +
+                    "o.value_numeric\n" +
                     "FROM amrs.obs o \n" +
                     "INNER JOIN amrs.encounter e using(encounter_id)\n" +
-                    "INNER JOIN amrs.location l on l.location_id = o.location_id \n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
+
                     " AND l.uuid IN (" + locations + ") \n" +
                     " AND o.person_id  in (" + pid + ") \n" +
                     " AND o.encounter_id > " + prevEncounterID + "  \n" +
                     "GROUP BY o.person_id, o.encounter_id limit 10";
+
         }
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
@@ -1259,27 +1261,42 @@ public class MigrateCareData {
         x = rs.getRow();
         rs.beforeFirst();
         while (rs.next()) {
-            String patientId = rs.getString("person_id");
-            String encounterID = rs.getString("encounter_id");
-            String encounterDateTime = rs.getString("encounter_datetime");
-            String visitId = rs.getString("visit_id");
-            String locationId = rs.getString("location_id");
-            String obsDateTime = rs.getString("obs_datetime");
-            String heightAgeZscore = rs.getString("height_age_zscore");
-            String weightHeightZscore = rs.getString("weight_height_zscore");
-            String bmiAgeZscore = rs.getString("bmi_age_zscore");
-            String bmi = rs.getString("bmi");
-            String muacMm = rs.getString("muac_mm");
-            String systolicBp = rs.getString("systolic_bp");
-            String diastolicBp = rs.getString("diastolic_bp");
-            String pulse = rs.getString("pulse");
-            String temperature = rs.getString("temperature");
-            String spo2 = rs.getString("spo2");
-            String rr = rs.getString("rr");
-            String weight = rs.getString("weight");
-            String height = rs.getString("height");
 
-            List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterId(patientId, encounterID);
+             String patientId = rs.getString("person_id");
+             String encounterID = rs.getString("encounter_id");
+             String encounterDateTime = rs.getString("encounter_datetime");
+             String visitId = rs.getString("visit_id");
+             String locationId = rs.getString("location_id");
+             String obsDateTime = rs.getString("obs_datetime");
+             String obsValue = rs.getString("value_numeric");
+             String conceptid = rs.getString("concept_id");
+            String kenyaemr_uuid = rs.getString("kenyaemr_uuid");
+
+             String kenyaemrPatientUuid="";
+
+             List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+             if(amrsPatients.size()>0){
+                 kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+             }
+
+
+             /* String heightAgeZscore = rs.getString("height_age_zscore");
+             String weightHeightZscore = rs.getString("weight_height_zscore");
+             String bmiAgeZscore = rs.getString("bmi_age_zscore");
+             String bmi = rs.getString("bmi");
+             String muacMm = rs.getString("muac_mm");
+             String systolicBp = rs.getString("systolic_bp");
+             String diastolicBp = rs.getString("diastolic_bp");
+             String pulse = rs.getString("pulse");
+             String temperature = rs.getString("temperature");
+             String spo2 = rs.getString("spo2");
+             String rr = rs.getString("rr");
+             String weight = rs.getString("weight");
+             String height = rs.getString("height");
+            */
+
+
+            List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID,conceptid);
             if (amrsTriageList.isEmpty()) {
                 AMRSTriage at = new AMRSTriage();
                 at.setPatientId(patientId);
@@ -1288,7 +1305,11 @@ public class MigrateCareData {
                 at.setEncounterId(encounterID);
                 at.setLocationId(locationId);
                 at.setObsDateTime(obsDateTime);
-                at.setHeightAgeZscore(heightAgeZscore);
+                at.setValue(obsValue);
+                at.setConceptId(conceptid);
+                at.setKenyaemrEncounterUuid(kenyaemrPatientUuid);
+                at.setKenyaemConceptId(kenyaemr_uuid);
+                /*at.setHeightAgeZscore(heightAgeZscore);
                 at.setWeightHeightZscore(weightHeightZscore);
                 at.setBmiAgeZscore(bmiAgeZscore);
                 at.setBmi(bmi);
@@ -1300,14 +1321,18 @@ public class MigrateCareData {
                 at.setSpo2(spo2);
                 at.setRr(rr);
                 at.setWeight(weight);
-                at.setHeight(height);
+                at.setHeight(height);*/
                 at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
                 amrsTriageService.save(at);
-                CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
+
+                 CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices,amrsEncounterService,url,auth);
+                System.out.println("Patient_id" + patientId + "encounterID "+ encounterID);
+            }else{
+                System.out.println("Existing Patient_id " + patientId + "encounterID "+ encounterID);
 
             }
 
-            System.out.println("Patient_id" + patientId);
+
         }
     }
 
