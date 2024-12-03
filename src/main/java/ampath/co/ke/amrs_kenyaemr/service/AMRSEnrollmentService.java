@@ -1,6 +1,7 @@
 package ampath.co.ke.amrs_kenyaemr.service;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSEnrollments;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSObs;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
 import ampath.co.ke.amrs_kenyaemr.repositories.AMRSEnrollmentsRepository;
 import ampath.co.ke.amrs_kenyaemr.repositories.AMRSPatientsRespository;
@@ -26,6 +27,7 @@ public class AMRSEnrollmentService {
         return amrsEnrollmentsRepository.findByPatientId(pid);
     }
 
-    public void save(AMRSEnrollments ae) {
-    }
+    public AMRSEnrollments save(AMRSEnrollments dataset) {
+    return amrsEnrollmentsRepository.save(dataset);
+  }
 }
