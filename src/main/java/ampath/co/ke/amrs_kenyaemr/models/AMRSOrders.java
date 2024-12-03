@@ -108,6 +108,9 @@ public class AMRSOrders {
     @Column(name = "fulfiller_comment")
     private String fulfillerComment;
 
+
+    private String kenyaemrPatientUuid;
+
     @Column(name = "fulfiller_status")
     private String fulfillerStatus;
 
@@ -119,6 +122,8 @@ public class AMRSOrders {
 
     @Column(name = "kenyaemr_order_id")
     private Integer kenyaemrOrderId;
+
+    private String kenyaEmrEncounterUuid;
 
     public Integer getId() {
         return Id;
@@ -224,6 +229,14 @@ public class AMRSOrders {
         this.creator = creator;
     }
 
+    public String getKenyaEmrEncounterUuid() {
+        return kenyaEmrEncounterUuid;
+    }
+
+    public void setKenyaEmrEncounterUuid(String kenyaEmrEncounterUuid) {
+        this.kenyaEmrEncounterUuid = kenyaEmrEncounterUuid;
+    }
+
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
@@ -274,6 +287,14 @@ public class AMRSOrders {
 
     public String getAccessionNumber() {
         return accessionNumber;
+    }
+
+    public String getKenyaemrPatientUuid() {
+        return kenyaemrPatientUuid;
+    }
+
+    public void setKenyaemrPatientUuid(String kenyaemrPatientUuid) {
+        this.kenyaemrPatientUuid = kenyaemrPatientUuid;
     }
 
     public void setAccessionNumber(String accessionNumber) {
