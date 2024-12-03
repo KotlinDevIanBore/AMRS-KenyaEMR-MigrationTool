@@ -12,6 +12,7 @@ public class AMRSConceptReader {
     @Autowired
     AMRSMappingService amrsMappingService;
 
+
     public String translater(String amrsConceptId) {
         String kenyaEmrConceptUuid = "";
         List<AMRSMappings> amrsMappingsList = amrsMappingService.findByAmrsConceptID(amrsConceptId);
