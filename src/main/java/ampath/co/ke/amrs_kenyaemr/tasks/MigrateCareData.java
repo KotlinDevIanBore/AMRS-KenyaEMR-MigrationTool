@@ -53,9 +53,9 @@ public class MigrateCareData {
                     "       inner join amrs.location l on l.location_id = e.location_id\n" +
 
 
-                    "       and l.uuid in (" + locations + ") and pp.patient_program_id>=" + ppid + " and e.patient_id in ("+ pid +")  \n" + //and e. patient_id in ('1224605,1222698')
+                    "       and l.uuid in (" + locations + ") and pp.patient_program_id>=" + ppid + " and e.patient_id in (" + pid + ")  \n" + //and e. patient_id in ('1224605,1222698')
                     "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc";
-           // System.out.println("SQLs " + sql);
+            // System.out.println("SQLs " + sql);
 
         } else {
             sql = "select pp.patient_program_id, pp.patient_id, \n" +
@@ -939,7 +939,7 @@ public class MigrateCareData {
 
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
-       // System.out.println("locations " + sql);
+        // System.out.println("locations " + sql);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -989,9 +989,7 @@ public class MigrateCareData {
     }
 
 
-
-    public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService,AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-
+    public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
 
         String samplePatientList = AMRSSamples.getPersonIdList();
@@ -1006,13 +1004,13 @@ public class MigrateCareData {
         System.out.println("Patient Id " + pid);
 
 
-   System.out.println("Patient Id "+ pid);
+        System.out.println("Patient Id " + pid);
 
         String sql = "SELECT o.*, et.encounter_type_id, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid,\n" +
                 " NULL AS kenyaemr_order_id FROM amrs.orders o \n" +
                 " inner join amrs.encounter e on (e.encounter_id = o.encounter_id)\n" +
                 " inner join amrs.encounter_type et on (et.encounter_type_id = e.encounter_type)\n" +
-                " where  e.patient_id in ("+ samplePatientList +" ) order by o.date_created ASC "; //
+                " where  e.patient_id in (" + samplePatientList + " ) order by o.date_created ASC "; //
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
 
@@ -1076,24 +1074,23 @@ public class MigrateCareData {
                     kenyaemr_patient_uuid = "Not Found"; // add logic for missing patientkenyaemr_patient_uuid
                 }
 
-                String kenyaEmrEncounterUuid="";
+                String kenyaEmrEncounterUuid = "";
                 List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
-                if(!amrsEncounters.isEmpty()){
+                if (!amrsEncounters.isEmpty()) {
                     kenyaEmrEncounterUuid = amrsEncounters.get(0).getKenyaemrEncounterUuid();
                     ao.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
                 }
                 String justificationcode = "";
-                if(justification==null) {
-                    justification="11666";
+                if (justification == null) {
+                    justification = "11666";
                 }
-                    if (!justification.isEmpty()) {
-                        List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(justification);
-                        if (!amrsConceptMapper.isEmpty()) {
-                            justificationcode = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
+                if (!justification.isEmpty()) {
+                    List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(justification);
+                    if (!amrsConceptMapper.isEmpty()) {
+                        justificationcode = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
 
-                        }
                     }
-
+                }
 
 
 //                System.out.println("Patient " + kenyaemr_patient_uuid + " concept " + conceptId + " kenyaemr_concept_id " + kenyaemr_uuid + " justification" + justification + "Kenyaemr justicafiation " + justificationcode);
@@ -1243,22 +1240,22 @@ public class MigrateCareData {
         rs.beforeFirst();
         while (rs.next()) {
 
-             String patientId = rs.getString("person_id");
-             String encounterID = rs.getString("encounter_id");
-             String encounterDateTime = rs.getString("encounter_datetime");
-             String visitId = rs.getString("visit_id");
-             String locationId = rs.getString("location_id");
-             String obsDateTime = rs.getString("obs_datetime");
-             String obsValue = rs.getString("value_numeric");
-             String conceptid = rs.getString("concept_id");
+            String patientId = rs.getString("person_id");
+            String encounterID = rs.getString("encounter_id");
+            String encounterDateTime = rs.getString("encounter_datetime");
+            String visitId = rs.getString("visit_id");
+            String locationId = rs.getString("location_id");
+            String obsDateTime = rs.getString("obs_datetime");
+            String obsValue = rs.getString("value_numeric");
+            String conceptid = rs.getString("concept_id");
             String kenyaemr_uuid = rs.getString("kenyaemr_uuid");
 
-             String kenyaemrPatientUuid="";
+            String kenyaemrPatientUuid = "";
 
-             List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
-             if(amrsPatients.size()>0){
-                 kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
-             }
+            List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+            if (amrsPatients.size() > 0) {
+                kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+            }
 
 
              /* String heightAgeZscore = rs.getString("height_age_zscore");
@@ -1277,7 +1274,7 @@ public class MigrateCareData {
             */
 
 
-            List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID,conceptid);
+            List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID, conceptid);
             if (amrsTriageList.isEmpty()) {
                 AMRSTriage at = new AMRSTriage();
                 at.setPatientId(patientId);
@@ -1306,10 +1303,10 @@ public class MigrateCareData {
                 at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
                 amrsTriageService.save(at);
 
-                 CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices,amrsEncounterService,url,auth);
-                System.out.println("Patient_id" + patientId + "encounterID "+ encounterID);
-            }else{
-                System.out.println("Existing Patient_id " + patientId + "encounterID "+ encounterID);
+                CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
+                System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
+            } else {
+                System.out.println("Existing Patient_id " + patientId + "encounterID " + encounterID);
 
             }
 
@@ -1989,560 +1986,556 @@ public class MigrateCareData {
 
             System.out.println("Patient_id" + patientId);
         }
-  }
-
-  public static void programEnrollments(String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-
-    AMRSConceptReader amrsConceptReader = new AMRSConceptReader();
-
-    String sql = "";
-    List<AMRSEnrollments> amrsEnrollmentsList = amrsEnrollmentService.getAll();
-    String nextEncounterID = "";
-
-    List<Integer> numbers = Arrays.asList(
-      1187467, 1207817, 1212603, 1216267, 1225187, 1140933, 1185368,
-      1177985, 1189238, 1191232, 1199830, 1170791, 1174464, 1206185,
-      1176830, 1182705, 1209127, 1177104, 1177467, 1184252, 1192270,
-      1204250, 1212823, 1193179, 1177270, 1191005, 1198509, 1167355,
-      1178369, 1184092, 1189326, 1191369, 1203354, 1203531, 1209140,
-      1226657, 1172517, 1186701, 1195760, 1169969, 1178748, 1206865,
-      1215595, 1180696, 1186078, 1195200, 1177704, 1212906, 1209159,
-      1202124, 1205268, 1208071, 1211667, 1212173, 1220342, 1176467,
-      1178456, 1176379, 1177933, 1179157, 1185422, 1198117, 1203972,
-      1211635, 1185861, 1188709, 1192374, 1194786, 1200228, 1212351,
-      1222698, 198492, 1178019, 1187425, 1176820, 1170115, 1175708,
-      1153475, 1153527,1153618, 1153684, 1153703,1153725, 1153811,
-      1153922, 1153931, 1166345, 1167167, 1168996, 1174041, 1174884,
-      1177493, 1180808, 1182235, 1182433, 1187031, 1188132, 1190631,
-      1192399, 1193816, 1196144, 1196454, 1197444, 1199916, 1201312,
-      1202111, 1203658, 1207799, 1207926, 1207939, 1209301, 1226630, 1188938, 827082,
-      33052, 104614, 161550, 839201, 1161908, 1188870, 1170159, 1212828
-    );
-
-    String pist = numbers.toString();
-    String result = pist.substring(1, pist.length() - 1);
-
-
-    if (amrsEnrollmentsList.isEmpty()) {
-
-      sql = "select\n" +
-        "\t-- e.*,\n" +
-        "\te.patient_id,\n" +
-        "\te.encounter_id,\n" +
-        "\te.encounter_datetime,\n" +
-        "\t-- e.form_id,\n" +
-        "\t-- f.name,\n" +
-        "\tmax(case f.form_id when '15' then 164144 -- New\n" +
-        "     when o.concept_id = 10194 then 160563 --  'Transfer-In'\n" +
-        "     when f.form_id then 164931 -- Transit\n" +
-        "     else NULL end) as Patient_Type,\n" +
-        "\tmax(case when o.concept_id = 2051 and o.value_coded = 2047 then 160539 -- 'VCT'\n" +
-        "     when o.concept_id = 2051 and o.value_coded = 2240 then 162050 -- 'ccc'\n" +
-        "      when o.concept_id = 2051 and o.value_coded = 2177 then 162050 -- 'PITC Mappend to CCC'\n" +
-        "     when 'Medical out patient' then 160542\n" +
-        "     when o.concept_id = 2051 and o.value_coded = 1965 then 160542 -- 'OPD'\n" +
-        "     when 'Inpatient Adult' then 160536\n" +
-        "     when 'Inpatient Child' then 160537\n" +
-        "     when o.concept_id = 2051 and o.value_coded = 1776 then 160536 -- 'PMTCT'\n" +
-        "     when 'Mother Child Health' then 159937\n" +
-        "     when 'TB Clinic' then 160541\n" +
-        "     when 'Unknown' then 162050\n" +
-        "     when 'Other' then 5622 else o.value_coded end) as Entry_point ,\n" +
-        "\t-- null as TI_Facility,\n" +
-        "\tmax(case when o.concept_id = 7013 then o.value_datetime else null end) Date_first_enrolled_in_care,\n" +
-        "    fhs.transfer_in_date,\n" +
-        "    fhs.hiv_start_date as Date_started_art_at_transferring_facility,\n" +
-        "    null as Date_confirmed_hiv_positive,\n" +
-        "    null as Facility_confirmed_hiv_positive,\n" +
-        "    etl.get_arv_names(fhs.cur_arv_meds) as Baseline_arv_use,\n" +
-        "    /*(ecase enr.Purpose_of_baseline_arv_use when 'PMTCT' then 1148\n" +
-        "     when 'PEP' then 1691\n" +
-        "     when 'ART' then 1181 else NULL end) as Purpose_of_baseline_arv_use,\n" +
-        "    (case enr.Baseline_arv_regimen when 'AF2D (TDF + 3TC + ATV/r)' then 164512\n" +
-        "     when 'AF2A (TDF + 3TC + NVP)' then 162565\n" +
-        "     when 'AF2B (TDF + 3TC + EFV)' then 164505\n" +
-        "     when 'AF1A (AZT + 3TC + NVP' then 1652\n" +
-        "     when 'AF1B (AZT + 3TC + EFV)' then 160124\n" +
-        "     when 'AF4B (ABC + 3TC + EFV)' then 162563\n" +
-        "     when 'AF4A (ABC + 3TC + NVP)' then 162199\n" +
-        "     when 'CF2A (ABC + 3TC + NVP)' then 162199\n" +
-        "     when 'CF2D (ABC + 3TC + LPV/r)' then 162200\n" +
-        "     when 'CF2B (ABC + 3TC + EFV)' then 162563 else NULL end) as Baseline_arv_regimen,*/\n" +
-        "    fhs.cur_who_stage  as Baseline_arv_regimen_line,\n" +
-        "    fhs.rtc_date as Baseline_arv_date_last_used,\n" +
-        "    case fhs.cur_who_stage when '1' then 1204\n" +
-        "     when '2' then 1205\n" +
-        "     when '3' then 1206\n" +
-        "     when '4' then 1207\n" +
-        "     when 'Unknown' then 1067 else NULL end as Baseline_who_stage,\n" +
-        "    case \n" +
-        "    \twhen fhs.cd4_2 is not null then fhs.cd4_2\n" +
-        "    \telse fhs.cd4_1\n" +
-        "    end as Baseline_cd4_results,\n" +
-        "    case \n" +
-        "    \twhen fhs.cd4_2_date is not null then fhs.cd4_2_date\n" +
-        "    \telse fhs.cd4_1_date\n" +
-        "    end as Baseline_cd4_date,\n" +
-        "    case \n" +
-        "    \twhen fhs.vl_2 is not null then fhs.vl_2 \n" +
-        "    \telse fhs.vl_1\n" +
-        "    end as Baseline_vl_results,\n" +
-        "    case \n" +
-        "    \twhen fhs.vl_2_date is not null then fhs.vl_2_date\n" +
-        "    \telse fhs.vl_1_date \n" +
-        "    end as Baseline_vl_date,\n" +
-        "    case \n" +
-        "\t    when fhs.vl_2 <=200 then fhs.vl_2 \n" +
-        "\t    when fhs.vl_1 <=200 then fhs.vl_1 \n" +
-        "\t    else null\t\n" +
-        "    end as Baseline_vl_ldl_results,\n" +
-        "    case \n" +
-        "\t    when fhs.vl_2_date <=200 then fhs.vl_2_date \n" +
-        "\t    when fhs.vl_1_date <=200 then fhs.vl_1_date \n" +
-        "\t    else null\n" +
-        "    end as Baseline_vl_ldl_date,\n" +
-        "    null as Baseline_HBV_Infected,\n" +
-        "    case \n" +
-        "    \twhen fhs.on_tb_tx = 1 then 1\n" +
-        "    \telse 0\n" +
-        "    end as Baseline_TB_Infected,\n" +
-        "    CASE\n" +
-        "    \twhen fhs.is_pregnant = 1 then 1 \n" +
-        "    \telse 0\n" +
-        "    END as Baseline_Pregnant,\n" +
-        "    case \n" +
-        "    \twhen fhs.is_mother_breastfeeding = 1 then 1\n" +
-        "    \telse 0\n" +
-        "    end as Baseline_Breastfeeding,\n" +
-        "    fhs.weight as Baseline_Weight,\n" +
-        "    fhs.height as Baseline_Height,\n" +
-        "\tnull as Baseline_BMI,\n" +
-        "    null as Name_of_treatment_supporter,\n" +
-        "    null as Relationship_of_treatment_supporter,\n" +
-        "    null as reatment_supporter_telephone,\n" +
-        "    null as Treatment_supporter_address\n" +
-        "from\n" +
-        "\tamrs.encounter e\n" +
-        "inner join etl.flat_hiv_summary_v15b fhs on (fhs.person_id = e.patient_id)\n" +
-        "inner join amrs.obs o on\n" +
-        "\te.encounter_id = o.encounter_id\n" +
-        "inner join amrs.form f on\n" +
-        "\tf.form_id = e.form_id\n" +
-        "where\n" +
-        "\te.encounter_type in (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266)\n" +
-        "\tand e.location_id in (2, 336, 98)\n" +
-        "\tand e.voided = 0\n" +
-        "\tand o.concept_id in (2051, 7013)\n" +
-        "\tand fhs.is_clinical_encounter = 1 and e.patient_id in ("+ result +")\n" +
-        "group by\n" +
-        "\te.patient_id";
-    } else {
-      System.out.println("List" + amrsEnrollmentsList);
-      //            nextEncounterID = amrsRegimenSwitchList.get(0).getEncounterID();
-      sql = "select\n" +
-        "\t-- e.*,\n" +
-        "\te.patient_id,\n" +
-        "\te.encounter_id,\n" +
-        "\te.encounter_datetime,\n" +
-        "\t-- e.form_id,\n" +
-        "\t-- f.name,\n" +
-        "\tmax(case f.form_id when '15' then 164144 -- New\n" +
-        "     when o.concept_id = 10194 then 160563 --  'Transfer-In'\n" +
-        "     when f.form_id then 164931 -- Transit\n" +
-        "     else NULL end) as Patient_Type,\n" +
-        "\tmax(case when o.concept_id = 2051 and o.value_coded = 2047 then 160539 -- 'VCT'\n" +
-        "     when o.concept_id = 2051 and o.value_coded = 2240 then 162050 -- 'ccc'\n" +
-        "      when o.concept_id = 2051 and o.value_coded = 2177 then 162050 -- 'PITC Mappend to CCC'\n" +
-        "     when 'Medical out patient' then 160542\n" +
-        "     when o.concept_id = 2051 and o.value_coded = 1965 then 160542 -- 'OPD'\n" +
-        "     when 'Inpatient Adult' then 160536\n" +
-        "     when 'Inpatient Child' then 160537\n" +
-        "     when o.concept_id = 2051 and o.value_coded = 1776 then 160536 -- 'PMTCT'\n" +
-        "     when 'Mother Child Health' then 159937\n" +
-        "     when 'TB Clinic' then 160541\n" +
-        "     when 'Unknown' then 162050\n" +
-        "     when 'Other' then 5622 else o.value_coded end) as Entry_point ,\n" +
-        "\t-- null as TI_Facility,\n" +
-        "\tmax(case when o.concept_id = 7013 then o.value_datetime else null end) Date_first_enrolled_in_care,\n" +
-        "    fhs.transfer_in_date,\n" +
-        "    fhs.hiv_start_date as Date_started_art_at_transferring_facility,\n" +
-        "    null as Date_confirmed_hiv_positive,\n" +
-        "    null as Facility_confirmed_hiv_positive,\n" +
-        "    etl.get_arv_names(fhs.cur_arv_meds) as Baseline_arv_use,\n" +
-        "    /*(ecase enr.Purpose_of_baseline_arv_use when 'PMTCT' then 1148\n" +
-        "     when 'PEP' then 1691\n" +
-        "     when 'ART' then 1181 else NULL end) as Purpose_of_baseline_arv_use,\n" +
-        "    (case enr.Baseline_arv_regimen when 'AF2D (TDF + 3TC + ATV/r)' then 164512\n" +
-        "     when 'AF2A (TDF + 3TC + NVP)' then 162565\n" +
-        "     when 'AF2B (TDF + 3TC + EFV)' then 164505\n" +
-        "     when 'AF1A (AZT + 3TC + NVP' then 1652\n" +
-        "     when 'AF1B (AZT + 3TC + EFV)' then 160124\n" +
-        "     when 'AF4B (ABC + 3TC + EFV)' then 162563\n" +
-        "     when 'AF4A (ABC + 3TC + NVP)' then 162199\n" +
-        "     when 'CF2A (ABC + 3TC + NVP)' then 162199\n" +
-        "     when 'CF2D (ABC + 3TC + LPV/r)' then 162200\n" +
-        "     when 'CF2B (ABC + 3TC + EFV)' then 162563 else NULL end) as Baseline_arv_regimen,*/\n" +
-        "    fhs.cur_who_stage  as Baseline_arv_regimen_line,\n" +
-        "    fhs.rtc_date as Baseline_arv_date_last_used,\n" +
-        "    case fhs.cur_who_stage when '1' then 1204\n" +
-        "     when '2' then 1205\n" +
-        "     when '3' then 1206\n" +
-        "     when '4' then 1207\n" +
-        "     when 'Unknown' then 1067 else NULL end as Baseline_who_stage,\n" +
-        "    case \n" +
-        "    \twhen fhs.cd4_2 is not null then fhs.cd4_2\n" +
-        "    \telse fhs.cd4_1\n" +
-        "    end as Baseline_cd4_results,\n" +
-        "    case \n" +
-        "    \twhen fhs.cd4_2_date is not null then fhs.cd4_2_date\n" +
-        "    \telse fhs.cd4_1_date\n" +
-        "    end as Baseline_cd4_date,\n" +
-        "    case \n" +
-        "    \twhen fhs.vl_2 is not null then fhs.vl_2 \n" +
-        "    \telse fhs.vl_1\n" +
-        "    end as Baseline_vl_results,\n" +
-        "    case \n" +
-        "    \twhen fhs.vl_2_date is not null then fhs.vl_2_date\n" +
-        "    \telse fhs.vl_1_date \n" +
-        "    end as Baseline_vl_date,\n" +
-        "    case \n" +
-        "\t    when fhs.vl_2 <=200 then fhs.vl_2 \n" +
-        "\t    when fhs.vl_1 <=200 then fhs.vl_1 \n" +
-        "\t    else null\t\n" +
-        "    end as Baseline_vl_ldl_results,\n" +
-        "    case \n" +
-        "\t    when fhs.vl_2_date <=200 then fhs.vl_2_date \n" +
-        "\t    when fhs.vl_1_date <=200 then fhs.vl_1_date \n" +
-        "\t    else null\n" +
-        "    end as Baseline_vl_ldl_date,\n" +
-        "    null as Baseline_HBV_Infected,\n" +
-        "    case \n" +
-        "    \twhen fhs.on_tb_tx = 1 then 1\n" +
-        "    \telse 0\n" +
-        "    end as Baseline_TB_Infected,\n" +
-        "    CASE\n" +
-        "    \twhen fhs.is_pregnant = 1 then 1 \n" +
-        "    \telse 0\n" +
-        "    END as Baseline_Pregnant,\n" +
-        "    case \n" +
-        "    \twhen fhs.is_mother_breastfeeding = 1 then 1\n" +
-        "    \telse 0\n" +
-        "    end as Baseline_Breastfeeding,\n" +
-        "    fhs.weight as Baseline_Weight,\n" +
-        "    fhs.height as Baseline_Height,\n" +
-        "\tnull as Baseline_BMI,\n" +
-        "    null as Name_of_treatment_supporter,\n" +
-        "    null as Relationship_of_treatment_supporter,\n" +
-        "    null as reatment_supporter_telephone,\n" +
-        "    null as Treatment_supporter_address\n" +
-        "from\n" +
-        "\tamrs.encounter e\n" +
-        "inner join etl.flat_hiv_summary_v15b fhs on (fhs.person_id = e.patient_id)\n" +
-        "inner join amrs.obs o on\n" +
-        "\te.encounter_id = o.encounter_id\n" +
-        "inner join amrs.form f on\n" +
-        "\tf.form_id = e.form_id\n" +
-        "where\n" +
-        "\te.encounter_type in (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266)\n" +
-        "\tand e.location_id in (2, 336, 98)\n" +
-        "\tand e.voided = 0\n" +
-        "\tand o.concept_id in (2051, 7013)\n" +
-        "\tand fhs.is_clinical_encounter = 1 and e.patient_id in ("+ result +")\n" +
-        "group by\n" +
-        "\te.patient_id";
-    }
-    System.out.println("regimenSwitchList" + sql);
-    System.out.println("locations " + locations + " parentUUID " + parentUUID);
-    Connection con = DriverManager.getConnection(server, username, password);
-    int x = 0;
-    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-      ResultSet.CONCUR_READ_ONLY);
-    ResultSet rs = stmt.executeQuery(sql);
-    rs.last();
-    x = rs.getRow();
-    rs.beforeFirst();
-    while (rs.next()) {
-      String patientId = rs.getString("patient_id");
-
-      if (amrsEnrollmentsList.isEmpty()) {
-
-        AMRSEnrollments ae = new AMRSEnrollments();
-
-        ae.setPatientId(rs.getString("patient_id"));
-        ae.setEncounterId(rs.getString("encounter_id"));
-        ae.setEncounterDatetime(rs.getString("encounter_datetime"));
-        ae.setPatientType(rs.getString("Patient_Type"));
-        ae.setEntryPoint(rs.getString("Entry_point"));
-        ae.setTransferInDate(rs.getString("transfer_in_date"));
-        ae.setDateStartedArtAtTransferringFacility(rs.getString("Date_started_art_at_transferring_facility"));
-        ae.setBaselineArvUse(rs.getString("Baseline_arv_use"));
-        ae.setBaselineArvRegimenLine(rs.getString("Baseline_arv_regimen_line"));
-        ae.setBaselineArvDateLastUsed(rs.getString("Baseline_arv_date_last_used"));
-        ae.setBaselineWhoStage(rs.getString("Baseline_who_stage"));
-        ae.setBaselineCd4Results(rs.getString("Baseline_cd4_results"));
-        ae.setBaselineCd4Date(rs.getString("Baseline_cd4_date"));
-        ae.setBaselineVlResults(rs.getString("Baseline_vl_results"));
-        ae.setBaselineVlDate(rs.getString("Baseline_vl_date"));
-        ae.setBaselineTbInfected(rs.getInt("Baseline_TB_Infected") == 1 ? "Yes" : "No");
-        ae.setBaselinePregnant(rs.getInt("Baseline_Pregnant") == 1 ? "Yes" : "No");
-        ae.setBaselineBreastFeeding(rs.getInt("Baseline_Breastfeeding") == 1 ? "Yes" : "No");
-        ae.setBaselineWeight(rs.getString("Baseline_Weight"));
-        ae.setBaselineHeight(rs.getString("Baseline_Height"));
-
-        amrsEnrollmentService.save(ae);
-
-        NewEnrollmentPayload.enrollments(amrsEnrollmentService, amrsEncounterService, url, auth);
-      }
-
-      System.out.println("Patient_id" + patientId);
-    }
-  }
-
-
     }
 
+    public static void programEnrollments(String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+        AMRSConceptReader amrsConceptReader = new AMRSConceptReader();
+
+        String sql = "";
+        List<AMRSEnrollments> amrsEnrollmentsList = amrsEnrollmentService.getAll();
+        String nextEncounterID = "";
+
+        List<Integer> numbers = Arrays.asList(
+                1187467, 1207817, 1212603, 1216267, 1225187, 1140933, 1185368,
+                1177985, 1189238, 1191232, 1199830, 1170791, 1174464, 1206185,
+                1176830, 1182705, 1209127, 1177104, 1177467, 1184252, 1192270,
+                1204250, 1212823, 1193179, 1177270, 1191005, 1198509, 1167355,
+                1178369, 1184092, 1189326, 1191369, 1203354, 1203531, 1209140,
+                1226657, 1172517, 1186701, 1195760, 1169969, 1178748, 1206865,
+                1215595, 1180696, 1186078, 1195200, 1177704, 1212906, 1209159,
+                1202124, 1205268, 1208071, 1211667, 1212173, 1220342, 1176467,
+                1178456, 1176379, 1177933, 1179157, 1185422, 1198117, 1203972,
+                1211635, 1185861, 1188709, 1192374, 1194786, 1200228, 1212351,
+                1222698, 198492, 1178019, 1187425, 1176820, 1170115, 1175708,
+                1153475, 1153527, 1153618, 1153684, 1153703, 1153725, 1153811,
+                1153922, 1153931, 1166345, 1167167, 1168996, 1174041, 1174884,
+                1177493, 1180808, 1182235, 1182433, 1187031, 1188132, 1190631,
+                1192399, 1193816, 1196144, 1196454, 1197444, 1199916, 1201312,
+                1202111, 1203658, 1207799, 1207926, 1207939, 1209301, 1226630, 1188938, 827082,
+                33052, 104614, 161550, 839201, 1161908, 1188870, 1170159, 1212828
+        );
+
+        String pist = numbers.toString();
+        String result = pist.substring(1, pist.length() - 1);
 
 
-public static void patientStatus(String server, String username, String password, String locations, String parentUUID, AMRSPatientStatusService amrsPatientStatusService, AMRSConceptMappingService amrsConceptMappingService,AMRSPatientServices amrsPatientServices ,String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        if (amrsEnrollmentsList.isEmpty()) {
 
-    String samplePatientList = AMRSSamples.getPersonIdList();
-
-    System.out.println("Sample Clients " + samplePatientList);
-    String sql = "";
-    List<AMRSPatientStatus> amrsCivilStatusList = amrsPatientStatusService.findFirstByOrderByIdDesc();
-    String nextEncounterID = "";
-    if (amrsCivilStatusList.isEmpty()) {
-
-        sql = "SELECT  \n" +
-                "                     pa.person_id, \n" +
-                "                    pt.person_attribute_type_id, \n" +
-                "                    case when pt.person_attribute_type_id =5 then '1054' \n" +
-                "                    when pt.person_attribute_type_id =42 then '1542' \n" +
-                "                    when pt.person_attribute_type_id =73 then '1712' \n" +
-                "                    end kenyaemr_concept, \n" +
-                "                    case when pt.person_attribute_type_id =5 then '1054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pt.person_attribute_type_id =42 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pt.person_attribute_type_id =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    end kenyaemr_concept_uuid, \n" +
-                "                    pt.name, \n" +
-                "                    cn.name as name_value,\n" +
-                "                    pa.value,\n" +
-                "                    case when pa.value =5555 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pa.value =1966 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pa.value =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pa.value = 1059 then '1059AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1057 then '1057AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' -- never married / single\n" +
-                "                    when pa.value = 1175 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1056 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1055 then '5555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1060 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5618 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6290 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1670 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 10479 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1058 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value =  8714 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1967 then '1538AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8711 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1968 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1966 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6966 then '159466AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6284 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1971 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6408 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1832 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8589 then '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6280 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1969 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1970 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6580 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5619 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value =  6401 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1678 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8407 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 10368 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 10369 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 11283 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1496 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5507 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8713 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8710 then  '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 12263 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 12265 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 12262 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 12264 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1602 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1604 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1600 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6216 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6214 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6215 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1601 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 7583 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5629 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1603 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 7549 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    end kenyaemr_value_uuid, \n" +
-                "                    pa.date_created  \n" +
-                "                     \n" +
-                "                FROM \n" +
-                "                    amrs.person_attribute pa \n" +
-                "                        INNER JOIN \n" +
-                "                    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5) \n" +
-                "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
-                "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
-                "                WHERE \n" +
-                "                       pa.person_id IN ("+ samplePatientList +") \n" +
-                "                        AND  \n" +
-                " pa.voided = 0 order by  pa.person_id  asc";
-
-
-    } else {
-        System.out.println("List" + amrsCivilStatusList);
-//            nextEncounterID = amrs.get(0).getEncounterID();
-        sql = "SELECT  \n" +
-                "                     pa.person_id, \n" +
-                "                    pt.person_attribute_type_id, \n" +
-                "                    case when pt.person_attribute_type_id =5 then '1054' \n" +
-                "                    when pt.person_attribute_type_id =42 then '1542' \n" +
-                "                    when pt.person_attribute_type_id =73 then '1712' \n" +
-                "                    end kenyaemr_concept, \n" +
-                "                    case when pt.person_attribute_type_id =5 then '1054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pt.person_attribute_type_id =42 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pt.person_attribute_type_id =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    end kenyaemr_concept_uuid, \n" +
-                "                    pt.name, \n" +
-                "                    cn.name as name_value,\n" +
-                "                    pa.value,\n" +
-                "                    case when pa.value =5555 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pa.value =1966 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pa.value =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                "                    when pa.value = 1059 then '1059AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1057 then '1057AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' -- never married / single\n" +
-                "                    when pa.value = 1175 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1056 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1055 then '5555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1060 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5618 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6290 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1670 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 10479 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1058 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value =  8714 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1967 then '1538AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8711 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1968 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1966 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6966 then '159466AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6284 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1971 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6408 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1832 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8589 then '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6280 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1969 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1970 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6580 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5619 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value =  6401 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1678 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8407 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 10368 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 10369 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 11283 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1496 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5507 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8713 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 8710 then  '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 12263 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 12265 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 12262 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 12264 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1602 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1604 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1600 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6216 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6214 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 6215 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1601 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 7583 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 5629 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 1603 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    when pa.value = 7549 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                "                    end kenyaemr_value_uuid, \n" +
-                "                    pa.date_created  \n" +
-                "                     \n" +
-                "                FROM \n" +
-                "                    amrs.person_attribute pa \n" +
-                "                        INNER JOIN \n" +
-                "                    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5) \n" +
-                "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
-                "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
-                "                WHERE \n" +
-                "                       pa.person_id IN ("+ samplePatientList +") \n" +
-                "                        AND pa.voided=0  and   \n" +
-                " pa.voided = 0 order by  pa.person_id  asc";
-    }
-    System.out.println("regimenSwitchList" + sql);
-    System.out.println("locations " + locations + " parentUUID " + parentUUID);
-    Connection con = DriverManager.getConnection(server, username, password);
-    int x = 0;
-    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-            ResultSet.CONCUR_READ_ONLY);
-    ResultSet rs = stmt.executeQuery(sql);
-    rs.last();
-    x = rs.getRow();
-    rs.beforeFirst();
-    while (rs.next()) {
-        String personId = rs.getString("person_id");
-        String personAttributeTypeId = rs.getString("person_attribute_type_id");
-        String kenyaEmrConcept = rs.getString("kenyaemr_concept");
-        String name = rs.getString("name");
-        String value = rs.getString("value");
-        String kenyaemr_concept_uuid = rs.getString("kenyaemr_concept_uuid");
-        String kenyaemr_value_uuid = rs.getString("kenyaemr_value_uuid");
-        String name_value = rs.getString("name_value");
-        String patientid = rs.getString("person_id");
-        String date_created = rs.getString("date_created");
-
-        List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientid);
-        String kenyaemrPatientUuid="";
-        if(amrsPatients.size()>0){
-            kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+            sql = "select\n" +
+                    "\t-- e.*,\n" +
+                    "\te.patient_id,\n" +
+                    "\te.encounter_id,\n" +
+                    "\te.encounter_datetime,\n" +
+                    "\t-- e.form_id,\n" +
+                    "\t-- f.name,\n" +
+                    "\tmax(case f.form_id when '15' then 164144 -- New\n" +
+                    "     when o.concept_id = 10194 then 160563 --  'Transfer-In'\n" +
+                    "     when f.form_id then 164931 -- Transit\n" +
+                    "     else NULL end) as Patient_Type,\n" +
+                    "\tmax(case when o.concept_id = 2051 and o.value_coded = 2047 then 160539 -- 'VCT'\n" +
+                    "     when o.concept_id = 2051 and o.value_coded = 2240 then 162050 -- 'ccc'\n" +
+                    "      when o.concept_id = 2051 and o.value_coded = 2177 then 162050 -- 'PITC Mappend to CCC'\n" +
+                    "     when 'Medical out patient' then 160542\n" +
+                    "     when o.concept_id = 2051 and o.value_coded = 1965 then 160542 -- 'OPD'\n" +
+                    "     when 'Inpatient Adult' then 160536\n" +
+                    "     when 'Inpatient Child' then 160537\n" +
+                    "     when o.concept_id = 2051 and o.value_coded = 1776 then 160536 -- 'PMTCT'\n" +
+                    "     when 'Mother Child Health' then 159937\n" +
+                    "     when 'TB Clinic' then 160541\n" +
+                    "     when 'Unknown' then 162050\n" +
+                    "     when 'Other' then 5622 else o.value_coded end) as Entry_point ,\n" +
+                    "\t-- null as TI_Facility,\n" +
+                    "\tmax(case when o.concept_id = 7013 then o.value_datetime else null end) Date_first_enrolled_in_care,\n" +
+                    "    fhs.transfer_in_date,\n" +
+                    "    fhs.hiv_start_date as Date_started_art_at_transferring_facility,\n" +
+                    "    null as Date_confirmed_hiv_positive,\n" +
+                    "    null as Facility_confirmed_hiv_positive,\n" +
+                    "    etl.get_arv_names(fhs.cur_arv_meds) as Baseline_arv_use,\n" +
+                    "    /*(ecase enr.Purpose_of_baseline_arv_use when 'PMTCT' then 1148\n" +
+                    "     when 'PEP' then 1691\n" +
+                    "     when 'ART' then 1181 else NULL end) as Purpose_of_baseline_arv_use,\n" +
+                    "    (case enr.Baseline_arv_regimen when 'AF2D (TDF + 3TC + ATV/r)' then 164512\n" +
+                    "     when 'AF2A (TDF + 3TC + NVP)' then 162565\n" +
+                    "     when 'AF2B (TDF + 3TC + EFV)' then 164505\n" +
+                    "     when 'AF1A (AZT + 3TC + NVP' then 1652\n" +
+                    "     when 'AF1B (AZT + 3TC + EFV)' then 160124\n" +
+                    "     when 'AF4B (ABC + 3TC + EFV)' then 162563\n" +
+                    "     when 'AF4A (ABC + 3TC + NVP)' then 162199\n" +
+                    "     when 'CF2A (ABC + 3TC + NVP)' then 162199\n" +
+                    "     when 'CF2D (ABC + 3TC + LPV/r)' then 162200\n" +
+                    "     when 'CF2B (ABC + 3TC + EFV)' then 162563 else NULL end) as Baseline_arv_regimen,*/\n" +
+                    "    fhs.cur_who_stage  as Baseline_arv_regimen_line,\n" +
+                    "    fhs.rtc_date as Baseline_arv_date_last_used,\n" +
+                    "    case fhs.cur_who_stage when '1' then 1204\n" +
+                    "     when '2' then 1205\n" +
+                    "     when '3' then 1206\n" +
+                    "     when '4' then 1207\n" +
+                    "     when 'Unknown' then 1067 else NULL end as Baseline_who_stage,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.cd4_2 is not null then fhs.cd4_2\n" +
+                    "    \telse fhs.cd4_1\n" +
+                    "    end as Baseline_cd4_results,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.cd4_2_date is not null then fhs.cd4_2_date\n" +
+                    "    \telse fhs.cd4_1_date\n" +
+                    "    end as Baseline_cd4_date,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.vl_2 is not null then fhs.vl_2 \n" +
+                    "    \telse fhs.vl_1\n" +
+                    "    end as Baseline_vl_results,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.vl_2_date is not null then fhs.vl_2_date\n" +
+                    "    \telse fhs.vl_1_date \n" +
+                    "    end as Baseline_vl_date,\n" +
+                    "    case \n" +
+                    "\t    when fhs.vl_2 <=200 then fhs.vl_2 \n" +
+                    "\t    when fhs.vl_1 <=200 then fhs.vl_1 \n" +
+                    "\t    else null\t\n" +
+                    "    end as Baseline_vl_ldl_results,\n" +
+                    "    case \n" +
+                    "\t    when fhs.vl_2_date <=200 then fhs.vl_2_date \n" +
+                    "\t    when fhs.vl_1_date <=200 then fhs.vl_1_date \n" +
+                    "\t    else null\n" +
+                    "    end as Baseline_vl_ldl_date,\n" +
+                    "    null as Baseline_HBV_Infected,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.on_tb_tx = 1 then 1\n" +
+                    "    \telse 0\n" +
+                    "    end as Baseline_TB_Infected,\n" +
+                    "    CASE\n" +
+                    "    \twhen fhs.is_pregnant = 1 then 1 \n" +
+                    "    \telse 0\n" +
+                    "    END as Baseline_Pregnant,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.is_mother_breastfeeding = 1 then 1\n" +
+                    "    \telse 0\n" +
+                    "    end as Baseline_Breastfeeding,\n" +
+                    "    fhs.weight as Baseline_Weight,\n" +
+                    "    fhs.height as Baseline_Height,\n" +
+                    "\tnull as Baseline_BMI,\n" +
+                    "    null as Name_of_treatment_supporter,\n" +
+                    "    null as Relationship_of_treatment_supporter,\n" +
+                    "    null as reatment_supporter_telephone,\n" +
+                    "    null as Treatment_supporter_address\n" +
+                    "from\n" +
+                    "\tamrs.encounter e\n" +
+                    "inner join etl.flat_hiv_summary_v15b fhs on (fhs.person_id = e.patient_id)\n" +
+                    "inner join amrs.obs o on\n" +
+                    "\te.encounter_id = o.encounter_id\n" +
+                    "inner join amrs.form f on\n" +
+                    "\tf.form_id = e.form_id\n" +
+                    "where\n" +
+                    "\te.encounter_type in (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266)\n" +
+                    "\tand e.location_id in (2, 336, 98)\n" +
+                    "\tand e.voided = 0\n" +
+                    "\tand o.concept_id in (2051, 7013)\n" +
+                    "\tand fhs.is_clinical_encounter = 1 and e.patient_id in (" + result + ")\n" +
+                    "group by\n" +
+                    "\te.patient_id";
+        } else {
+            System.out.println("List" + amrsEnrollmentsList);
+            //            nextEncounterID = amrsRegimenSwitchList.get(0).getEncounterID();
+            sql = "select\n" +
+                    "\t-- e.*,\n" +
+                    "\te.patient_id,\n" +
+                    "\te.encounter_id,\n" +
+                    "\te.encounter_datetime,\n" +
+                    "\t-- e.form_id,\n" +
+                    "\t-- f.name,\n" +
+                    "\tmax(case f.form_id when '15' then 164144 -- New\n" +
+                    "     when o.concept_id = 10194 then 160563 --  'Transfer-In'\n" +
+                    "     when f.form_id then 164931 -- Transit\n" +
+                    "     else NULL end) as Patient_Type,\n" +
+                    "\tmax(case when o.concept_id = 2051 and o.value_coded = 2047 then 160539 -- 'VCT'\n" +
+                    "     when o.concept_id = 2051 and o.value_coded = 2240 then 162050 -- 'ccc'\n" +
+                    "      when o.concept_id = 2051 and o.value_coded = 2177 then 162050 -- 'PITC Mappend to CCC'\n" +
+                    "     when 'Medical out patient' then 160542\n" +
+                    "     when o.concept_id = 2051 and o.value_coded = 1965 then 160542 -- 'OPD'\n" +
+                    "     when 'Inpatient Adult' then 160536\n" +
+                    "     when 'Inpatient Child' then 160537\n" +
+                    "     when o.concept_id = 2051 and o.value_coded = 1776 then 160536 -- 'PMTCT'\n" +
+                    "     when 'Mother Child Health' then 159937\n" +
+                    "     when 'TB Clinic' then 160541\n" +
+                    "     when 'Unknown' then 162050\n" +
+                    "     when 'Other' then 5622 else o.value_coded end) as Entry_point ,\n" +
+                    "\t-- null as TI_Facility,\n" +
+                    "\tmax(case when o.concept_id = 7013 then o.value_datetime else null end) Date_first_enrolled_in_care,\n" +
+                    "    fhs.transfer_in_date,\n" +
+                    "    fhs.hiv_start_date as Date_started_art_at_transferring_facility,\n" +
+                    "    null as Date_confirmed_hiv_positive,\n" +
+                    "    null as Facility_confirmed_hiv_positive,\n" +
+                    "    etl.get_arv_names(fhs.cur_arv_meds) as Baseline_arv_use,\n" +
+                    "    /*(ecase enr.Purpose_of_baseline_arv_use when 'PMTCT' then 1148\n" +
+                    "     when 'PEP' then 1691\n" +
+                    "     when 'ART' then 1181 else NULL end) as Purpose_of_baseline_arv_use,\n" +
+                    "    (case enr.Baseline_arv_regimen when 'AF2D (TDF + 3TC + ATV/r)' then 164512\n" +
+                    "     when 'AF2A (TDF + 3TC + NVP)' then 162565\n" +
+                    "     when 'AF2B (TDF + 3TC + EFV)' then 164505\n" +
+                    "     when 'AF1A (AZT + 3TC + NVP' then 1652\n" +
+                    "     when 'AF1B (AZT + 3TC + EFV)' then 160124\n" +
+                    "     when 'AF4B (ABC + 3TC + EFV)' then 162563\n" +
+                    "     when 'AF4A (ABC + 3TC + NVP)' then 162199\n" +
+                    "     when 'CF2A (ABC + 3TC + NVP)' then 162199\n" +
+                    "     when 'CF2D (ABC + 3TC + LPV/r)' then 162200\n" +
+                    "     when 'CF2B (ABC + 3TC + EFV)' then 162563 else NULL end) as Baseline_arv_regimen,*/\n" +
+                    "    fhs.cur_who_stage  as Baseline_arv_regimen_line,\n" +
+                    "    fhs.rtc_date as Baseline_arv_date_last_used,\n" +
+                    "    case fhs.cur_who_stage when '1' then 1204\n" +
+                    "     when '2' then 1205\n" +
+                    "     when '3' then 1206\n" +
+                    "     when '4' then 1207\n" +
+                    "     when 'Unknown' then 1067 else NULL end as Baseline_who_stage,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.cd4_2 is not null then fhs.cd4_2\n" +
+                    "    \telse fhs.cd4_1\n" +
+                    "    end as Baseline_cd4_results,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.cd4_2_date is not null then fhs.cd4_2_date\n" +
+                    "    \telse fhs.cd4_1_date\n" +
+                    "    end as Baseline_cd4_date,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.vl_2 is not null then fhs.vl_2 \n" +
+                    "    \telse fhs.vl_1\n" +
+                    "    end as Baseline_vl_results,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.vl_2_date is not null then fhs.vl_2_date\n" +
+                    "    \telse fhs.vl_1_date \n" +
+                    "    end as Baseline_vl_date,\n" +
+                    "    case \n" +
+                    "\t    when fhs.vl_2 <=200 then fhs.vl_2 \n" +
+                    "\t    when fhs.vl_1 <=200 then fhs.vl_1 \n" +
+                    "\t    else null\t\n" +
+                    "    end as Baseline_vl_ldl_results,\n" +
+                    "    case \n" +
+                    "\t    when fhs.vl_2_date <=200 then fhs.vl_2_date \n" +
+                    "\t    when fhs.vl_1_date <=200 then fhs.vl_1_date \n" +
+                    "\t    else null\n" +
+                    "    end as Baseline_vl_ldl_date,\n" +
+                    "    null as Baseline_HBV_Infected,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.on_tb_tx = 1 then 1\n" +
+                    "    \telse 0\n" +
+                    "    end as Baseline_TB_Infected,\n" +
+                    "    CASE\n" +
+                    "    \twhen fhs.is_pregnant = 1 then 1 \n" +
+                    "    \telse 0\n" +
+                    "    END as Baseline_Pregnant,\n" +
+                    "    case \n" +
+                    "    \twhen fhs.is_mother_breastfeeding = 1 then 1\n" +
+                    "    \telse 0\n" +
+                    "    end as Baseline_Breastfeeding,\n" +
+                    "    fhs.weight as Baseline_Weight,\n" +
+                    "    fhs.height as Baseline_Height,\n" +
+                    "\tnull as Baseline_BMI,\n" +
+                    "    null as Name_of_treatment_supporter,\n" +
+                    "    null as Relationship_of_treatment_supporter,\n" +
+                    "    null as reatment_supporter_telephone,\n" +
+                    "    null as Treatment_supporter_address\n" +
+                    "from\n" +
+                    "\tamrs.encounter e\n" +
+                    "inner join etl.flat_hiv_summary_v15b fhs on (fhs.person_id = e.patient_id)\n" +
+                    "inner join amrs.obs o on\n" +
+                    "\te.encounter_id = o.encounter_id\n" +
+                    "inner join amrs.form f on\n" +
+                    "\tf.form_id = e.form_id\n" +
+                    "where\n" +
+                    "\te.encounter_type in (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266)\n" +
+                    "\tand e.location_id in (2, 336, 98)\n" +
+                    "\tand e.voided = 0\n" +
+                    "\tand o.concept_id in (2051, 7013)\n" +
+                    "\tand fhs.is_clinical_encounter = 1 and e.patient_id in (" + result + ")\n" +
+                    "group by\n" +
+                    "\te.patient_id";
         }
+        System.out.println("regimenSwitchList" + sql);
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String patientId = rs.getString("patient_id");
 
-List<AMRSPatientStatus> amrsPatientStatusList = amrsPatientStatusService.findByPersonIdAndPersonAttributeTypeId(patientid,personAttributeTypeId);
+            if (amrsEnrollmentsList.isEmpty()) {
 
-        if (amrsPatientStatusList.size() ==0) {
+                AMRSEnrollments ae = new AMRSEnrollments();
 
-            AMRSPatientStatus cs = new AMRSPatientStatus();
-            cs.setPersonId(personId);
-            cs.setPersonAttributeTypeId(personAttributeTypeId);
-            cs.setKenyaEmrConcept(kenyaEmrConcept);
-            cs.setName(name);
-            cs.setValue(value);
-            cs.setKenyaEmrConceptUuid(kenyaemr_concept_uuid);
-            cs.setKenyaEmrValueUuid(kenyaemr_value_uuid);
-            cs.setValueName(name_value);
-            cs.setKenyaPatientUuid(kenyaemrPatientUuid);
-            cs.setObsDateTime(date_created);
-            System.out.println("Tumefika Hapa!!!" + parentUUID);
-            amrsPatientStatusService.save(cs);
-            if((!(kenyaemrPatientUuid ==null))) {
-                CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
+                ae.setPatientId(rs.getString("patient_id"));
+                ae.setEncounterId(rs.getString("encounter_id"));
+                ae.setEncounterDatetime(rs.getString("encounter_datetime"));
+                ae.setPatientType(rs.getString("Patient_Type"));
+                ae.setEntryPoint(rs.getString("Entry_point"));
+                ae.setTransferInDate(rs.getString("transfer_in_date"));
+                ae.setDateStartedArtAtTransferringFacility(rs.getString("Date_started_art_at_transferring_facility"));
+                ae.setBaselineArvUse(rs.getString("Baseline_arv_use"));
+                ae.setBaselineArvRegimenLine(rs.getString("Baseline_arv_regimen_line"));
+                ae.setBaselineArvDateLastUsed(rs.getString("Baseline_arv_date_last_used"));
+                ae.setBaselineWhoStage(rs.getString("Baseline_who_stage"));
+                ae.setBaselineCd4Results(rs.getString("Baseline_cd4_results"));
+                ae.setBaselineCd4Date(rs.getString("Baseline_cd4_date"));
+                ae.setBaselineVlResults(rs.getString("Baseline_vl_results"));
+                ae.setBaselineVlDate(rs.getString("Baseline_vl_date"));
+                ae.setBaselineTbInfected(rs.getInt("Baseline_TB_Infected") == 1 ? "Yes" : "No");
+                ae.setBaselinePregnant(rs.getInt("Baseline_Pregnant") == 1 ? "Yes" : "No");
+                ae.setBaselineBreastFeeding(rs.getInt("Baseline_Breastfeeding") == 1 ? "Yes" : "No");
+                ae.setBaselineWeight(rs.getString("Baseline_Weight"));
+                ae.setBaselineHeight(rs.getString("Baseline_Height"));
+
+                amrsEnrollmentService.save(ae);
+
+                NewEnrollmentPayload.enrollments(amrsEnrollmentService, amrsEncounterService, url, auth);
             }
-        }
 
-        System.out.println("Patient_id" + personId);
+            System.out.println("Patient_id" + patientId);
+        }
     }
 
+    public static void patientStatus(String server, String username, String password, String locations, String parentUUID, AMRSPatientStatusService amrsPatientStatusService, AMRSConceptMappingService amrsConceptMappingService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+        String samplePatientList = AMRSSamples.getPersonIdList();
+
+        System.out.println("Sample Clients " + samplePatientList);
+        String sql = "";
+        List<AMRSPatientStatus> amrsCivilStatusList = amrsPatientStatusService.findFirstByOrderByIdDesc();
+        String nextEncounterID = "";
+        if (amrsCivilStatusList.isEmpty()) {
+
+            sql = "SELECT  \n" +
+                    "                     pa.person_id, \n" +
+                    "                    pt.person_attribute_type_id, \n" +
+                    "                    case when pt.person_attribute_type_id =5 then '1054' \n" +
+                    "                    when pt.person_attribute_type_id =42 then '1542' \n" +
+                    "                    when pt.person_attribute_type_id =73 then '1712' \n" +
+                    "                    end kenyaemr_concept, \n" +
+                    "                    case when pt.person_attribute_type_id =5 then '1054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pt.person_attribute_type_id =42 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pt.person_attribute_type_id =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    end kenyaemr_concept_uuid, \n" +
+                    "                    pt.name, \n" +
+                    "                    cn.name as name_value,\n" +
+                    "                    pa.value,\n" +
+                    "                    case when pa.value =5555 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pa.value =1966 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pa.value =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pa.value = 1059 then '1059AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1057 then '1057AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' -- never married / single\n" +
+                    "                    when pa.value = 1175 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1056 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1055 then '5555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1060 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5618 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6290 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1670 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 10479 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1058 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value =  8714 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1967 then '1538AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8711 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1968 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1966 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6966 then '159466AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6284 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1971 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6408 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1832 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8589 then '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6280 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1969 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1970 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6580 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5619 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value =  6401 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1678 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8407 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 10368 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 10369 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 11283 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1496 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5507 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8713 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8710 then  '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 12263 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 12265 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 12262 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 12264 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1602 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1604 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1600 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6216 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6214 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6215 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1601 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 7583 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5629 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1603 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 7549 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    end kenyaemr_value_uuid, \n" +
+                    "                    pa.date_created  \n" +
+                    "                     \n" +
+                    "                FROM \n" +
+                    "                    amrs.person_attribute pa \n" +
+                    "                        INNER JOIN \n" +
+                    "                    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5) \n" +
+                    "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
+                    "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
+                    "                WHERE \n" +
+                    "                       pa.person_id IN (" + samplePatientList + ") \n" +
+                    "                        AND  \n" +
+                    " pa.voided = 0 order by  pa.person_id  asc";
+
+
+        } else {
+            System.out.println("List" + amrsCivilStatusList);
+//            nextEncounterID = amrs.get(0).getEncounterID();
+            sql = "SELECT  \n" +
+                    "                     pa.person_id, \n" +
+                    "                    pt.person_attribute_type_id, \n" +
+                    "                    case when pt.person_attribute_type_id =5 then '1054' \n" +
+                    "                    when pt.person_attribute_type_id =42 then '1542' \n" +
+                    "                    when pt.person_attribute_type_id =73 then '1712' \n" +
+                    "                    end kenyaemr_concept, \n" +
+                    "                    case when pt.person_attribute_type_id =5 then '1054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pt.person_attribute_type_id =42 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pt.person_attribute_type_id =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    end kenyaemr_concept_uuid, \n" +
+                    "                    pt.name, \n" +
+                    "                    cn.name as name_value,\n" +
+                    "                    pa.value,\n" +
+                    "                    case when pa.value =5555 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pa.value =1966 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pa.value =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "                    when pa.value = 1059 then '1059AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1057 then '1057AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' -- never married / single\n" +
+                    "                    when pa.value = 1175 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1056 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1055 then '5555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1060 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5618 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6290 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1670 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 10479 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1058 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value =  8714 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1967 then '1538AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8711 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1968 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1966 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6966 then '159466AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6284 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1971 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6408 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1832 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8589 then '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6280 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1969 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1970 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6580 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5619 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value =  6401 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1678 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8407 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 10368 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 10369 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 11283 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1496 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5507 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8713 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 8710 then  '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 12263 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 12265 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 12262 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 12264 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1602 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1604 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1600 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6216 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6214 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 6215 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1601 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 7583 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 5629 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 1603 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    when pa.value = 7549 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "                    end kenyaemr_value_uuid, \n" +
+                    "                    pa.date_created  \n" +
+                    "                     \n" +
+                    "                FROM \n" +
+                    "                    amrs.person_attribute pa \n" +
+                    "                        INNER JOIN \n" +
+                    "                    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5) \n" +
+                    "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
+                    "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
+                    "                WHERE \n" +
+                    "                       pa.person_id IN (" + samplePatientList + ") \n" +
+                    "                        AND pa.voided=0  and   \n" +
+                    " pa.voided = 0 order by  pa.person_id  asc";
+        }
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String personId = rs.getString("person_id");
+            String personAttributeTypeId = rs.getString("person_attribute_type_id");
+            String kenyaEmrConcept = rs.getString("kenyaemr_concept");
+            String name = rs.getString("name");
+            String value = rs.getString("value");
+            String kenyaemr_concept_uuid = rs.getString("kenyaemr_concept_uuid");
+            String kenyaemr_value_uuid = rs.getString("kenyaemr_value_uuid");
+            String name_value = rs.getString("name_value");
+            String patientid = rs.getString("person_id");
+            String date_created = rs.getString("date_created");
+
+            List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientid);
+            String kenyaemrPatientUuid = "";
+            if (amrsPatients.size() > 0) {
+                kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+            }
+
+            List<AMRSPatientStatus> amrsPatientStatusList = amrsPatientStatusService.findByPersonIdAndPersonAttributeTypeId(patientid, personAttributeTypeId);
+
+            if (amrsPatientStatusList.size() == 0) {
+
+                AMRSPatientStatus cs = new AMRSPatientStatus();
+                cs.setPersonId(personId);
+                cs.setPersonAttributeTypeId(personAttributeTypeId);
+                cs.setKenyaEmrConcept(kenyaEmrConcept);
+                cs.setName(name);
+                cs.setValue(value);
+                cs.setKenyaEmrConceptUuid(kenyaemr_concept_uuid);
+                cs.setKenyaEmrValueUuid(kenyaemr_value_uuid);
+                cs.setValueName(name_value);
+                cs.setKenyaPatientUuid(kenyaemrPatientUuid);
+                cs.setObsDateTime(date_created);
+                System.out.println("Tumefika Hapa!!!" + parentUUID);
+                amrsPatientStatusService.save(cs);
+                if ((!(kenyaemrPatientUuid == null))) {
+                    CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
+                }
+            }
+
+            System.out.println("Patient_id" + personId);
+        }
+
+    }
 }
 
