@@ -45,12 +45,10 @@ public class MigrateCareData {
                     "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                     "       inner join amrs.location l on l.location_id = e.location_id\n" +
                     "       and l.uuid in (" + locations + ") and pp.patient_program_id>=" + ppid + " and e.patient_id in ("+ pid +")  \n" + //and e. patient_id in ('1224605,1222698')
-                    "       group by  pp.patient_idd,p.concept_id  order by pp.patient_program_id asc limit 100";
-            System.out.println("SQLs " + sql);
-
+                    "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc";
+           // System.out.println("SQLs " + sql);
 
         } else {
-
             sql = "select pp.patient_program_id, pp.patient_id, \n" +
                     "       p.name,\n" +
                     "       p.uuid program_uuid,\n" +
@@ -88,7 +86,6 @@ public class MigrateCareData {
             String dateCompleted = rs.getString("date_completed");
             String programId = rs.getString("program_id");
             String patientProgramId = rs.getString("patient_program_id");
-
 
             // List<AMRSPrograms> patientsList = amrsProgramService.getprogramByLocation(rs.getString(2),parentUUID);
             List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
