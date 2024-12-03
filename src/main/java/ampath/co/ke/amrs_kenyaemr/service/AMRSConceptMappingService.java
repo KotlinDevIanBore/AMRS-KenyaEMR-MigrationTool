@@ -26,6 +26,9 @@ public class AMRSConceptMappingService {
     public List<AMRSConceptMapper> findByAmrsConceptID(String pid) {
         return amrsMappingRepository.findByAmrsConceptID(pid);
     }
+    public List<AMRSConceptMapper> findByKenyaeEmrConceptUuid(String conceptID) {
+        return amrsMappingRepository.findByKenyaEmrConceptID(conceptID);
+    }
 
 
 
