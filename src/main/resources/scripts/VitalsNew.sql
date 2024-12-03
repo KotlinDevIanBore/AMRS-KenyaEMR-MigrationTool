@@ -39,21 +39,7 @@ case  when o.concept_id=1342 then '1342AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
   when o.concept_id=5242 then '5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
  end  kenyaemr_uuid,
 o.obs_datetime,
-o.value_numeric
--- max(o.obs_datetime) as obs_datetime,
--- max(case when o.concept_id = 9816 then o.value_numeric end) as height_age_zscore,
--- max(case when o.concept_id = 8238 then o.value_numeric end) as weight_height_zscore,
--- max(case when o.concept_id = 8239 then o.value_numeric end) as bmi_age_zscore,
--- max(case when o.concept_id = 1342 then o.value_numeric end) as bmi,
--- max(case when o.concept_id = 1343 then o.value_numeric end) as muac_mm,
--- max(case when o.concept_id = 5085 then o.value_numeric end) as systolic_bp,
--- max(case when o.concept_id = 5086 then o.value_numeric end) as diastolic_bp,
--- max(case when o.concept_id = 5087 then o.value_numeric end) as pulse,
--- max(case when o.concept_id = 5088 then o.value_numeric end) as temperature,
--- max(case when o.concept_id = 5092 then o.value_numeric end) as spo2,
--- max(case when o.concept_id = 5242 then o.value_numeric end) as rr,
--- max(case when o.concept_id = 5089 then o.value_numeric end) as weight,
--- max(case when o.concept_id = 5090 then o.value_numeric end) as height 
+o.value_numeric as value
 FROM amrs.obs o 
 INNER JOIN amrs.encounter e using(encounter_id)
 WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) 

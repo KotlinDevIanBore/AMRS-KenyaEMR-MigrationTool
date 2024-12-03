@@ -30,6 +30,12 @@ public class AMRSPatientStatusService {
     public List<AMRSPatientStatus> findByResponseCodeIsNull() {
         return amrsPatientStatusRepository.findByResponseCodeIsNull();
     }
+
+    public List<AMRSPatientStatus> findByPersonIdAndPersonAttributeTypeId(String pid,String attribute ) {
+        return amrsPatientStatusRepository.findByPersonIdAndPersonAttributeTypeId(pid,attribute);
+    }
+
+
     public AMRSPatientStatus save(AMRSPatientStatus dataset) {
         return amrsPatientStatusRepository.save(dataset);
     }

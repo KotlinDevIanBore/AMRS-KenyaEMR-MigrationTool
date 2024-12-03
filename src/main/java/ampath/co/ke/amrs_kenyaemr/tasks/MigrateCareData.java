@@ -1,10 +1,12 @@
 package ampath.co.ke.amrs_kenyaemr.tasks;
 
 import ampath.co.ke.amrs_kenyaemr.methods.AMRSConceptReader;
+import ampath.co.ke.amrs_kenyaemr.methods.AMRSSamples;
 import ampath.co.ke.amrs_kenyaemr.models.*;
 import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.*;
 import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.sql.*;
@@ -991,6 +993,9 @@ public class MigrateCareData {
     public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService,AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
 
+
+        String samplePatientList = AMRSSamples.getPersonIdList();
+
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss = "";
         for (int y = 0; y < amrsPatientsList.size(); y++) {
@@ -1001,39 +1006,13 @@ public class MigrateCareData {
         System.out.println("Patient Id " + pid);
 
 
-
-        List<Integer> numbers = Arrays.asList(
-                1171851, 1180830, 1167167, 1187468, 1210762, 1211677, 1205381, 1178556, 1177079, 1177856,
-                1198638, 1211883, 1191727, 1191862, 1176796, 1210716, 1212684, 1223669, 1182300, 1188506,
-                765546, 1187467, 1207817, 1212603, 1216267, 1225187, 1140933, 1185368, 1177985, 1189238,
-                1191232, 1199830, 1170791, 1174464, 1206185, 1176830, 1182705, 1209127, 1177104, 1177467,
-                1184252, 1192270, 1204250, 1212823, 1193179, 1177270, 1191005, 1198509, 1167355, 1178369,
-                1184092, 1189326, 1191369, 1203354, 1203531, 1209140, 1226657, 1172517, 1186701, 1195760,
-                1169969, 1178748, 1206865, 1215595, 1180696, 1186078, 1195200, 1177704, 1212906, 1209159,
-                1202124, 1205268, 1208071, 1211667, 1212173, 1220342, 1176467, 1178456, 1176379, 1177933,
-                1179157, 1185422, 1198117, 1203972, 1211635, 1185861, 1188709, 1192374, 1194786, 1200228,
-                1212351, 1222698, 198492, 1178019, 1187425, 1176820, 1170115, 1175708, 1188938, 827082,
-                1151769, 1152148, 1157527, 1161436, 1208219, 1217264, 1205146, 1021232, 1188422, 1204743,
-                1215598, 1199094, 1206409, 1185638, 1214044, 1185495, 1201438, 1171131, 1176867, 1198019,
-                1166252, 1223395, 1186135, 1169125, 1218971, 1184391, 1216914, 1153475, 1153527, 1153618,
-                1153684, 1153703, 1153725, 1153811, 1153922, 1153931, 1166345, 1168996, 1174041, 1174884,
-                1177493, 1180808, 1182235, 1182433, 1187031, 1188132, 1190631, 1192399, 1193816, 1196144,
-                1196454, 1197444, 1199916, 1201312, 1202111, 1203658, 1207799, 1207926, 1207939, 1209301,
-                1226630
-        );
-
- 
-
-        String pist = numbers.toString();
-        String result = pist.substring(1, pist.length() - 1);
-
    System.out.println("Patient Id "+ pid);
 
         String sql = "SELECT o.*, et.encounter_type_id, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid,\n" +
                 " NULL AS kenyaemr_order_id FROM amrs.orders o \n" +
                 " inner join amrs.encounter e on (e.encounter_id = o.encounter_id)\n" +
                 " inner join amrs.encounter_type et on (et.encounter_type_id = e.encounter_type)\n" +
-                " where  e.patient_id in ("+ result +" ) order by o.date_created ASC "; //
+                " where  e.patient_id in ("+ samplePatientList +" ) order by o.date_created ASC "; //
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
 
@@ -1156,7 +1135,7 @@ public class MigrateCareData {
                     "    amrs.concept\n" +
                     "WHERE\n" +
                     "    uuid IN (\n" +
-                    "\t\t'a8a65d5a-1350-11df-a1f1-0026b9348838', \n" +
+                    "    'a8a65d5a-1350-11df-a1f1-0026b9348838', \n" +
                     "        'a8a65e36-1350-11df-a1f1-0026b9348838',\n" +
                     "        'a8a65f12-1350-11df-a1f1-0026b9348838',\n" +
                     "        'a8a6f71a-1350-11df-a1f1-0026b9348838',\n" +
@@ -1193,10 +1172,11 @@ public class MigrateCareData {
                     "o.value_numeric\n" +
                     "FROM amrs.obs o \n" +
                     "INNER JOIN amrs.encounter e using(encounter_id)\n" +
+                    "INNER JOIN amrs.location l on l.location_id= e.location_id\n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
                     "AND l.uuid IN(" + locations + ") \n" +
                     " AND o.person_id in ( " + pid + " )\n" +
-                    "GROUP BY o.person_id, o.encounter_id limit 10";
+                    "GROUP BY o.person_id, o.encounter_id ";
         } else {
             sql = "WITH cte_vitals_concepts as (\n" +
                     "SELECT \n" +
@@ -1242,6 +1222,7 @@ public class MigrateCareData {
                     "o.value_numeric\n" +
                     "FROM amrs.obs o \n" +
                     "INNER JOIN amrs.encounter e using(encounter_id)\n" +
+                    "INNER JOIN amrs.location l on l.location_id= e.location_id\n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
 
                     " AND l.uuid IN (" + locations + ") \n" +
@@ -2322,55 +2303,193 @@ public class MigrateCareData {
 
 
 
-public static void patientStatus(String server, String username, String password, String locations, String parentUUID, AMRSPatientStatusService amrsPatientStatusService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+public static void patientStatus(String server, String username, String password, String locations, String parentUUID, AMRSPatientStatusService amrsPatientStatusService, AMRSConceptMappingService amrsConceptMappingService,AMRSPatientServices amrsPatientServices ,String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
+    String samplePatientList = AMRSSamples.getPersonIdList();
 
+    System.out.println("Sample Clients " + samplePatientList);
     String sql = "";
     List<AMRSPatientStatus> amrsCivilStatusList = amrsPatientStatusService.findFirstByOrderByIdDesc();
     String nextEncounterID = "";
     if (amrsCivilStatusList.isEmpty()) {
 
-        sql = "SELECT \n" +
-                "    pa.person_id,\n" +
-                "    pt.person_attribute_type_id,\n" +
-                "    case when pt.person_attribute_type_id =5 then '1054'\n" +
-                "    when pt.person_attribute_type_id =42 then '1542'\n" +
-                "    when pt.person_attribute_type_id =73 then '1712'\n" +
-                "    end kenyaemr_concept,\n" +
-                "    pt.name,\n" +
-                "    pa.value\n" +
-                "    \n" +
-                "FROM\n" +
-                "    amrs.person_attribute pa\n" +
-                "        INNER JOIN\n" +
-                "    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5)\n" +
-                "    inner join amrs.concept c on c.concept_id = pa.value\n" +
-                "WHERE\n" +
-                "     pa.person_id IN (1220891,1191232, 1199830, 1170791, 1174464, 1206185)\n" +
-                "        AND \n" +
-                "        pa.voided = 0";
+        sql = "SELECT  \n" +
+                "                     pa.person_id, \n" +
+                "                    pt.person_attribute_type_id, \n" +
+                "                    case when pt.person_attribute_type_id =5 then '1054' \n" +
+                "                    when pt.person_attribute_type_id =42 then '1542' \n" +
+                "                    when pt.person_attribute_type_id =73 then '1712' \n" +
+                "                    end kenyaemr_concept, \n" +
+                "                    case when pt.person_attribute_type_id =5 then '1054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pt.person_attribute_type_id =42 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pt.person_attribute_type_id =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    end kenyaemr_concept_uuid, \n" +
+                "                    pt.name, \n" +
+                "                    cn.name as name_value,\n" +
+                "                    pa.value,\n" +
+                "                    case when pa.value =5555 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pa.value =1966 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pa.value =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pa.value = 1059 then '1059AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1057 then '1057AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' -- never married / single\n" +
+                "                    when pa.value = 1175 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1056 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1055 then '5555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1060 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5618 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6290 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1670 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 10479 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1058 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value =  8714 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1967 then '1538AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8711 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1968 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1966 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6966 then '159466AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6284 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1971 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6408 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1832 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8589 then '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6280 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1969 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1970 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6580 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5619 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value =  6401 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1678 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8407 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 10368 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 10369 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 11283 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1496 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5507 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8713 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8710 then  '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 12263 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 12265 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 12262 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 12264 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1602 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1604 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1600 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6216 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6214 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6215 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1601 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 7583 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5629 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1603 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 7549 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    end kenyaemr_value_uuid, \n" +
+                "                    pa.date_created  \n" +
+                "                     \n" +
+                "                FROM \n" +
+                "                    amrs.person_attribute pa \n" +
+                "                        INNER JOIN \n" +
+                "                    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5) \n" +
+                "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
+                "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
+                "                WHERE \n" +
+                "                       pa.person_id IN ("+ samplePatientList +") \n" +
+                "                        AND  \n" +
+                " pa.voided = 0 order by  pa.person_id  asc";
+
+
     } else {
         System.out.println("List" + amrsCivilStatusList);
 //            nextEncounterID = amrs.get(0).getEncounterID();
-        sql = "SELECT \n" +
-                "    pa.person_id,\n" +
-                "    pt.person_attribute_type_id,\n" +
-                "    case when pt.person_attribute_type_id =5 then '1054'\n" +
-                "    when pt.person_attribute_type_id =42 then '1542'\n" +
-                "    when pt.person_attribute_type_id =73 then '1712'\n" +
-                "    end kenyaemr_concept,\n" +
-                "    pt.name,\n" +
-                "    pa.value\n" +
-                "    \n" +
-                "FROM\n" +
-                "    amrs.person_attribute pa\n" +
-                "        INNER JOIN\n" +
-                "    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5)\n" +
-                "    inner join amrs.concept c on c.concept_id = pa.value\n" +
-                "WHERE\n" +
-                "     pa.person_id IN (1220891,1191232, 1199830, 1170791, 1174464, 1206185)\n" +
-                "        AND \n" +
-                "        pa.voided = 0";
+        sql = "SELECT  \n" +
+                "                     pa.person_id, \n" +
+                "                    pt.person_attribute_type_id, \n" +
+                "                    case when pt.person_attribute_type_id =5 then '1054' \n" +
+                "                    when pt.person_attribute_type_id =42 then '1542' \n" +
+                "                    when pt.person_attribute_type_id =73 then '1712' \n" +
+                "                    end kenyaemr_concept, \n" +
+                "                    case when pt.person_attribute_type_id =5 then '1054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pt.person_attribute_type_id =42 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pt.person_attribute_type_id =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    end kenyaemr_concept_uuid, \n" +
+                "                    pt.name, \n" +
+                "                    cn.name as name_value,\n" +
+                "                    pa.value,\n" +
+                "                    case when pa.value =5555 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pa.value =1966 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pa.value =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                "                    when pa.value = 1059 then '1059AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1057 then '1057AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' -- never married / single\n" +
+                "                    when pa.value = 1175 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1056 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1055 then '5555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1060 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5618 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6290 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1670 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 10479 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1058 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value =  8714 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1967 then '1538AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8711 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1968 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1966 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6966 then '159466AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6284 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1971 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6408 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1832 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8589 then '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6280 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1969 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1970 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6580 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5619 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value =  6401 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1678 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8407 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 10368 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 10369 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 11283 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1496 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5507 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8713 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 8710 then  '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 12263 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 12265 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 12262 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 12264 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1602 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1604 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1600 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6216 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6214 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 6215 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1601 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 7583 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 5629 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 1603 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    when pa.value = 7549 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                "                    end kenyaemr_value_uuid, \n" +
+                "                    pa.date_created  \n" +
+                "                     \n" +
+                "                FROM \n" +
+                "                    amrs.person_attribute pa \n" +
+                "                        INNER JOIN \n" +
+                "                    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5) \n" +
+                "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
+                "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
+                "                WHERE \n" +
+                "                       pa.person_id IN ("+ samplePatientList +") \n" +
+                "                        AND pa.voided=0  and   \n" +
+                " pa.voided = 0 order by  pa.person_id  asc";
     }
     System.out.println("regimenSwitchList" + sql);
     System.out.println("locations " + locations + " parentUUID " + parentUUID);
@@ -2388,21 +2507,38 @@ public static void patientStatus(String server, String username, String password
         String kenyaEmrConcept = rs.getString("kenyaemr_concept");
         String name = rs.getString("name");
         String value = rs.getString("value");
+        String kenyaemr_concept_uuid = rs.getString("kenyaemr_concept_uuid");
+        String kenyaemr_value_uuid = rs.getString("kenyaemr_value_uuid");
+        String name_value = rs.getString("name_value");
+        String patientid = rs.getString("person_id");
+        String date_created = rs.getString("date_created");
 
+        List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientid);
+        String kenyaemrPatientUuid="";
+        if(amrsPatients.size()>0){
+            kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+        }
 
-        if (amrsCivilStatusList.isEmpty()) {
+List<AMRSPatientStatus> amrsPatientStatusList = amrsPatientStatusService.findByPersonIdAndPersonAttributeTypeId(patientid,personAttributeTypeId);
+
+        if (amrsPatientStatusList.size() ==0) {
+
             AMRSPatientStatus cs = new AMRSPatientStatus();
             cs.setPersonId(personId);
             cs.setPersonAttributeTypeId(personAttributeTypeId);
             cs.setKenyaEmrConcept(kenyaEmrConcept);
             cs.setName(name);
             cs.setValue(value);
-
-
+            cs.setKenyaEmrConceptUuid(kenyaemr_concept_uuid);
+            cs.setKenyaEmrValueUuid(kenyaemr_value_uuid);
+            cs.setValueName(name_value);
+            cs.setKenyaPatientUuid(kenyaemrPatientUuid);
+            cs.setObsDateTime(date_created);
             System.out.println("Tumefika Hapa!!!" + parentUUID);
             amrsPatientStatusService.save(cs);
-            CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
-
+            if((!(kenyaemrPatientUuid ==null))) {
+                CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
+            }
         }
 
         System.out.println("Patient_id" + personId);
