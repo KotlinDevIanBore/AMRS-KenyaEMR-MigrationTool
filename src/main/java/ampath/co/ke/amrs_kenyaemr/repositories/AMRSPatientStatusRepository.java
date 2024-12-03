@@ -13,4 +13,5 @@ public interface AMRSPatientStatusRepository extends JpaRepository<AMRSPatientSt
     List<AMRSPatientStatus> findFirstByOrderByIdDesc();
 
     List<AMRSPatientStatus> findByResponseCodeIsNull();
+    List<AMRSPatientStatus> findByPersonIdAndPersonAttributeTypeId(String pid,String attribute);
 }

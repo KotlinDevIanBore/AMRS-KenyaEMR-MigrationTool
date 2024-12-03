@@ -14,8 +14,15 @@ public class AMRSPatientStatus {
     private String personId;
     private String personAttributeTypeId;
     private String kenyaEmrConcept;
+    private String kenyaEmrConceptUuid;
     private String name;
+    private String valueName;
     private String value;
+    private String kenyaEmrValueUuid;
+
+    private String kenyaPatientUuid;
+
+    private String obsDateTime;
     private String responseCode;
 
     public Integer getId() {
@@ -72,5 +79,45 @@ public class AMRSPatientStatus {
 
     public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public String getKenyaEmrConceptUuid() {
+        return kenyaEmrConceptUuid;
+    }
+
+    public void setKenyaEmrConceptUuid(String kenyaEmrConceptUuid) {
+        this.kenyaEmrConceptUuid = kenyaEmrConceptUuid;
+    }
+
+    public String getValueName() {
+        return valueName;
+    }
+
+    public void setValueName(String valueName) {
+        this.valueName = valueName;
+    }
+
+    public String getKenyaEmrValueUuid() {
+        return kenyaEmrValueUuid;
+    }
+
+    public void setKenyaEmrValueUuid(String kenyaEmrValueUuid) {
+        this.kenyaEmrValueUuid = kenyaEmrValueUuid;
+    }
+
+    public String getKenyaPatientUuid() {
+        return kenyaPatientUuid;
+    }
+
+    public void setKenyaPatientUuid(String kenyaPatientUuid) {
+        this.kenyaPatientUuid = kenyaPatientUuid;
+    }
+
+    public String getObsDateTime() {
+        return obsDateTime;
+    }
+
+    public void setObsDateTime(String obsDateTime) {
+        this.obsDateTime = obsDateTime;
     }
 }
