@@ -9,8 +9,14 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
+
 import java.util.*;
 import java.util.stream.Collectors;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
 
 public class MigrateCareData {
 
@@ -983,7 +989,7 @@ public class MigrateCareData {
     }
 
 
-    public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService,AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss = "";
@@ -991,12 +997,43 @@ public class MigrateCareData {
             pidss += amrsPatientsList.get(y).getPersonId() + ",";
         }
         String pid = pidss.substring(0, pidss.length() - 1);
+
         System.out.println("Patient Id " + pid);
+
+
+
+        List<Integer> numbers = Arrays.asList(
+                1171851, 1180830, 1167167, 1187468, 1210762, 1211677, 1205381, 1178556, 1177079, 1177856,
+                1198638, 1211883, 1191727, 1191862, 1176796, 1210716, 1212684, 1223669, 1182300, 1188506,
+                765546, 1187467, 1207817, 1212603, 1216267, 1225187, 1140933, 1185368, 1177985, 1189238,
+                1191232, 1199830, 1170791, 1174464, 1206185, 1176830, 1182705, 1209127, 1177104, 1177467,
+                1184252, 1192270, 1204250, 1212823, 1193179, 1177270, 1191005, 1198509, 1167355, 1178369,
+                1184092, 1189326, 1191369, 1203354, 1203531, 1209140, 1226657, 1172517, 1186701, 1195760,
+                1169969, 1178748, 1206865, 1215595, 1180696, 1186078, 1195200, 1177704, 1212906, 1209159,
+                1202124, 1205268, 1208071, 1211667, 1212173, 1220342, 1176467, 1178456, 1176379, 1177933,
+                1179157, 1185422, 1198117, 1203972, 1211635, 1185861, 1188709, 1192374, 1194786, 1200228,
+                1212351, 1222698, 198492, 1178019, 1187425, 1176820, 1170115, 1175708, 1188938, 827082,
+                1151769, 1152148, 1157527, 1161436, 1208219, 1217264, 1205146, 1021232, 1188422, 1204743,
+                1215598, 1199094, 1206409, 1185638, 1214044, 1185495, 1201438, 1171131, 1176867, 1198019,
+                1166252, 1223395, 1186135, 1169125, 1218971, 1184391, 1216914, 1153475, 1153527, 1153618,
+                1153684, 1153703, 1153725, 1153811, 1153922, 1153931, 1166345, 1168996, 1174041, 1174884,
+                1177493, 1180808, 1182235, 1182433, 1187031, 1188132, 1190631, 1192399, 1193816, 1196144,
+                1196454, 1197444, 1199916, 1201312, 1202111, 1203658, 1207799, 1207926, 1207939, 1209301,
+                1226630
+        );
+
+ 
+
+        String pist = numbers.toString();
+        String result = pist.substring(1, pist.length() - 1);
+
+   System.out.println("Patient Id "+ pid);
+
         String sql = "SELECT o.*, et.encounter_type_id, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid,\n" +
                 " NULL AS kenyaemr_order_id FROM amrs.orders o \n" +
                 " inner join amrs.encounter e on (e.encounter_id = o.encounter_id)\n" +
                 " inner join amrs.encounter_type et on (et.encounter_type_id = e.encounter_type)\n" +
-                " where  o.order_reason order by o.date_created ASC  limit 100 "; //and e.patient_id in ("+ pid +" )
+                " where  e.patient_id in ("+ result +" ) order by o.date_created ASC "; //
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
 
@@ -1009,6 +1046,7 @@ public class MigrateCareData {
         x = rs.getRow();
         rs.beforeFirst();
         while (rs.next()) {
+
             String patientId = rs.getString("patient_id");
             String orderId = rs.getString("order_id");
             String orderTypeId = rs.getString("order_type_id");
@@ -1034,7 +1072,6 @@ public class MigrateCareData {
                     kenyaemr_encounter_id = ac.get(0).getKenyaemrEncounterTypeUuid();
                 } else {
                     kenyaemr_encounter_id = "";
-
                 }
 
                 ao.setConceptId(Integer.valueOf(conceptId));
@@ -1055,21 +1092,32 @@ public class MigrateCareData {
                 String kenyaemr_patient_uuid = "";
                 if (!amrsPatients.isEmpty()) {
                     kenyaemr_patient_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                    ao.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
                 } else {
                     kenyaemr_patient_uuid = "Not Found"; // add logic for missing patientkenyaemr_patient_uuid
                 }
 
-                String justificationcode = "";
-                if (!justification.isEmpty()) {
-                    List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(justification);
-                    if (!amrsConceptMapper.isEmpty()) {
-                        justificationcode = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
-
-                    }
+                String kenyaEmrEncounterUuid="";
+                List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+                if(!amrsEncounters.isEmpty()){
+                    kenyaEmrEncounterUuid = amrsEncounters.get(0).getKenyaemrEncounterUuid();
+                    ao.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
                 }
+                String justificationcode = "";
+                if(justification==null) {
+                    justification="11666";
+                }
+                    if (!justification.isEmpty()) {
+                        List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(justification);
+                        if (!amrsConceptMapper.isEmpty()) {
+                            justificationcode = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
+
+                        }
+                    }
 
 
-                System.out.println("Patient " + kenyaemr_patient_uuid + " concept " + conceptId + " kenyaemr_concept_id " + kenyaemr_uuid + " justification" + justification + "Kenyaemr justicafiation " + justificationcode);
+
+//                System.out.println("Patient " + kenyaemr_patient_uuid + " concept " + conceptId + " kenyaemr_concept_id " + kenyaemr_uuid + " justification" + justification + "Kenyaemr justicafiation " + justificationcode);
 
 
                 amrsOrderService.save(ao);
