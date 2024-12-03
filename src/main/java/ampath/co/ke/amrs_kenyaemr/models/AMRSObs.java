@@ -28,6 +28,8 @@ public class AMRSObs {
     private String kenyaemrlocationuuid;
     @Column(name="kenyaemr_concept_uuid")
     private String kenyaemrconceptuuid;
+    @Column(name="kenyaemr_person_uuid")
+    private String kenyaemrpersonuuid;
     @Column(name="kenyaemr_encounter_uuid")
     private String kenyaemrencounteruuid;
     @Column(name="amrs_encounter_uuid")
@@ -79,6 +81,14 @@ public class AMRSObs {
 
     public void setEncounterType(String encounterType) {
         this.encounterType = encounterType;
+    }
+
+    public String getKenyaemrpersonuuid() {
+        return kenyaemrpersonuuid;
+    }
+
+    public void setKenyaemrpersonuuid(String kenyaemrpersonuuid) {
+        this.kenyaemrpersonuuid = kenyaemrpersonuuid;
     }
 
     public String getConceptId() {

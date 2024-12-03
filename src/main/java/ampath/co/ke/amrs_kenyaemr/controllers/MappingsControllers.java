@@ -86,6 +86,9 @@ public class MappingsControllers {
                 String amrs_concept_id = record.get("amrs_concept_id");
                 String kenyaemr_concept_uuid = record.get("kenyaemr_concept_uuid");
 
+                // logic to extract kenyaemr concept from kenyaemr_concept_uuid
+                String kenyaemrConceptId = record.get("kenyaemr_concept_uuid").replaceAll("[^0-9]", "");
+
                 // Create a unique key to identify duplicates
                 String uniqueKey = amrs_concept_id + ":" + kenyaemr_concept_uuid;
 
@@ -98,7 +101,8 @@ public class MappingsControllers {
                 AMRSMappings anc = new AMRSMappings();
                 anc.setAmrsConceptId(amrs_concept_id);
                 anc.setKenyaemrConceptUuid(kenyaemr_concept_uuid);
-                System.out.println("anc is here" + anc);
+                anc.setKenyaemrConceptId(kenyaemrConceptId);
+
                   amrsMappingService.save(anc);
 
                 // Add to processed entries
