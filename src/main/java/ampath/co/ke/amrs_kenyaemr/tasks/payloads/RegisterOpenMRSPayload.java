@@ -171,7 +171,7 @@ public class RegisterOpenMRSPayload {
         // End of dentifier
         JSONArray jsonAddressesArray = new JSONArray();
         JSONObject jsonAddresses = new JSONObject();
-        jsonAddresses.put("address1", amrsPatients.getCounty()); //County
+        //jsonAddresses.put("address1", amrsPatients.getCounty()); //County
         jsonAddresses.put("address2", amrsPatients.getLandmark()); //Land Mark
        // jsonAddresses.put("address3", amrsPatients.getAddress4());
         jsonAddresses.put("address6", amrsPatients.getAddress6()); //Location
@@ -179,7 +179,7 @@ public class RegisterOpenMRSPayload {
         jsonAddresses.put("address4", amrsPatients.getAddress4()); //ward
         jsonAddresses.put("cityVillage", amrsPatients.getCityVillage()); //Village
         jsonAddresses.put("stateProvince", amrsPatients.getSubcounty()); //subcounty
-        jsonAddresses.put("countyDistrict",amrsPatients.getCounty_district());
+        jsonAddresses.put("countyDistrict",amrsPatients.getCounty()); //county
         jsonAddresses.put("country", "Kenya"); //subcounty
         jsonAddressesArray.put(jsonAddresses);
 

@@ -8,11 +8,13 @@ mvn spring-boot:run
 
 mvn clean spring-boot:run
 
+mvn package`-DskipTests`
+
 use openmrs;
 call create_etl_tables();
 call sp_first_time_setup();
 Sort red ribbon;
 set foreign_key_checks=0;
 
-sudo lsof -i :8082   
+sudo lsof -i :8082
 kill -9 58959

@@ -1,6 +1,7 @@
 package ampath.co.ke.amrs_kenyaemr.repositories;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSOrders;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,5 +16,7 @@ public interface AMRSOrdersRepository extends JpaRepository<AMRSOrders, Long> {
      */
     List<AMRSOrders>  findByUuid(String uuid);
     List<AMRSOrders> findAll();
+
+    List<AMRSOrders> findByResponseCodeIsNull();
 
 }

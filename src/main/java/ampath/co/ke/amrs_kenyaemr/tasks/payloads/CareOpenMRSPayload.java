@@ -15,7 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CareOpenMRSPayload {
     public static void programs(AMRSProgramService amrsProgramService, String locations, String parentUUID, String url, String auth) throws JSONException, IOException {
@@ -73,7 +77,93 @@ public class CareOpenMRSPayload {
 
         List<AMRSTriage> amrsTriages = amrsTriageService.findByResponseCodeIsNull();
         if (amrsTriages.size() > 0) {
-            JSONArray jsonObservations = new JSONArray();
+
+            // Use a Set to store unique encounter IDs
+            Set<String> encounterIdSet = new HashSet<>();
+            List<String> distinctEncounterIds = new ArrayList<>();
+
+            // Loop through the list
+            for (AMRSTriage triage : amrsTriages) {
+                if (triage.getResponseCode() == null) {
+                    String encounterId = triage.getEncounterId();
+                    // Add to the result list only if it hasn't been added already
+                    if (encounterIdSet.add(encounterId)) {
+                        distinctEncounterIds.add(encounterId);
+                    }
+                }
+            }
+
+            for (String encounterId : distinctEncounterIds) {
+                System.out.println("Encounter ID for Vitals "+encounterId);
+                List<AMRSTriage> amrsTriageEncounters = amrsTriageService.findByEncounterId(encounterId);
+
+                //AMRSTriage at = amrsTriageEncounters.get(0);
+                JSONArray jsonObservations = new JSONArray();
+
+                for(int x =0;x<amrsTriageEncounters.size();x++) {
+
+                    JSONObject jsonObservation = new JSONObject();
+
+                    String value = amrsTriageEncounters.get(x).getValue();
+                    jsonObservation.put("person",amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
+                    jsonObservation.put("concept",amrsTriageEncounters.get(x).getKenyaemConceptId());///String.valueOf(conceptsetId));
+
+                    if(isDecimal(value)){
+                        jsonObservation.put("value", Double.parseDouble(amrsTriageEncounters.get(x).getValue()));
+
+                    }else {
+                        jsonObservation.put("value", Double.parseDouble(amrsTriageEncounters.get(x).getValue()));
+
+                    }
+
+                   // jsonObservation.put("person",amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
+                  //  jsonObservation.put("concept",amrsTriageEncounters.get(x).getKenyaemrFormUuid());///String.valueOf(conceptsetId));
+                  //  jsonObservation.put("value", Decimal.p(amrsTriageEncounters.get(x).getValue()));
+                    jsonObservations.put(jsonObservation);
+                }
+                List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+                if(amrsEncounters.size()>0) {
+                    JSONObject jsonEncounter = new JSONObject();
+                    jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                    jsonEncounter.put("obs", jsonObservations);
+                    System.out.println("Payload for is here " + jsonEncounter.toString());
+                    System.out.println("URL is here " + url + "encounter/"+amrsEncounters.get(0).getKenyaemrEncounterUuid());
+                    OkHttpClient client = new OkHttpClient();
+                    MediaType mediaType = MediaType.parse("application/json");
+                    okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
+                    //RequestBody body = RequestBody.create(mediaType, jsonEncounter.toString());
+                    Request request = new Request.Builder()
+                            .url(url + "encounter/" + amrsEncounters.get(0).getKenyaemrEncounterUuid())
+                            .method("POST", body)
+                            .addHeader("Authorization", "Basic " + auth)
+                            .addHeader("Content-Type", "application/json")
+                            .build();
+
+                    Response response = client.newCall(request).execute();
+                     String responseBody = response.body().string(); // Get the response as a string
+                     System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
+
+                     String resBody = response.request().toString();
+                      int rescode = response.code();
+                      if(rescode==201) {
+                          for(int x =0;x<amrsTriageEncounters.size();x++) {
+                              AMRSTriage at =amrsTriageEncounters.get(x);
+                          at.setResponseCode(String.valueOf(rescode));
+                          at.setResponseCode("201");
+                          at.setKenyaemrEncounterUuid(amrsEncounters.get(0).getKenyaemrEncounterUuid());
+                          System.out.println("Imefika Hapa na data " + rescode);
+                          amrsTriageService.save(at);
+                          }
+                      }
+
+                }
+
+
+            }
+
+
+
+           /* JSONArray jsonObservations = new JSONArray();
             for (int x = 0; x < amrsTriages.size(); x++) {
                 AMRSTriage at = amrsTriages.get(x);
                 List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(at.getPatientId());
@@ -81,13 +171,15 @@ public class CareOpenMRSPayload {
                 System.out.println("Patient ID " + amrsPatients.get(0).getPersonId() +" Encounter Id "+ at.getEncounterId());
                 //Height
                 //wight,tempdbp,sbp,bmi,pulse,rr,sop,
+                JSONObject jsonEncounter = new JSONObject();
+                jsonEncounter.put("form",at.getKenyaemrFormUuid());
 
               /*  JSONObject jsonObservationBMI = new JSONObject();
                 jsonObservationBMI.put("person",amrsPatients.get(0).getKenyaemrpatientUUID());
                 jsonObservationBMI.put("concept",conceptuuid);///String.valueOf(conceptsetId));
                 jsonObservationBMI.put("value", at.getBmi());
                 */
-                JSONObject jsonEncounter = new JSONObject();
+               /* JSONObject jsonEncounter = new JSONObject();
                 jsonEncounter.put("form",at.getKenyaemrFormUuid());
 
                 JSONObject jsonObservationTEMP = new JSONObject();
@@ -105,8 +197,9 @@ public class CareOpenMRSPayload {
                 jsonObservationH.put("concept","5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");///String.valueOf(conceptsetId));
                 jsonObservationH.put("value", at.getHeight());
                 jsonObservations.put(jsonObservationH);
+                */
 
-                jsonEncounter.put("obs",jsonObservations);
+               /* jsonEncounter.put("obs",jsonObservations);
 
 
                 System.out.println("Payload for is here " + jsonEncounter.toString());
@@ -121,20 +214,21 @@ public class CareOpenMRSPayload {
                         .addHeader("Authorization", "Basic " + auth)
                         .addHeader("Content-Type", "application/json")
                         .build();
-                Response response = client.newCall(request).execute();
-                String responseBody = response.body().string(); // Get the response as a string
-                System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
+                */
+               // Response response = client.newCall(request).execute();
+               // String responseBody = response.body().string(); // Get the response as a string
+               // System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
 
                 // String resBody = response.request().toString();
-                int rescode = response.code();
-                at.setResponseCode(String.valueOf(rescode));
-                System.out.println("Imefika Hapa na data " + rescode);
+              //  int rescode = response.code();
+               // at.setResponseCode(String.valueOf(rescode));
+              //  System.out.println("Imefika Hapa na data " + rescode);
 
-                amrsTriageService.save(at);
+               // amrsTriageService.save(at);
 
 
 
-                if(amrsEncounters.size()>0) {
+           /*     if(amrsEncounters.size()>0) {
                     System.out.println("Encounter ID " + amrsEncounters.get(0).getEncounterId() + " Visit ID " + at.getVisitId());
                 }
             }
@@ -154,6 +248,19 @@ public class CareOpenMRSPayload {
         }
     }
 
+
+        public static boolean isDecimal(String value) {
+            try {
+                Double.parseDouble(value); // Convert to double
+                return value.contains("."); // Check for decimal point
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+
     public static void amrsProgramSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, String parentUUID, String locations, String auth, String url) {
+    }
+
+    public static void patientStatus(AMRSPatientStatusService amrsPatientStatusService, String parentUUID, String locations, String auth, String url) {
     }
 }
