@@ -16,7 +16,11 @@ public class AMRSTriage {
     private String visitId;
     private String locationId;
     private String obsDateTime;
-    private String heightAgeZscore;
+    private String conceptId;
+  private String kenyaemConceptId;
+    private String value;
+
+    /* private String heightAgeZscore;
     private String weightHeightZscore;
     private String bmiAgeZscore;
     private String bmi;
@@ -28,10 +32,13 @@ public class AMRSTriage {
     private String spo2;
     private String rr;
     private String weight;
-    private String height;
+    private String height; */
   private String responseCode;
   private String kenyaemrFormUuid;
   private String kenyaemrEncounterUuid;
+  private String kenyaemrVisitUuid;
+
+  private String kenyaemrPatientUuid;
 
 
   public Integer getId() {
@@ -90,108 +97,12 @@ public class AMRSTriage {
     this.obsDateTime = obsDateTime;
   }
 
-  public String getHeightAgeZscore() {
-    return heightAgeZscore;
+  public String getValue() {
+    return value;
   }
 
-  public void setHeightAgeZscore(String heightAgeZscore) {
-    this.heightAgeZscore = heightAgeZscore;
-  }
-
-  public String getWeightHeightZscore() {
-    return weightHeightZscore;
-  }
-
-  public void setWeightHeightZscore(String weightHeightZscore) {
-    this.weightHeightZscore = weightHeightZscore;
-  }
-
-  public String getBmiAgeZscore() {
-    return bmiAgeZscore;
-  }
-
-  public void setBmiAgeZscore(String bmiAgeZscore) {
-    this.bmiAgeZscore = bmiAgeZscore;
-  }
-
-  public String getBmi() {
-    return bmi;
-  }
-
-  public void setBmi(String bmi) {
-    this.bmi = bmi;
-  }
-
-  public String getMuacMm() {
-    return muacMm;
-  }
-
-  public void setMuacMm(String muacMm) {
-    this.muacMm = muacMm;
-  }
-
-  public String getSystolicBp() {
-    return systolicBp;
-  }
-
-  public void setSystolicBp(String systolicBp) {
-    this.systolicBp = systolicBp;
-  }
-
-  public String getDiastolicBp() {
-    return diastolicBp;
-  }
-
-  public void setDiastolicBp(String diastolicBp) {
-    this.diastolicBp = diastolicBp;
-  }
-
-  public String getPulse() {
-    return pulse;
-  }
-
-  public void setPulse(String pulse) {
-    this.pulse = pulse;
-  }
-
-  public String getTemperature() {
-    return temperature;
-  }
-
-  public void setTemperature(String temperature) {
-    this.temperature = temperature;
-  }
-
-  public String getSpo2() {
-    return spo2;
-  }
-
-  public void setSpo2(String spo2) {
-    this.spo2 = spo2;
-  }
-
-  public String getRr() {
-    return rr;
-  }
-
-  public void setRr(String rr) {
-    this.rr = rr;
-  }
-
-  public String getWeight() {
-    return weight;
-  }
-
-  public void setWeight(String weight) {
-    this.weight = weight;
-  }
-
-  public String getHeight() {
-    return height;
-  }
-
-  public void setHeight(String height) {
-    this.height = height;
+  public void setValue(String value) {
+    this.value = value;
   }
 
   public String getResponseCode() {
@@ -218,4 +129,35 @@ public class AMRSTriage {
     this.kenyaemrEncounterUuid = kenyaemrEncounterUuid;
   }
 
+  public String getKenyaemrVisitUuid() {
+    return kenyaemrVisitUuid;
+  }
+
+  public void setKenyaemrVisitUuid(String kenyaemrVisitUuid) {
+    this.kenyaemrVisitUuid = kenyaemrVisitUuid;
+  }
+
+  public String getConceptId() {
+    return conceptId;
+  }
+
+  public void setConceptId(String conceptId) {
+    this.conceptId = conceptId;
+  }
+
+  public String getKenyaemrPatientUuid() {
+    return kenyaemrPatientUuid;
+  }
+
+  public void setKenyaemrPatientUuid(String kenyaemrPatientUuid) {
+    this.kenyaemrPatientUuid = kenyaemrPatientUuid;
+  }
+
+  public String getKenyaemConceptId() {
+    return kenyaemConceptId;
+  }
+
+  public void setKenyaemConceptId(String kenyaemConceptId) {
+    this.kenyaemConceptId = kenyaemConceptId;
+  }
 }
