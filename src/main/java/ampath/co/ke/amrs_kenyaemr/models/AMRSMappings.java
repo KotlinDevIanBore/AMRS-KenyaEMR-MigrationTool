@@ -13,6 +13,8 @@ public class AMRSMappings {
     private String amrsConceptId;
     @Column(name = "kenyaemr_concept_uuid")
     private String kenyaemrConceptUuid;
+    @Column(name = "kenyaemr_concept_id")
+    private String kenyaemrConceptId;
 
     public Integer getId() {
         return id;
@@ -32,6 +34,14 @@ public class AMRSMappings {
 
     public void setKenyaemrConceptUuid(String kenyaemrConceptUuid) {
         this.kenyaemrConceptUuid = kenyaemrConceptUuid;
+    }
+
+    public String getKenyaemrConceptId() {
+        return kenyaemrConceptId;
+    }
+
+    public void setKenyaemrConceptId(String kenyaemrConceptId) {
+        this.kenyaemrConceptId = kenyaemrConceptId;
     }
 
     public void setAmrsConceptId(String amrsConceptId) {
