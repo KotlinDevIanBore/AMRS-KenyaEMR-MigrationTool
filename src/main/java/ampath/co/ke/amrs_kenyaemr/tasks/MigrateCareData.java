@@ -2014,7 +2014,6 @@ public class MigrateCareData {
         String pist = numbers.toString();
         String result = pist.substring(1, pist.length() - 1);
 
-
         if (amrsEnrollmentsList.isEmpty()) {
 
             sql = "select\n" +
@@ -2132,7 +2131,6 @@ public class MigrateCareData {
             System.out.println("List" + amrsEnrollmentsList);
             //            nextEncounterID = amrsRegimenSwitchList.get(0).getEncounterID();
             sql = "select\n" +
-                    "\t-- e.*,\n" +
                     "\te.patient_id,\n" +
                     "\te.encounter_id,\n" +
                     "\te.encounter_datetime,\n" +
@@ -2265,6 +2263,7 @@ public class MigrateCareData {
                 ae.setPatientType(rs.getString("Patient_Type"));
                 ae.setEntryPoint(rs.getString("Entry_point"));
                 ae.setTransferInDate(rs.getString("transfer_in_date"));
+                ae.setDateFirstEnrolledInCare(rs.getString("Date_first_enrolled_in_care"));
                 ae.setDateStartedArtAtTransferringFacility(rs.getString("Date_started_art_at_transferring_facility"));
                 ae.setBaselineArvUse(rs.getString("Baseline_arv_use"));
                 ae.setBaselineArvRegimenLine(rs.getString("Baseline_arv_regimen_line"));

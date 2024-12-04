@@ -34,31 +34,39 @@ public class NewEnrollmentPayload {
           jsonEncounter.put("form","e4b506c1-7379-42b6-a374-284469cba8da");
 
           JSONObject jsonObservationPatientType = new JSONObject();
-          String concept = null;
+          String conceptvalue = null;
 
           switch (at.getPatientType()) {
-            case "164144":
-              concept = "164144AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+            case "164144": // New client
+              conceptvalue = "164144AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
               break;
-            case "160563":
-              concept = "160563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+            case "160563": // Transfer in
+              conceptvalue = "160563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
               break;
-            case "164931":
-              concept = "4bd29eed-e486-426d-a2b6-7e5bb75319f6";
+            case "164931": // Transit patient
+              conceptvalue = "4bd29eed-e486-426d-a2b6-7e5bb75319f6";
+              break;
+            case "159833": // Re-enrollment(Re-activation)
+              conceptvalue = "159833AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
               break;
             default:
               throw new IllegalArgumentException("Unknown patient type: " + at.getPatientType());
           }
-          if (concept != null) {
-            jsonObservationPatientType.put("concept", concept);
-            jsonObservationPatientType.put("value", "1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+          if (conceptvalue != null) {
+            jsonObservationPatientType.put("concept", "423c034e-14ac-4243-ae75-80d1daddce55"); // patient type
+            jsonObservationPatientType.put("value", conceptvalue);
             jsonObservations.put(jsonObservationPatientType);
           }
 
-          JSONObject jsonObservationEncounterDatetime = new JSONObject();
-          jsonObservationEncounterDatetime.put("concept","160555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-          jsonObservationEncounterDatetime.put("value", at.getEncounterDatetime());
-          jsonObservations.put(jsonObservationEncounterDatetime);
+          JSONObject jsonObservationDateStartedArtAtTransferringFacility = new JSONObject();
+          jsonObservationDateStartedArtAtTransferringFacility.put("concept","159599AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+          jsonObservationDateStartedArtAtTransferringFacility.put("value", at.getDateStartedArtAtTransferringFacility());
+          jsonObservations.put(jsonObservationDateStartedArtAtTransferringFacility);
+
+          JSONObject jsonObservationDateFirstEnrolled = new JSONObject();
+          jsonObservationDateFirstEnrolled.put("concept","160555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+          jsonObservationDateFirstEnrolled.put("value", at.getDateFirstEnrolledInCare());
+          jsonObservations.put(jsonObservationDateFirstEnrolled);
 
           jsonEncounter.put("obs",jsonObservations);
 
