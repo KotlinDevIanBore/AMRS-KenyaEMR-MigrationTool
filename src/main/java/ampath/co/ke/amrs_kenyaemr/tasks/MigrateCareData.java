@@ -2560,7 +2560,8 @@ public class MigrateCareData {
                 "amrs.form f on f.form_id = e.form_id\n" +
                 " limit 100\n" +
                 " -- where voided=0;";
-   Connection con = DriverManager.getConnection(server, username, password);
+
+        Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                 ResultSet.CONCUR_READ_ONLY);
@@ -2584,14 +2585,7 @@ public class MigrateCareData {
             amrsFormsMappingService.save(form);
 
         }
-
-
     }
-}
-
- 
-
-
     public static void tcas(String server, String username, String password, String locations, String parentUUID, AMRSTCAService amrstcaService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
 
