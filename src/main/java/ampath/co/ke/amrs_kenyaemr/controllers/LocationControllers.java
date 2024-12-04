@@ -193,7 +193,7 @@ public class LocationControllers {
        // MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
 
         //obs
-        MigrateCareData.obs(server, username, password, locationId, parentUuid, amrsObsService, amrsPatientServices, amrsConceptReader , OpenMRSURL,auth);
+        MigrateCareData.obs(server, username, password, locationId, parentUuid, amrsEncounterService, amrsObsService, amrsPatientServices, amrsConceptReader , OpenMRSURL,auth);
         System.out.println("AMRS Locations "+locationId);
 
         return locationId;
