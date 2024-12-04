@@ -1,0 +1,16 @@
+package ampath.co.ke.amrs_kenyaemr.repositories;
+
+import ampath.co.ke.amrs_kenyaemr.models.AMRSFormsMapper;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository("AMRSFormsMappingRepository")
+public interface AMRSFormsMappingRepository extends JpaRepository<AMRSFormsMapper, Long> {
+    AMRSFormsMapper findByAmrsFormId(String amrsFormId);
+    List<AMRSFormsMapper> getAll();
+    List<AMRSFormsMapper> findByAmrsEncounterTypeId(String encounterTypeid);
+    List<AMRSFormsMapper> findBykenyaemrFormUuid(String kenyaemrFormUuid);
+    List<AMRSFormsMapper> findByAmrsMigrationStatus(boolean migrationStatus);
+}
