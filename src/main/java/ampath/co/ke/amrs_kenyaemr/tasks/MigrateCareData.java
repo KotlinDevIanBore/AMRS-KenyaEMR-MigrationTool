@@ -988,7 +988,6 @@ public class MigrateCareData {
         }
     }
 
-
     public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
 
@@ -2537,5 +2536,64 @@ public class MigrateCareData {
         }
 
     }
+
+    public static void formsMappings(String server, String username, String password, String locations, String parentUUID, AMRSFormsMappingService amrsFormsMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        String sql = "select distinct(e.form_id), \n" +
+                "e.encounter_type ,\n" +
+                "f.name,\n" +
+                "case \n" +
+                "when e.form_id in(14,16,17,44,49,59,61,85,84,89,87,94,88,93,98,105,118,119,121,133,135,124,80,232,236,241,247,254,252,251,250)  then '22c68f86-bbf0-49ba-b2d1-23fa7ccf0259' -- adult return\n" +
+                "when e.form_id in(15,34,43,50,58,35,96,111,120,134,136,230,235) then 'e4b506c1-7379-42b6-a374-284469cba8da' -- adult initial\n" +
+                "when e.form_id in(30,22,19,18,20,21) then '2cdeded1-3f69-3bda-beff-1ed2ead94eaf' -- lab\n" +
+                "when e.form_id in(64,65,69,70,109,110,231) then '83fb6ab2-faec-4d87-a714-93e77a28a201' -- art fast track\n" +
+                "when e.form_id in(66,91,112) then 'a1a62d1e-2def-11e9-b210-d663bd873d93' -- defaulter tracing\n" +
+                "when e.form_id = 68 then 'c483f10f-d9ee-4b0d-9b8c-c24c1ec24701'\n" +
+                "when e.form_id = 71 then '5cf01528-09da-11ea-8d71-362b9e155667'\n" +
+                "when e.form_id = 52 then 'b8357314-0f6a-4fc9-a5b7-339f47095d62'\n" +
+                "when e.form_id in(97,248) then 'e8f98494-af35-4bb8-9fc7-c409c8fed843' -- anc\n" +
+                "when e.form_id = 31 then '1f76643e-2495-11e9-ab14-d663bd873d93' -- discontinuation\n" +
+                "when e.form_id in(101,239) then '59ed8e62-7f1f-40ae-a2e3-eabe350277ce' -- tb\n" +
+                "when e.form_id in(174,240,249) then '72aa78e0-ee4b-47c3-9073-26f3b9ecc4a7' -- pnc\n" +
+                "when e.form_id = 225 then 'a52c57d4-110f-4879-82ae-907b0d90add6'\n" +
+                "when e.form_id = 244 then '755b59e6-acbb-4853-abaf-be302039f902' -- cwc\n" +
+                "when e.form_id = 164 then '31a371c6-3cfe-431f-94db-4acadad8d209' -- oncology\n" +
+                "end kenyaemr_form_uuid\n" +
+                "from \n" +
+                "amrs.encounter e\n" +
+                "inner join\n" +
+                "amrs.form f on f.form_id = e.form_id\n" +
+                " limit 100\n" +
+                " -- where voided=0;";
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String amrsFormId = rs.getString("form_id");
+            String encounterType = rs.getString("encounter_type");
+            String amrsFormName = rs.getString("name");
+            String kenyaEmrFormUuid = rs.getString("kenyaemr_form_uuid");
+
+            AMRSFormsMapper form = new AMRSFormsMapper();
+            form.setAmrsFormId(amrsFormId);
+            form.setAmrsEncounterTypeId(encounterType);
+            form.setKenyaemrFormUuid(kenyaEmrFormUuid);
+            form.setAmrsFormName(amrsFormName);
+            form.setAmrsMigrationStatus(false);
+            form.setAmrsMigrationErrorDescription(null);
+            amrsFormsMappingService.save(form);
+
+        }
+
+
+    }
+
+
 }
 
