@@ -1738,7 +1738,7 @@ public class MigrateCareData {
     }
 
     public static void obs(String server, String username, String password, String locations,
-                           String parentUUID, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices,
+                           String parentUUID, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices,
                            AMRSTranslater amrsConceptReader, String url, String auth) throws SQLException, JSONException,
             ParseException, IOException {
 
@@ -1774,7 +1774,7 @@ public class MigrateCareData {
 
     private static List<AMRSObs> processPatientObservations(String server, String username,
                                                             String password, String patientId, String location, String patientUuid, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
-                                                            AMRSConceptReader amrsConceptReader) throws SQLException {
+                                                            AMRSTranslater amrsConceptReader) throws SQLException {
 
         List<AMRSObs> newObservations = new ArrayList<>();
         String sql = "SELECT \n" +
@@ -1839,7 +1839,7 @@ public class MigrateCareData {
     }
 
     private static AMRSObs processObservationRow(ResultSet rs, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
-                                                 AMRSConceptReader amrsConceptReader, String location, String patientUuid) throws SQLException {
+                                                 AMRSTranslater amrsConceptReader, String location, String patientUuid) throws SQLException {
 
         String conceptId = rs.getString("concept_id");
         String personId = rs.getString("person_id");
@@ -2602,7 +2602,6 @@ public class MigrateCareData {
 
 
     }
-}
 
 
 
@@ -2704,4 +2703,5 @@ public class MigrateCareData {
         }
     }
 }
+
 
