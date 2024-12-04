@@ -2,15 +2,21 @@ package ampath.co.ke.amrs_kenyaemr.service;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSEncountersMapping;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSFormsMapper;
+import ampath.co.ke.amrs_kenyaemr.repositories.AMRSConceptMappingRepository;
 import ampath.co.ke.amrs_kenyaemr.repositories.AMRSFormsMappingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service("AMRSFormsMappingService")
 public class AMRSFormsMappingService {
-    private AMRSFormsMappingRepository amrsFormsMappingRepository;
 
+    private AMRSFormsMappingRepository amrsFormsMappingRepository;
+    @Autowired
+    public AMRSFormsMappingService(AMRSFormsMappingRepository amrsMappingRepository) {
+        this.amrsFormsMappingRepository = amrsMappingRepository;
+    }
     public AMRSFormsMapper save(AMRSFormsMapper dataset){
         return amrsFormsMappingRepository.save(dataset);
     }
