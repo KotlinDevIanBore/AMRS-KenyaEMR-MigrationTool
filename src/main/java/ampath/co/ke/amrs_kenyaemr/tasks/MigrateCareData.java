@@ -2530,5 +2530,113 @@ public class MigrateCareData {
         }
 
     }
+
+
+
+
+    public static void tcas(String server, String username, String password, String locations, String parentUUID, AMRSTCAService amrstcaService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+
+        String samplePatientList = AMRSSamples.getPersonIdList();
+
+        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+        String pidss = "";
+        for (int y = 0; y < amrsPatientsList.size(); y++) {
+            pidss += amrsPatientsList.get(y).getPersonId() + ",";
+        }
+        String pid = pidss.substring(0, pidss.length() - 1);
+
+        System.out.println("Patient Id " + pid);
+
+
+        System.out.println("Patient Id " + pid);
+
+//        String sql = "SELECT o.*, et.encounter_type_id, UUID() AS migration_uuid, NULL AS kenyaemr_order_uuid,\n" +
+//                " NULL AS kenyaemr_order_id FROM amrs.orders o \n" +
+//                " inner join amrs.encounter e on (e.encounter_id = o.encounter_id)\n" +
+//                " inner join amrs.encounter_type et on (et.encounter_type_id = e.encounter_type)\n" +
+//                " where  e.patient_id in (" + samplePatientList + " ) order by o.date_created ASC "; //
+
+
+        String sql = "SELECT o.person_id as patient_id,e.form_id,o.concept_id,o.encounter_id, " +
+                "o.value_datetime as tca, o.obs_datetime,o.uuid  " +
+                "FROM amrs.obs o \n" +
+                "INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+                "AND o.person_id IN("+samplePatientList+")\n" +
+                "AND c.uuid in ('a8a666ba-1350-11df-a1f1-0026b9348838','318a5e8b-218c-4f66-9106-cd581dec1f95')\n" +
+                "INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0";
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+
+            String patientId = rs.getString("patient_id");
+
+            String formId = rs.getString("form_id");
+            String conceptId = rs.getString("concept_id");
+            String encounterId = rs.getString("encounter_id");
+            String tca = rs.getString("tca");
+            String obsDateTime = rs.getString("obs_datetime");
+            String amrsTCAUuid = rs.getString("uuid");
+
+
+//            List<AMRSTcas> amrsTcas = AMRSTCAService.findByUuid(amrsTCAUuid);
+//            if (amrsTcas.isEmpty()) {
+                String kenyaemr_uuid = "";
+                AMRSOrders ao = new AMRSOrders();
+                AMRSTcas amrsTcas1 = new AMRSTcas();
+
+                String kenyaemr_encounter_id;
+
+
+
+                amrsTcas1.setPatientId(patientId);
+                amrsTcas1.setFormId(formId);
+                amrsTcas1.setConceptId(conceptId);
+                amrsTcas1.setEncounterId(encounterId);
+                amrsTcas1.setTca(tca);
+                amrsTcas1.setObsDateTime(obsDateTime);
+
+                List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+                String kenyaemr_patient_uuid = "";
+                if (!amrsPatients.isEmpty()) {
+                    kenyaemr_patient_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                    amrsTcas1.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+                } else {
+                    kenyaemr_patient_uuid = "Not Found"; // add logic for missing patientkenyaemr_patient_uuid
+                }
+
+
+                String kenyaEmrEncounterUuid = "";
+                List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+                if (!amrsEncounters.isEmpty()) {
+                    kenyaEmrEncounterUuid = amrsEncounters.get(0).getKenyaemrEncounterUuid();
+                    amrsTcas1.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+                }
+
+                String kenyaEmrConceptUuid="";
+                kenyaEmrConceptUuid="162549AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+                amrsTcas1.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+//                List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(conceptId);
+//                    if (!amrsConceptMapper.isEmpty()) {
+////                        kenyaEmrConceptUuid = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
+//                    }
+
+                amrstcaService.save(amrsTcas1);
+
+            //}
+            // Call method to create and insert the payload
+            TCAsPayload.tcas(amrstcaService, amrsPatientServices, url, auth);
+
+        }
+    }
 }
 

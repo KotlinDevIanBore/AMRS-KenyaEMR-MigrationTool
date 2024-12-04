@@ -64,6 +64,9 @@ public class CronTasks {
     private AMRSPatientStatusService amrsPatientStatusService;
 
     @Autowired
+<<<<<<< HEAD
+    private AMRSTCAService amrstcaService;
+=======
     private AMRSMappingService amrsMappingService;
 
     @Autowired
@@ -71,6 +74,7 @@ public class CronTasks {
 
     @Autowired
     private AMRSTranslater amrsTranslater;
+>>>>>>> 756a30f2ba7b3b3f32ea10b4e17fa0f70d329580
 
    // @Scheduled(cron = "0 */1 * ? * *")
    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
@@ -169,12 +173,22 @@ public class CronTasks {
     MigrateCareData.programEnrollments(server, username, password, locationId,parentUuid, amrsEnrollmentService, amrsEncounterService, amrsConceptMappingService, OpenMRSURL, auth);
   }
 
-
+//    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+  public void civilStatus() throws JSONException, ParseException, SQLException, IOException {
+  }
   //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void patientStatus() throws JSONException, ParseException, SQLException, IOException {
+
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         MigrateCareData.patientStatus(server, username, password, locationId,parentUuid, amrsPatientStatusService, amrsConceptMappingService, amrsPatientServices, OpenMRSURL, auth);
+    }
+
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    public void ProcessTCAs() throws JSONException, ParseException, SQLException, IOException {
+        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        MigrateCareData.tcas(server,username,password,locationId,parentUuid, amrstcaService, amrsPatientServices, amrsEncounterMappingService, amrsConceptMappingService,amrsEncounterService, OpenMRSURL,auth);
     }
 
 
