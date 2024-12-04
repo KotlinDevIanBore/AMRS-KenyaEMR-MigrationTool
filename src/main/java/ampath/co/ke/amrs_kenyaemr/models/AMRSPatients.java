@@ -78,13 +78,11 @@ public class AMRSPatients {
     @Column(name = "landmark")
     private String landmark;
 
-
-
     @Column(name = "migrated")
     private int migrated;
 
     @Column(name = "response_code")
-    private int response_code;
+    private String responseCode;
 
     public Integer getId() {
         return id;
@@ -225,12 +223,12 @@ public class AMRSPatients {
         this.migrated = migrated;
     }
 
-    public int getResponse_code() {
-        return response_code;
+    public String getResponseCode() {
+        return responseCode;
     }
 
-    public void setResponse_code(int response_code) {
-        this.response_code = response_code;
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
     }
 
     public String getParentlocationuuid() {

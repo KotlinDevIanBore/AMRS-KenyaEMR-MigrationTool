@@ -30,57 +30,59 @@ public class OrdersPayload {
 //                        Integer amrs_uuid = Integer.valueOf(amrsOrders.get(x).getUuid());
                         String careSettings = amrsOrders.get(x).getCareSetting();
                         String orderReason = amrsOrders.get(x).getOrderReason();
-                        String concept_uuid="856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+                        String concept_uuid=amrsOrders.get(x).getKenyaemrConceptUuid();
+                        if(concept_uuid==null) {
 
-                        JSONObject jsonOrder = new JSONObject();
+                            JSONObject jsonOrder = new JSONObject();
 //                        jsonOrder.put("patient", pid);
 //                        jsonOrder.put("orderId", kenyaemrOrderId);
 //                        jsonOrder.put("orderNumber", orderNumber);
 //                        jsonOrder.put("orderType", orderType);
-                        jsonOrder.put("urgency", urgency);
+                            jsonOrder.put("urgency", urgency);
 //                        jsonOrder.put("orderer", orderer);
-                        jsonOrder.put("orderer", "ae01b8ff-a4cc-4012-bcf7-72359e852e14");
-                        jsonOrder.put("orderReason", orderReason);
+                            jsonOrder.put("orderer", "ae01b8ff-a4cc-4012-bcf7-72359e852e14");
+                            jsonOrder.put("orderReason", orderReason);
 //                        jsonOrder.put("amrs_uuid", amrs_uuid);
-                        jsonOrder.put("careSetting", "OUTPATIENT");
-                        jsonOrder.put("patient", amrsOrders.get(x).getKenyaemrPatientUuid());
-                        jsonOrder.put("concept",concept_uuid);
-                        jsonOrder.put("encounter",amrsOrders.get(x).getKenyaEmrEncounterUuid());
-                        jsonOrder.put("action","new");
-                        jsonOrder.put("type","testorder");
+                            jsonOrder.put("careSetting", "OUTPATIENT");
+                            jsonOrder.put("patient", amrsOrders.get(x).getKenyaemrPatientUuid());
+                            jsonOrder.put("concept", concept_uuid);
+                            jsonOrder.put("encounter", amrsOrders.get(x).getKenyaEmrEncounterUuid());
+                            jsonOrder.put("action", "new");
+                            jsonOrder.put("type", "testorder");
 
-                        System.out.println("---------------------------------------------");
-                        System.out.println(jsonOrder.toString());
-                        System.out.println("----------------------------------------------");
+                            System.out.println("---------------------------------------------");
+                            System.out.println(jsonOrder.toString());
+                            System.out.println("----------------------------------------------");
 
-                        if(amrsOrders.get(0).getKenyaEmrEncounterUuid()!=null) {
-                            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX---------------"+amrsOrders.get(0).getKenyaemrPatientUuid());
-                        }
+                            if (amrsOrders.get(0).getKenyaEmrEncounterUuid() != null) {
+                                System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX---------------" + amrsOrders.get(0).getKenyaemrPatientUuid());
+                            }
 
-                        OkHttpClient client = new OkHttpClient();
-                        MediaType mediaType = MediaType.parse("application/json");
-                        RequestBody body = RequestBody.create(mediaType, jsonOrder.toString());
-                        String bodyString = body.toString();
-                        Request request = new Request.Builder()
-                                .url(url + "order")
-                                .method("POST", body)
-                                .addHeader("Authorization", "Basic " + auth)
-                                .addHeader("Content-Type", "application/json")
-                                .build();
-                        Response response = client.newCall(request).execute();
+                            OkHttpClient client = new OkHttpClient();
+                            MediaType mediaType = MediaType.parse("application/json");
+                            RequestBody body = RequestBody.create(mediaType, jsonOrder.toString());
+                            String bodyString = body.toString();
+                            Request request = new Request.Builder()
+                                    .url(url + "order")
+                                    .method("POST", body)
+                                    .addHeader("Authorization", "Basic " + auth)
+                                    .addHeader("Content-Type", "application/json")
+                                    .build();
+                            Response response = client.newCall(request).execute();
 
-                        String responseBody = response.body().string(); // Get the response as a string
+                            String responseBody = response.body().string(); // Get the response as a string
 //                        System.out.println("Response ndo hii " + responseBody + " More message " + response.message() + " reponse code " + response.code());
-                        JSONObject jsonObject = new JSONObject(responseBody);
-                        // System.out.println("Response ndo hii " + jsonUser.toString());
+                            JSONObject jsonObject = new JSONObject(responseBody);
+                            // System.out.println("Response ndo hii " + jsonUser.toString());
 //                        System.out.println("Response ndo hii " + response);
 //                        System.out.println("Response Payload " + jsonOrder.toString());
-                        if(response.code()==201) {
+                            if (response.code() == 201) {
 //                            Integer orderUuid = Integer.valueOf(jsonObject.getString("uuid"));
-                            String orderUuid = jsonObject.getString("uuid");
-                            amrsOrders1.setKenyaemrOrderUuid(orderUuid);
-                            amrsOrders1.setResponseCode(String.valueOf(response.code()));
-                            amrsOrderService.save(amrsOrders1);
+                                String orderUuid = jsonObject.getString("uuid");
+                                amrsOrders1.setKenyaemrOrderUuid(orderUuid);
+                                amrsOrders1.setResponseCode(String.valueOf(response.code()));
+                                amrsOrderService.save(amrsOrders1);
+                            }
                         }
                     } else {
                         System.out.println("Order not saved");

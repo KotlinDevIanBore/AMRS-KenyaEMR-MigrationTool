@@ -1,11 +1,9 @@
 package ampath.co.ke.amrs_kenyaemr.tasks;
 
 import ampath.co.ke.amrs_kenyaemr.methods.AMRSSamples;
+import ampath.co.ke.amrs_kenyaemr.methods.AMRSTranslater;
 import ampath.co.ke.amrs_kenyaemr.models.*;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSIdentifiersService;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSPersonAtrributesService;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSUserServices;
+import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.RegisterOpenMRSPayload;
 import jakarta.persistence.Column;
 import org.json.JSONException;
@@ -25,12 +23,13 @@ public class MigrateRegistration {
 
     @Autowired
     AMRSPatientServices amrsPatientServices;
-    public static void users(String server, String username, String password, String locations, String parentUUID,AMRSUserServices amrsUserServices,String url,String auth) throws SQLException, JSONException, ParseException, IOException {
-        String sql ="";
+
+    public static void users(String server, String username, String password, String locations, String parentUUID, AMRSUserServices amrsUserServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        String sql = "";
         List<AMRSUsers> amrsVisitsList = amrsUserServices.findFirstByOrderByIdDesc();
-        if(amrsVisitsList.size()>0) {
-            String visitId= amrsVisitsList.get(0).getUser_id();
-             sql = "select \n" +
+        if (amrsVisitsList.size() > 0) {
+            String visitId = amrsVisitsList.get(0).getUser_id();
+            sql = "select \n" +
                     "                u.uuid,\n" +
                     "                u.user_id,\n" +
                     "                u.system_id,\n" +
@@ -52,10 +51,10 @@ public class MigrateRegistration {
                     "                inner join amrs.person p on p.person_id=u.person_id\n" +
                     "                inner join amrs.person_name pn on pn.person_id=p.person_id\n" +
                     "                inner join amrs.person_address pa on pa.person_id=p.person_id\n" +
-                    "                where location_id in (" + locations + ") and u.user_id >"+ visitId +"  \n" +
+                    "                where location_id in (" + locations + ") and u.user_id >" + visitId + "  \n" +
                     "                group by u.user_id\n" +
                     "                order by u.user_id asc";
-        }else{
+        } else {
             sql = "select \n" +
                     "                u.uuid,\n" +
                     "                u.user_id,\n" +
@@ -93,9 +92,9 @@ public class MigrateRegistration {
         x = rs.getRow();
         rs.beforeFirst();
         while (rs.next()) {
-            System.out.println("User id "+ rs.getString(1));
-            List<AMRSUsers> afyastatErrors = amrsUserServices.getUserByLocation(rs.getString(1),parentUUID);
-            if (afyastatErrors.size()==0) {
+            System.out.println("User id " + rs.getString(1));
+            List<AMRSUsers> afyastatErrors = amrsUserServices.getUserByLocation(rs.getString(1), parentUUID);
+            if (afyastatErrors.size() == 0) {
                 AMRSUsers ae = new AMRSUsers();
                 ae.setUuid(rs.getString(1));
                 ae.setUser_id(rs.getString(2));
@@ -117,208 +116,206 @@ public class MigrateRegistration {
                 amrsUserServices.save(ae);
 
                 //Migate user
-                RegisterOpenMRSPayload.users(ae,amrsUserServices,url,auth);
+                RegisterOpenMRSPayload.users(ae, amrsUserServices, url, auth);
 
 
             }
 //con.close();
         }
     }
+
     //Patients
-    public static void patients (String server, String username, String password, String locations, String parentUUID, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,AMRSPersonAtrributesService amrsPersonAtrributesService,String url,String auth) throws SQLException, JSONException, ParseException, IOException {
-      List<AMRSPatients> patientsListt = amrsPatientServices.findFirstByOrderByIdDesc();
+    public static void patients(String server, String username, String password, String locations, String parentUUID, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService, AMRSPersonAtrributesService amrsPersonAtrributesService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        List<AMRSPatients> patientsListt = amrsPatientServices.findFirstByOrderByIdDesc();
 
-        String sql="";
-     if(patientsListt.size()==0){
-         sql = "select  \n" +
-                 "                   p.uuid, \n" +
-                 "                   p.person_id, \n" +
-                 "                   pn.given_name, \n" +
-                 "                   pn.family_name, \n" +
-                 "                   pn.middle_name, \n" +
-                 "                   p.gender, \n" +
-                 "                   p.birthdate, \n" +
-                 "                   pa.address1, \n" +
-                 "                   pa.county_district, \n" +
-                 "                   pa.address4, \n" +
-                 "                   pa.address5, \n" +
-                 "                   pa.address6, \n" +
-                 "                   p.dead, \n" +
-                 "                   p.cause_of_death,\n" +
-                 "                   p.death_date,\n" +
-                 "                   case \n" +
-                 "  when   p.cause_of_death = 16 then 142412\n" +
-                 "  when   p.cause_of_death = 43 then 114100\n" +
-                 "  when   p.cause_of_death = 58 then 112141\n" +
-                 "  when   p.cause_of_death = 60 then 115835\n" +
-                 "  when   p.cause_of_death = 84 then 84\n" +
-                 "  when   p.cause_of_death = 86 then 86\n" +
-                 "  when   p.cause_of_death = 102 then 102\n" +
-                 "  when   p.cause_of_death = 123 then 116128\n" +
-                 "  when   p.cause_of_death = 148 then 112234\n" +
-                 "  when   p.cause_of_death = 507 then 507\n" +
-                 "  when   p.cause_of_death = 903 then 117399\n" +
-                 "  when   p.cause_of_death = 1067 then 1067\n" +
-                 "  when   p.cause_of_death = 1107 then 1107\n" +
-                 "  when   p.cause_of_death = 1571 then 125561\n" +
-                 "  when   p.cause_of_death = 1593 then 159\n" +
-                 "  when   p.cause_of_death = 2375 then 137296\n" +
-                 "  when   p.cause_of_death = 5041 then 5041\n" +
-                 "  when   p.cause_of_death = 5547 then 119975\n" +
-                 "  when   p.cause_of_death = 5622 then 5622\n" +
-                 "  when   p.cause_of_death = 6483 then 139444\n" +
-                 "  when   p.cause_of_death = 7257 then 134612\n" +
-                 "  when   p.cause_of_death = 7971 then 145717\n" +
-                 "  when   p.cause_of_death = 10366 then 133814\n" +
-                 "  when   p.cause_of_death = 12038 then 155762 \n" +
-                 "  end as kmr_concept_id,\n" +
-                 "                   case\n" +
-                 "  when   p.cause_of_death = 16 then '142412AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 43 then '114100AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 58 then '112141AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 60 then '115835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 84 then '84AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 86 then '86AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 102 then '102AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 123 then '116128AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 148 then '112234AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 507 then '507AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 903 then '117399AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 1067 then '1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 1571 then '125561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 1593 then '159AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 2375 then '137296AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 5041 then '5041AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 5547 then '119975AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 6483 then '139444AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 7257 then '134612AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 7971 then '145717AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 10366 then '133814AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' --\n" +
-                 "  when   p.cause_of_death = 12038 then '155762AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  end as kmr_concept_uuid ,    \n" +
-                 "                   p.birthdate_estimated, \n" +
-                 "                   p.voided, \n" +
-                 "                   l.location_id, \n" +
-                 "                   l.name location_name, \n" +
-                 "                   pa.address1 county,  \n" +
-                 "                   pa.address2 sub_county, \n" +
-                 "                   pa.city_village, \n" +
-                 "                   pa.state_province,  \n" +
-                 "                   pa.county_district, \n" +
-                 "                   pa.address3 landmark \n" +
-                 "                   from amrs.encounter e  \n" +
-                 "                   inner join amrs.patient pt on e.patient_id =pt.patient_id \n" +
-                 "                   inner join amrs.person p on p.person_id=pt.patient_id \n" +
-                 "                   inner join amrs.person_name pn on pn.person_id=p.person_id \n" +
-                 "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 \n" +
-                 "                   inner join amrs.location l on e.location_id=l.location_id \n" +
-                 "                   where l.uuid in ( "+ locations +" )  and p.person_id in ( "+ samplePatientList +") and p.voided=0  -- and p.person_id >  + pid +    \n" +
-                 "                   group by pt.patient_id \n" +
-                 "                   order by e.patient_id asc ";
-        System.out.println("SQL ID is "+ sql);
-     }else {
-         String pid = patientsListt.get(0).getPersonId();
-         System.out.println("Person ID is "+ pid);
-         System.out.println("SQL ID is "+ sql);
+        String sql = "";
+        if (patientsListt.size() == 0) {
+            sql = "select  \n" +
+                    "                   p.uuid, \n" +
+                    "                   p.person_id, \n" +
+                    "                   pn.given_name, \n" +
+                    "                   pn.family_name, \n" +
+                    "                   pn.middle_name, \n" +
+                    "                   p.gender, \n" +
+                    "                   p.birthdate, \n" +
+                    "                   pa.address1, \n" +
+                    "                   pa.county_district, \n" +
+                    "                   pa.address4, \n" +
+                    "                   pa.address5, \n" +
+                    "                   pa.address6, \n" +
+                    "                   p.dead, \n" +
+                    "                   p.cause_of_death,\n" +
+                    "                   p.death_date,\n" +
+                    "case \n" +
+                    "\twhen p.dead = 1 and c.concept_id = 16 then 142412\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 43 then 114100\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 58 then 112141\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 60 then 115835\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 84 then 84\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 86 then 86\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 102 then 102\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 123 then 116128\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 148 then 112234\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 507 then 507\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 903 then 117399\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1067 then 1067\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1107 then 1107\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1571 then 125561\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1593 then 159\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 2375 then 137296\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5041 then 5041\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5547 then 119975\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5622 then 5622\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 6483 then 139444\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 7257 then 134612\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 7971 then 145717 \n" +
+                    "\twhen p.dead = 1 and c.concept_id = 10366 then 133814\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 12038 then 155762 \n" +
+                    "    else 5622\n" +
+                    "\tend as kmr_concept_id," +
+                    "case\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 16 then '142412AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 43 then '114100AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 58 then '112141AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 60 then '115835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 84 then '84AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 86 then '86AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 102 then '102AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 123 then '116128AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 148 then '112234AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 507 then '507AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 903 then '117399AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1067 then '1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1571 then '125561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1593 then '159AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 2375 then '137296AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5041 then '5041AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5547 then '119975AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 6483 then '139444AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 7257 then '134612AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 7971 then '145717AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 10366 then '133814AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "\twhen p.dead = 1 and c.concept_id = 12038 then '155762AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\tend as kmr_concept_uuid, \n" +
+                    "                   p.birthdate_estimated, \n" +
+                    "                   p.voided, \n" +
+                    "                   l.location_id, \n" +
+                    "                   l.name location_name, \n" +
+                    "                   pa.address1 county,  \n" +
+                    "                   pa.address2 sub_county, \n" +
+                    "                   pa.city_village, \n" +
+                    "                   pa.state_province,  \n" +
+                    "                   pa.county_district, \n" +
+                    "                   pa.address3 landmark \n" +
+                    "                   from amrs.encounter e  \n" +
+                    "                   inner join amrs.patient pt on e.patient_id =pt.patient_id \n" +
+                    "                   inner join amrs.person p on p.person_id=pt.patient_id \n" +
+                    "                   inner join amrs.person_name pn on pn.person_id=p.person_id \n" +
+                    "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 \n" +
+                    "                   inner join amrs.location l on e.location_id=l.location_id \n" +
+                    "                   where l.uuid in ( " + locations + " ) and p.voided=0  and p.person_id in ( " + samplePatientList + ") and p.voided=0  -- and p.person_id >  + pid +    \n" +
+                    "                   group by pt.patient_id \n" +
+                    "                   order by e.patient_id asc ";
+            System.out.println("SQL ID is " + sql);
+        } else {
+            String pid = patientsListt.get(0).getPersonId();
+            System.out.println("Person ID is " + pid);
+            System.out.println("SQL ID is " + sql);
 
-        sql = "select  \n" +
-                 "                   p.uuid, \n" +
-                 "                   p.person_id, \n" +
-                 "                   pn.given_name, \n" +
-                 "                   pn.family_name, \n" +
-                 "                   pn.middle_name, \n" +
-                 "                   p.gender, \n" +
-                 "                   p.birthdate, \n" +
-                 "                   pa.address1, \n" +
-                 "                   pa.county_district, \n" +
-                 "                   pa.address4, \n" +
-                 "                   pa.address5, \n" +
-                 "                   pa.address6, \n" +
-                 "                   p.dead, \n" +
-                 "                   p.cause_of_death,\n" +
-                 "                   p.death_date,\n" +
-                 "                   case \n" +
-                 "  when   p.cause_of_death = 16 then 142412\n" +
-                 "  when   p.cause_of_death = 43 then 114100\n" +
-                 "  when   p.cause_of_death = 58 then 112141\n" +
-                 "  when   p.cause_of_death = 60 then 115835\n" +
-                 "  when   p.cause_of_death = 84 then 84\n" +
-                 "  when   p.cause_of_death = 86 then 86\n" +
-                 "  when   p.cause_of_death = 102 then 102\n" +
-                 "  when   p.cause_of_death = 123 then 116128\n" +
-                 "  when   p.cause_of_death = 148 then 112234\n" +
-                 "  when   p.cause_of_death = 507 then 507\n" +
-                 "  when   p.cause_of_death = 903 then 117399\n" +
-                 "  when   p.cause_of_death = 1067 then 1067\n" +
-                 "  when   p.cause_of_death = 1107 then 1107\n" +
-                 "  -- when   p.cause_of_death = 1548 then --\n" +
-                 "  when   p.cause_of_death = 1571 then 125561\n" +
-                 "  -- when   p.cause_of_death = 1572 then --\n" +
-                 "  when   p.cause_of_death = 1593 then 159\n" +
-                 "  when   p.cause_of_death = 2375 then 137296\n" +
-                 "  when   p.cause_of_death = 5041 then 5041\n" +
-                 "  when   p.cause_of_death = 5547 then 119975\n" +
-                 "  when   p.cause_of_death = 5622 then 5622\n" +
-                 "  when   p.cause_of_death = 6483 then 139444\n" +
-                 "  when   p.cause_of_death = 7257 then 134612\n" +
-                 "  when   p.cause_of_death = 7971 then 145717\n" +
-                 "  -- when   p.cause_of_death = 10363 then \n" +
-                 "  -- when   p.cause_of_death = 10364 then \n" +
-                 "  -- when   p.cause_of_death = 10365 then \n" +
-                 "  when   p.cause_of_death = 10366 then 133814\n" +
-                 "  -- when   p.cause_of_death = 10367 then \n" +
-                 "  -- when   p.cause_of_death = 10654 then\n" +
-                 "  when   p.cause_of_death = 12038 then 155762 \n" +
-                 "  end as kmr_concept_id,\n" +
-                 "                   case\n" +
-                 "  when   p.cause_of_death = 16 then '142412AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 43 then '114100AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 58 then '112141AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 60 then '115835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 84 then '84AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 86 then '86AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 102 then '102AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 123 then '116128AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 148 then '112234AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 507 then '507AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 903 then '117399AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 1067 then '1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 1571 then '125561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 1593 then '159AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 2375 then '137296AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 5041 then '5041AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 5547 then '119975AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 6483 then '139444AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 7257 then '134612AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 7971 then '145717AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  when   p.cause_of_death = 10366 then '133814AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' --\n" +
-                 "  when   p.cause_of_death = 12038 then '155762AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                 "  end as kmr_concept_uuid ,    \n" +
-                 "                   p.birthdate_estimated, \n" +
-                 "                   p.voided, \n" +
-                 "                   l.location_id, \n" +
-                 "                   l.name location_name, \n" +
-                 "                   pa.address1 county,  \n" +
-                 "                   pa.address2 sub_county, \n" +
-                 "                   pa.city_village, \n" +
-                 "                   pa.state_province,  \n" +
-                 "                   pa.county_district, \n" +
-                 "                   pa.address3 landmark \n" +
-                 "                   from amrs.encounter e  \n" +
-                 "                   inner join amrs.patient pt on e.patient_id =pt.patient_id \n" +
-                 "                   inner join amrs.person p on p.person_id=pt.patient_id \n" +
-                 "                   inner join amrs.person_name pn on pn.person_id=p.person_id \n" +
-                 "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 \n" +
-                 "                   inner join amrs.location l on e.location_id=l.location_id \n" +
-                 "where l.uuid in (" + locations + ") and p.person_id in ("+ samplePatientList +") \n" + //and p.person_id >"+ pid +"
-                 "group by pt.patient_id\n" +
-                 "order by e.patient_id asc";
+            sql = "select  \n" +
+                    "                   p.uuid, \n" +
+                    "                   p.person_id, \n" +
+                    "                   pn.given_name, \n" +
+                    "                   pn.family_name, \n" +
+                    "                   pn.middle_name, \n" +
+                    "                   p.gender, \n" +
+                    "                   p.birthdate, \n" +
+                    "                   pa.address1, \n" +
+                    "                   pa.county_district, \n" +
+                    "                   pa.address4, \n" +
+                    "                   pa.address5, \n" +
+                    "                   pa.address6, \n" +
+                    "                   p.dead, \n" +
+                    "                   p.cause_of_death,\n" +
+                    "                   p.death_date,\n" +
+                    "case \n" +
+                    "\twhen p.dead = 1 and c.concept_id = 16 then 142412\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 43 then 114100\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 58 then 112141\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 60 then 115835\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 84 then 84\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 86 then 86\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 102 then 102\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 123 then 116128\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 148 then 112234\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 507 then 507\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 903 then 117399\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1067 then 1067\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1107 then 1107\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1571 then 125561\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1593 then 159\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 2375 then 137296\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5041 then 5041\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5547 then 119975\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5622 then 5622\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 6483 then 139444\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 7257 then 134612\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 7971 then 145717 \n" +
+                    "\twhen p.dead = 1 and c.concept_id = 10366 then 133814\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 12038 then 155762 \n" +
+                    "    else 5622\n" +
+                    "\tend as kmr_concept_id," +
+                    "case\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 16 then '142412AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 43 then '114100AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 58 then '112141AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 60 then '115835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 84 then '84AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 86 then '86AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 102 then '102AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  c.concept_id = 123 then '116128AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 148 then '112234AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 507 then '507AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 903 then '117399AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1067 then '1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1571 then '125561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 1593 then '159AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 2375 then '137296AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5041 then '5041AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5547 then '119975AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 6483 then '139444AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 7257 then '134612AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 7971 then '145717AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and c.concept_id = 10366 then '133814AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "\twhen p.dead = 1 and c.concept_id = 12038 then '155762AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\tend as kmr_concept_uuid, \n" +
+                    "                   p.birthdate_estimated, \n" +
+                    "                   p.voided, \n" +
+                    "                   l.location_id, \n" +
+                    "                   l.name location_name, \n" +
+                    "                   pa.address1 county,  \n" +
+                    "                   pa.address2 sub_county, \n" +
+                    "                   pa.city_village, \n" +
+                    "                   pa.state_province,  \n" +
+                    "                   pa.county_district, \n" +
+                    "                   pa.address3 landmark \n" +
+                    "                   from amrs.encounter e  \n" +
+                    "                   inner join amrs.patient pt on e.patient_id =pt.patient_id \n" +
+                    "                   inner join amrs.person p on p.person_id=pt.patient_id \n" +
+                    "                   inner join amrs.person_name pn on pn.person_id=p.person_id \n" +
+                    "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 \n" +
+                    "                   inner join amrs.location l on e.location_id=l.location_id \n" +
+                    "where l.uuid in (" + locations + ") and p.voided=0  and  p.person_id in (" + samplePatientList + ") \n" + //and p.person_id >"+ pid +"
+                    "group by pt.patient_id\n" +
+                    "order by e.patient_id asc";
 
-     }
+        }
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         //System.out.println("SQL "+ sql);
         Connection con = DriverManager.getConnection(server, username, password);
@@ -331,11 +328,13 @@ public class MigrateRegistration {
         rs.beforeFirst();
         while (rs.next()) {
 
-            System.out.println("User id "+ rs.getString(1));
-            List<AMRSPatients> patientsList = amrsPatientServices.getPatientByLocation(rs.getString("person_id"),parentUUID);
-            if (patientsList.size()==0) {
+            System.out.println("User id " + rs.getString(1));
+            //List<AMRSPatients> patientsList = amrsPatientServices.getPatientByLocation(rs.getString("person_id"), parentUUID);
 
-                String person_id=rs.getString("person_id");
+            List<AMRSPatients> patientsList = amrsPatientServices.getPatientByStatus(rs.getString("person_id"));
+            if (patientsList.size() == 0) {
+
+                String person_id = rs.getString("person_id");
                 AMRSPatients ae = new AMRSPatients();
                 ae.setUuid(rs.getString("uuid"));
                 ae.setPersonId(rs.getString("person_id"));
@@ -374,7 +373,7 @@ public class MigrateRegistration {
                         "from amrs.patient_identifier pi\n" +
                         "join amrs.patient_identifier_type pit on pi.identifier_type=pit.patient_identifier_type_id\n" +
                         "inner join amrs.person p on p.person_id =pi.patient_id\n" +
-                        "where pi.voided=0 and pi.patient_id="+ rs.getString("person_id") +"\n" +
+                        "where pi.voided=0 and pi.patient_id=" + rs.getString("person_id") + "\n" +
                         "order by pi.patient_id desc";
                 //identifers
                 Statement stmtID = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -387,17 +386,17 @@ public class MigrateRegistration {
                     List<AMRSIdentifiers> identifiers = amrsIdentifiersService.getPatientByLocation(rsID.getString("patient_id"), parentUUID);
                     if (identifiers.size() == 0) {
                         AMRSIdentifiers iden = new AMRSIdentifiers();
-                        String pref ="";
-                        if(rsID.getString(4).equals("0")){
-                            pref="false";
-                        }else{
-                            pref="true";
+                        String pref = "";
+                        if (rsID.getString(4).equals("0")) {
+                            pref = "false";
+                        } else {
+                            pref = "true";
                         }
-                        String identifer="";
-                        if(rsID.getString(2).equals("f2d6ff1a-8440-4d35-a150-1d4b5a930c5e")){
+                        String identifer = "";
+                        if (rsID.getString(2).equals("f2d6ff1a-8440-4d35-a150-1d4b5a930c5e")) {
                             identifer = rsID.getString(3).replace("-", "");
 
-                        }else{
+                        } else {
                             identifer = rsID.getString(3);
                         }
                         iden.setPatientid(rsID.getString(1));
@@ -414,8 +413,8 @@ public class MigrateRegistration {
                     }
                     //end of identifers
                     //Person Attributes
-                    String pattreibutesSQl=
-                                    "select  pa.person_id,\n" +
+                    String pattreibutesSQl =
+                            "select  pa.person_id,\n" +
                                     "pt.person_attribute_type_id,\n" +
                                     "pt.name,\n" +
                                     "pa.value,\n" +
@@ -424,26 +423,26 @@ public class MigrateRegistration {
                                     "when pt.person_attribute_type_id =25 then '342a1d39-c541-4b29-8818-930916f4c2dc' -- contact\n" +
                                     "when pt.person_attribute_type_id =0 then '7cf22bec-d90a-46ad-9f48-035952261294' -- Kin Address\n" +
                                     " when pt.person_attribute_type_id =0 then '94614350-84c8-41e0-ac29-86bc107069be' -- alternative phone\n" +
-                                            "WHEN pt.person_attribute_type_id = 10 THEN 'b2c38640-2603-4629-aebd-3b54f33f1e3a'\n" + "       " +
-                                            " WHEN pt.person_attribute_type_id = 12 THEN '830bef6d-b01f-449d-9f8d-ac0fede8dbd3'\n" +
-                                            "        WHEN pt.person_attribute_type_id = 25 THEN '342a1d39-c541-4b29-8818-930916f4c2dc'\n" +
-                                            "        WHEN pt.person_attribute_type_id = 0 THEN '7cf22bec-d90a-46ad-9f48-035952261294' \n" +
-                                            "        WHEN pt.person_attribute_type_id = 40 THEN '94614350-84c8-41e0-ac29-86bc107069be'\n" +
-                                            "\t\tWHEN pt.person_attribute_type_id = 163 THEN 'accb7273-ef29-11ed-8ec5-70b5e8686cf7'\n" +
-                                            "        WHEN pt.person_attribute_type_id = 2 THEN '8d8718c2-c2cc-11de-8d13-0010c6dffd0f'\n" +
-                                            "        WHEN pt.person_attribute_type_id = 3 THEN '8d871afc-c2cc-11de-8d13-0010c6dffd0f'\n" +
-                                            "        WHEN pt.person_attribute_type_id = 5 THEN '8d871f2a-c2cc-11de-8d13-0010c6dffd0f'\n" +
-                                            "        WHEN pt.person_attribute_type_id = 60 THEN 'b8d0b331-1d2d-4a9a-b741-1816f498bdb6'\n" +
-                                            "        when pt.person_attribute_type_id = 7  then '8d87236c-c2cc-11de-8d13-0010c6dffd0f'\n" +
-                                            "        when pt.person_attribute_type_id = 59  then 'd0aa9fd1-2ac5-45d8-9c5e-4317c622c8f5'\n" +
-                                            "        when pt.person_attribute_type_id = 165  then '752a0331-5293-4aa5-bf46-4d51aaf2cdc5'\n" +
-                                            "        when pt.person_attribute_type_id = 164  then '869f623a-f78e-4ace-9202-0bed481822f5'\n" +
-                                            "        when pt.person_attribute_type_id = 4  then '8d871d18-c2cc-11de-8d13-0010c6dffd0f' \n" +
-                                              "      when pt.person_attribute_type_id = 1  then  '8d871386-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                    "WHEN pt.person_attribute_type_id = 10 THEN 'b2c38640-2603-4629-aebd-3b54f33f1e3a'\n" + "       " +
+                                    " WHEN pt.person_attribute_type_id = 12 THEN '830bef6d-b01f-449d-9f8d-ac0fede8dbd3'\n" +
+                                    "        WHEN pt.person_attribute_type_id = 25 THEN '342a1d39-c541-4b29-8818-930916f4c2dc'\n" +
+                                    "        WHEN pt.person_attribute_type_id = 0 THEN '7cf22bec-d90a-46ad-9f48-035952261294' \n" +
+                                    "        WHEN pt.person_attribute_type_id = 40 THEN '94614350-84c8-41e0-ac29-86bc107069be'\n" +
+                                    "\t\tWHEN pt.person_attribute_type_id = 163 THEN 'accb7273-ef29-11ed-8ec5-70b5e8686cf7'\n" +
+                                    "        WHEN pt.person_attribute_type_id = 2 THEN '8d8718c2-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                    "        WHEN pt.person_attribute_type_id = 3 THEN '8d871afc-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                    "        WHEN pt.person_attribute_type_id = 5 THEN '8d871f2a-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                    "        WHEN pt.person_attribute_type_id = 60 THEN 'b8d0b331-1d2d-4a9a-b741-1816f498bdb6'\n" +
+                                    "        when pt.person_attribute_type_id = 7  then '8d87236c-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                                    "        when pt.person_attribute_type_id = 59  then 'd0aa9fd1-2ac5-45d8-9c5e-4317c622c8f5'\n" +
+                                    "        when pt.person_attribute_type_id = 165  then '752a0331-5293-4aa5-bf46-4d51aaf2cdc5'\n" +
+                                    "        when pt.person_attribute_type_id = 164  then '869f623a-f78e-4ace-9202-0bed481822f5'\n" +
+                                    "        when pt.person_attribute_type_id = 4  then '8d871d18-c2cc-11de-8d13-0010c6dffd0f' \n" +
+                                    "      when pt.person_attribute_type_id = 1  then  '8d871386-c2cc-11de-8d13-0010c6dffd0f'\n" +
                                     "else null end as kenyaemruuid\n" +
                                     " from amrs.person_attribute pa\n" +
                                     " inner join amrs.person_attribute_type pt on pa.person_attribute_type_id = pt.person_attribute_type_id\n" +
-                                    "where pa.person_id  in ("+ rs.getString("person_id")  +") and pa.voided=0";
+                                    "where pa.person_id  in (" + rs.getString("person_id") + ") and pa.voided=0";
                     Statement stmtPA = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                             ResultSet.CONCUR_READ_ONLY);
                     ResultSet rsPA = stmtPA.executeQuery(pattreibutesSQl);
@@ -451,29 +450,76 @@ public class MigrateRegistration {
                     x = rsPA.getRow();
                     rsPA.beforeFirst();
                     while (rsPA.next()) {
-                        List<AMRSPatientAttributes> patientAttributes = amrsPersonAtrributesService.getByPatientIDAndPType(rsPA.getString("person_id"),rsPA.getString("person_attribute_type_id"));
-                        if(patientAttributes.size()==0){
+                        List<AMRSPatientAttributes> patientAttributes = amrsPersonAtrributesService.getByPatientIDAndPType(rsPA.getString("person_id"), rsPA.getString("person_attribute_type_id"));
+                        if (patientAttributes.size() == 0) {
                             AMRSPatientAttributes apt = new AMRSPatientAttributes();
                             apt.setPatientId(rsPA.getString("person_id"));
                             apt.setPersonAttributeTypeId(rsPA.getString("person_attribute_type_id"));
                             apt.setPersonAttributeName(rsPA.getString("name"));
-
-
                             apt.setPersonAttributeValue(rsPA.getString("value"));
                             apt.setKenyaemrAttributeUuid(rsPA.getString("kenyaemruuid"));
                             amrsPersonAtrributesService.save(apt);
                         }
 
                     }
-                        //End of Person Attributes
+                    //End of Person Attributes
 
                 }
                 //Migate Patient
-               RegisterOpenMRSPayload.patient(ae,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService ,url,auth);
+                RegisterOpenMRSPayload.patient(ae, amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService, url, auth);
 
             }
 
         }
         con.close();
+       }
+    public static void patient_relationship(String server, String username, String password, String locations, String parentUUID, AMRSPatientRelationshipService amrsPatientRelationshipService, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+        String samplePatientList = AMRSSamples.getPersonIdList();
+
+        String sql = "SELECT r.person_a,\n" +
+                " r.relationship,\n" +
+                " rt.a_is_to_b,\n" +
+                " rt.b_is_to_a,\n" +
+                " rt.uuid,\n" +
+                " r.person_b\n" +
+                " FROM amrs.relationship r \n" +
+                " inner join amrs.relationship_type rt on rt.relationship_type_id=r.relationship\n" +
+                " where voided =0 and person_a in ("+ samplePatientList +") and person_b in("+ samplePatientList +")";
+
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String persona =rs.getString("person_a");
+            String personb =rs.getString("person_b");
+            String relationshipType =rs.getString("relationship");
+            String relationshipuuid =rs.getString("uuid");
+            String aIsToB =rs.getString("a_is_to_b");
+            String bIsToA =rs.getString("b_is_to_a");
+
+            List<AMRSPatientRelationship> amrsPatientRelationships = amrsPatientRelationshipService.findByPersonAAndPeronBAndRelationship(persona,personb,relationshipType);
+            if (amrsPatientRelationships.size() == 0) {
+                AMRSPatientRelationship pr =new AMRSPatientRelationship();
+                pr.setAistob(aIsToB);
+                pr.setBistoa(bIsToA);
+                pr.setPersonA(persona);
+                pr.setPersonB(personb);
+                pr.setRelationshipType(relationshipType);
+                pr.setRelationshipUuid(relationshipuuid);
+                pr.setRelationshipUuid(amrsTranslater.KenyaemrPatientUuid(persona));
+                pr.setRelationshipUuid(amrsTranslater.KenyaemrPatientUuid(personb));
+                amrsPatientRelationshipService.save(pr);
+
+            }
+
+            RegisterOpenMRSPayload.relationship(amrsPatientRelationshipService, url, auth);
+
+        }
     }
 }
