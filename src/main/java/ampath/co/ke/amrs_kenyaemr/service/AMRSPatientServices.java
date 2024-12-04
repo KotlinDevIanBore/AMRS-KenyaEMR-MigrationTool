@@ -33,6 +33,11 @@ public class AMRSPatientServices {
     public List<AMRSPatients> findFirstByOrderByIdDesc() {
         return amrsPatientsRespository.findFirstByOrderByIdDesc();
     }
+
+
+    public List<AMRSPatients> getPatientByStatus(String uuid) {
+        return amrsPatientsRespository.findByUuidAndResponseCodeIsNull(uuid);
+    }
     public AMRSPatients save(AMRSPatients dataset) {
         return amrsPatientsRespository.save(dataset);
     }

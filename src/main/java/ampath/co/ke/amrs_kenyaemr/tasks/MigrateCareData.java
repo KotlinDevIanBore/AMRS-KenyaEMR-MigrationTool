@@ -1,12 +1,11 @@
 package ampath.co.ke.amrs_kenyaemr.tasks;
 
-import ampath.co.ke.amrs_kenyaemr.methods.AMRSConceptReader;
+import ampath.co.ke.amrs_kenyaemr.methods.AMRSTranslater;
 import ampath.co.ke.amrs_kenyaemr.methods.AMRSSamples;
 import ampath.co.ke.amrs_kenyaemr.models.*;
 import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.*;
 import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.sql.*;
@@ -906,10 +905,10 @@ public class MigrateCareData {
         if (amrsVisitsList.size() > 0) {
             sql = "select v.visit_id,\n" +
                     "       e.patient_id,\n" +
-                    "\t     visit_type_id,\n" +
+                    "       visit_type_id,\n" +
                     "       date_started,\n" +
                     "       e.location_id,\n" +
-                    "\t     date_stopped,\n" +
+                    "       date_stopped,\n" +
                     "       encounter_type,\n" +
                     "       v.voided \n" +
                     "              from amrs.visit v\n" +
@@ -970,7 +969,6 @@ public class MigrateCareData {
                     kenyaemrpid = amrsPatients.get(0).getKenyaemrpatientUUID();
                     // avv.setResponseCode("400");
                 }
-
                 avv.setVisitId(visitId);
                 avv.setDateStarted(dateStarted);
                 avv.setPatientId(patientId);
@@ -989,20 +987,15 @@ public class MigrateCareData {
     }
 
 
-    public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-
+    public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, AMRSMappingService amrsMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         String samplePatientList = AMRSSamples.getPersonIdList();
-
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss = "";
         for (int y = 0; y < amrsPatientsList.size(); y++) {
             pidss += amrsPatientsList.get(y).getPersonId() + ",";
         }
         String pid = pidss.substring(0, pidss.length() - 1);
-
-        System.out.println("Patient Id " + pid);
-
 
         System.out.println("Patient Id " + pid);
 
@@ -1065,6 +1058,11 @@ public class MigrateCareData {
                 ao.setOrderNumber(orderNumber);
                 ao.setOrderAction(orderAction);
                 ao.setCareSetting(careSetting);
+                List<AMRSMappings> amrsMappings = amrsMappingService.findByAmrsConceptID(conceptId);
+                if(amrsMappings.size()>0){
+                    ao.setKenyaemrConceptUuid(amrsMappings.get(0).getKenyaemrConceptUuid());
+                }
+                ao.setUuid(amrsOrderUuid);
                 List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
                 String kenyaemr_patient_uuid = "";
                 if (!amrsPatients.isEmpty()) {
@@ -1092,12 +1090,9 @@ public class MigrateCareData {
                     }
                 }
 
-
-//                System.out.println("Patient " + kenyaemr_patient_uuid + " concept " + conceptId + " kenyaemr_concept_id " + kenyaemr_uuid + " justification" + justification + "Kenyaemr justicafiation " + justificationcode);
-
-
                 amrsOrderService.save(ao);
-
+            }else{
+                System.out.println("Order already Shipped");
             }
             // orders
             OrdersPayload.orders(amrsOrderService, amrsPatientServices, url, auth);
@@ -1225,7 +1220,7 @@ public class MigrateCareData {
                     " AND l.uuid IN (" + locations + ") \n" +
                     " AND o.person_id  in (" + pid + ") \n" +
                     " AND o.encounter_id > " + prevEncounterID + "  \n" +
-                    "GROUP BY o.person_id, o.encounter_id limit 10";
+                    "GROUP BY o.person_id, o.encounter_id ";
 
         }
 
@@ -1743,7 +1738,7 @@ public class MigrateCareData {
 
     public static void obs(String server, String username, String password, String locations,
                            String parentUUID, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices,
-                           AMRSConceptReader amrsConceptReader, String url, String auth) throws SQLException, JSONException,
+                           AMRSTranslater amrsConceptReader, String url, String auth) throws SQLException, JSONException,
             ParseException, IOException {
 
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
@@ -1756,11 +1751,11 @@ public class MigrateCareData {
 
         for (AMRSPatients patient : amrsPatientsList) {
             String pid = patient.getPersonId();
-            int statusCode = patient.getResponse_code();
+            String statusCode = patient.getResponseCode();
             String kenyaemrLocation = patient.getLocation_id();
             String kenyaemrPatientUuid = patient.getKenyaemrpatientUUID();
 
-            if (pid == null || pid.isEmpty() || statusCode != 201) {
+            if (pid == null || pid.isEmpty() || statusCode != "201") {
                 System.out.println("Skipping Patient ID: " + pid + " due to invalid pid or status code: " + statusCode);
                 continue;
             }
@@ -1779,7 +1774,7 @@ public class MigrateCareData {
 
     private static List<AMRSObs> processPatientObservations(String server, String username,
                                                             String password, String patientId, String location, String patientUuid, AMRSObsService amrsObsService,
-                                                            AMRSConceptReader amrsConceptReader) throws SQLException {
+                                                            AMRSTranslater amrsConceptReader) throws SQLException {
 
         List<AMRSObs> newObservations = new ArrayList<>();
         String sql = "SELECT \n" +
@@ -1844,7 +1839,7 @@ public class MigrateCareData {
     }
 
     private static AMRSObs processObservationRow(ResultSet rs, AMRSObsService amrsObsService,
-                                                 AMRSConceptReader amrsConceptReader, String location, String patientUuid) throws SQLException {
+                                                 AMRSTranslater amrsConceptReader, String location, String patientUuid) throws SQLException {
 
         String conceptId = rs.getString("concept_id");
         String personId = rs.getString("person_id");
@@ -1990,7 +1985,7 @@ public class MigrateCareData {
 
     public static void programEnrollments(String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        AMRSConceptReader amrsConceptReader = new AMRSConceptReader();
+        AMRSTranslater amrsConceptReader = new AMRSTranslater();
 
         String sql = "";
         List<AMRSEnrollments> amrsEnrollmentsList = amrsEnrollmentService.getAll();
@@ -2141,7 +2136,6 @@ public class MigrateCareData {
                     "\te.patient_id,\n" +
                     "\te.encounter_id,\n" +
                     "\te.encounter_datetime,\n" +
-                    "\t-- e.form_id,\n" +
                     "\t-- f.name,\n" +
                     "\tmax(case f.form_id when '15' then 164144 -- New\n" +
                     "     when o.concept_id = 10194 then 160563 --  'Transfer-In'\n" +

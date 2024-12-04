@@ -1,11 +1,9 @@
 package ampath.co.ke.amrs_kenyaemr.controllers;
 
-import ampath.co.ke.amrs_kenyaemr.methods.AMRSConceptReader;
+import ampath.co.ke.amrs_kenyaemr.methods.AMRSTranslater;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSLocations;
-import ampath.co.ke.amrs_kenyaemr.models.AMRSVisits;
 import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.MigrateCareData;
-import ampath.co.ke.amrs_kenyaemr.tasks.MigrateRegistration;
 import jakarta.servlet.http.HttpSession;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +67,7 @@ public class LocationControllers {
     @Autowired
     private AMRSMappingService amrsMappingService;
     @Autowired
-    private AMRSConceptReader amrsConceptReader;
+    private AMRSTranslater amrsConceptReader;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView Locations(){
