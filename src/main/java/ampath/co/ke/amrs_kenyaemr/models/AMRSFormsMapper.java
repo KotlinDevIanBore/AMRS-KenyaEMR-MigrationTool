@@ -17,12 +17,8 @@ public class AMRSFormsMapper {
     private String amrsFormName;
     @Column(name = "kenyaemr_form_uuid")
     private String kenyaemrFormUuid;
-    @Column(name = "amrs_migration_status")
-    private boolean amrsMigrationStatus;
     @Column(name = "amrs_migration_error_description",nullable = true)
     private String amrsMigrationErrorDescription;
-
-
 
     public Integer getId() {
         return id;
@@ -31,40 +27,44 @@ public class AMRSFormsMapper {
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getAmrsFormId() {
         return amrsFormId;
     }
-    public void setAmrsFormId(String formid) {
-        this.amrsFormId = formid;
+
+    public void setAmrsFormId(String amrsFormId) {
+        this.amrsFormId = amrsFormId;
     }
+
     public String getAmrsEncounterTypeId() {
         return amrsEncounterTypeId;
     }
-    public void setAmrsEncounterTypeId(String encounterTypeId) {
-        this.amrsEncounterTypeId = encounterTypeId;
+
+    public void setAmrsEncounterTypeId(String amrsEncounterTypeId) {
+        this.amrsEncounterTypeId = amrsEncounterTypeId;
     }
-    public String getKenyaemrFormUuid() {
-        return kenyaemrFormUuid;
-    }
-    public void setKenyaemrFormUuid(String kenyaemrFormUuid) {
-        this.kenyaemrFormUuid = kenyaemrFormUuid;
-    }
+
     public String getAmrsFormName() {
         return amrsFormName;
     }
+
     public void setAmrsFormName(String amrsFormName) {
         this.amrsFormName = amrsFormName;
     }
-    public boolean getAmrsMigrationStatus() {
-        return amrsMigrationStatus;
+
+    public String getKenyaemrFormUuid() {
+        return kenyaemrFormUuid;
     }
-    public void setAmrsMigrationStatus(boolean migrationStatus) {
-        this.amrsMigrationStatus = migrationStatus;
+
+    public void setKenyaemrFormUuid(String kenyaemrFormUuid) {
+        this.kenyaemrFormUuid = kenyaemrFormUuid;
     }
+
     public String getAmrsMigrationErrorDescription() {
         return amrsMigrationErrorDescription;
     }
-    public void setAmrsMigrationErrorDescription(String description) {
-        this.amrsMigrationErrorDescription = description;
+
+    public void setAmrsMigrationErrorDescription(String amrsMigrationErrorDescription) {
+        this.amrsMigrationErrorDescription = amrsMigrationErrorDescription;
     }
 }
