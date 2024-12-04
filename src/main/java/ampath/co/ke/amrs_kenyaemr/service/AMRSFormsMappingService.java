@@ -18,7 +18,7 @@ public class AMRSFormsMappingService {
         return amrsFormsMappingRepository.findByAmrsFormId(FormId);
     }
     public List<AMRSFormsMapper> getAll() {
-        return amrsFormsMappingRepository.getAll();
+        return amrsFormsMappingRepository.findAll();
     }
     public List<AMRSFormsMapper> findBykenyaemrFormUuid(String kenyaemrFormUuid) {
         return amrsFormsMappingRepository.findBykenyaemrFormUuid(kenyaemrFormUuid);
