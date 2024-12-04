@@ -2509,7 +2509,6 @@ public class MigrateCareData {
             form.setAmrsEncounterTypeId(encounterType);
             form.setKenyaemrFormUuid(kenyaEmrFormUuid);
             form.setAmrsFormName(amrsFormName);
-            form.setAmrsMigrationStatus(false);
             form.setAmrsMigrationErrorDescription(null);
             amrsFormsMappingService.save(form);
 
@@ -2517,7 +2516,6 @@ public class MigrateCareData {
     }
 
     public static void tcas(String server, String username, String password, String locations, String parentUUID, AMRSTCAService amrstcaService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-
 
         String samplePatientList = AMRSSamples.getPersonIdList();
 

@@ -12,5 +12,5 @@ public interface AMRSFormsMappingRepository extends JpaRepository<AMRSFormsMappe
     List<AMRSFormsMapper> findAll();
     List<AMRSFormsMapper> findByAmrsEncounterTypeId(String encounterTypeid);
     List<AMRSFormsMapper> findBykenyaemrFormUuid(String kenyaemrFormUuid);
-    List<AMRSFormsMapper> findByAmrsMigrationStatus(boolean migrationStatus);
+
 }

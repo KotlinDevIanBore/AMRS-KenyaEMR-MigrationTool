@@ -95,12 +95,11 @@ public class CronTasks {
 
     }
 
-    //@Scheduled(cron = "0 */1 * ? * *")
     //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
     public void ProcessPatients() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService,OpenMRSURL,auth);
+        MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService,amrsPatientStatusService,OpenMRSURL,auth);
 
     }
 
@@ -112,12 +111,10 @@ public class CronTasks {
         }
 
 
-
     //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
    public void ProcessPrograms() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        //HIVEnrollment
         MigrateCareData.programs(server,username,password,locationId,parentUuid, amrsProgramService, amrsPatientServices, OpenMRSURL,auth);
     }
 
@@ -126,7 +123,6 @@ public class CronTasks {
     public void HIVEnrollmets() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        //HIVEnrollment
         MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
     }
     //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
@@ -144,7 +140,7 @@ public class CronTasks {
 
     }
 
-     @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+     //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessTriage() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
@@ -170,7 +166,6 @@ public class CronTasks {
 
 
     // @Scheduled(cron = "0 */1 * ? * *")
-
     public void ProcessProgramSwitches() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
@@ -211,7 +206,7 @@ public class CronTasks {
     }
 
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ordersResults() throws JSONException, ParseException, SQLException, IOException {
 
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
@@ -220,7 +215,7 @@ public class CronTasks {
     }
 
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessFormMappings() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";

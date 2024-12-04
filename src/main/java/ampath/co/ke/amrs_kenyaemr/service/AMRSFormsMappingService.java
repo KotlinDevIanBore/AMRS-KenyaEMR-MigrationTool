@@ -32,7 +32,4 @@ public class AMRSFormsMappingService {
     public List<AMRSFormsMapper> findByAmrsEncounterTypeId(String encounterTypeId) {
         return amrsFormsMappingRepository.findByAmrsEncounterTypeId(encounterTypeId);
     }
-    public List<AMRSFormsMapper> findByAmrsMigrationStatus(boolean migrationStatus) {
-        return amrsFormsMappingRepository.findByAmrsMigrationStatus(migrationStatus);
-    }
 }
