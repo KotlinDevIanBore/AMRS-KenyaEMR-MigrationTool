@@ -118,7 +118,6 @@ public class CareOpenMRSPayload {
                     JSONObject jsonEncounter = new JSONObject();
                     jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                     jsonEncounter.put("obs", jsonObservations);
-                    //jsonEncounter.put("encounter")
                     System.out.println("Payload for is here " + jsonEncounter.toString());
                     System.out.println("URL is here " + url + "encounter/" + amrsEncounters.get(0).getKenyaemrEncounterUuid());
 
@@ -149,10 +148,7 @@ public class CareOpenMRSPayload {
                             amrsTriageService.save(at);
                         }
                     }
-
                 }
-
-
             }
 
 
