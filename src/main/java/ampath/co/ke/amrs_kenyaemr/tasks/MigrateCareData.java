@@ -1739,11 +1739,11 @@ public class MigrateCareData {
     }
 
     public static void obs(String server, String username, String password, String locations,
-                           String parentUUID, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices,
+                           String parentUUID, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices,
                            AMRSTranslater amrsConceptReader, String url, String auth) throws SQLException, JSONException,
             ParseException, IOException {
 
-        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+       List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         if (amrsPatientsList.isEmpty()) {
             System.out.println("No patients found.");
             return;
@@ -1753,18 +1753,17 @@ public class MigrateCareData {
 
         for (AMRSPatients patient : amrsPatientsList) {
             String pid = patient.getPersonId();
-            String statusCode = patient.getResponseCode();
             String kenyaemrLocation = patient.getLocation_id();
             String kenyaemrPatientUuid = patient.getKenyaemrpatientUUID();
 
-            if (pid == null || pid.isEmpty() || statusCode != "201") {
-                System.out.println("Skipping Patient ID: " + pid + " due to invalid pid or status code: " + statusCode);
+            if (pid == null) {
+             System.out.println("Skipping Patient ID: " + pid );
                 continue;
             }
 
             System.out.println("Processing Patient ID: " + pid);
             // Process database operations
-            newObservations.addAll(processPatientObservations(server, username, password, pid, kenyaemrLocation, kenyaemrPatientUuid,
+            newObservations.addAll(processPatientObservations(server, username, password, pid, kenyaemrLocation, kenyaemrPatientUuid, amrsEncounterService,
                     amrsObsService, amrsConceptReader));
         }
 
@@ -1775,7 +1774,7 @@ public class MigrateCareData {
     }
 
     private static List<AMRSObs> processPatientObservations(String server, String username,
-                                                            String password, String patientId, String location, String patientUuid, AMRSObsService amrsObsService,
+                                                            String password, String patientId, String location, String patientUuid, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
                                                             AMRSTranslater amrsConceptReader) throws SQLException {
 
         List<AMRSObs> newObservations = new ArrayList<>();
@@ -1825,10 +1824,10 @@ public class MigrateCareData {
         try (Connection con = DriverManager.getConnection(server, username, password);
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setString(1, "198492");
+            stmt.setString(1, patientId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    AMRSObs observation = processObservationRow(rs, amrsObsService, amrsConceptReader, location, patientUuid);
+                    AMRSObs observation = processObservationRow(rs, amrsEncounterService, amrsObsService, amrsConceptReader, location, patientUuid);
                     if (observation != null) {
 
                         newObservations.add(observation);
@@ -1840,7 +1839,7 @@ public class MigrateCareData {
         return newObservations;
     }
 
-    private static AMRSObs processObservationRow(ResultSet rs, AMRSObsService amrsObsService,
+    private static AMRSObs processObservationRow(ResultSet rs, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
                                                  AMRSTranslater amrsConceptReader, String location, String patientUuid) throws SQLException {
 
         String conceptId = rs.getString("concept_id");
@@ -1854,12 +1853,28 @@ public class MigrateCareData {
                         obs -> obs.getPatientId() + "_" + obs.getEncounterID() + "_" + obs.getConceptId(),
                         obs -> obs
                 ));
+        String kenyaemr_encounter_uuid = "";
+        String kenyaemr_concept_uuid = "";
+
+
+        List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+        if(!amrsEncounters.isEmpty()) {
+            kenyaemr_encounter_uuid = amrsEncounters.get(0).getKenyaemrEncounterUuid();
+        }
+
+        kenyaemr_concept_uuid = amrsConceptReader.translater(conceptId);
+
+        // Check if kenyaemr_concept_uuid is valid
+        if (kenyaemr_concept_uuid == null || kenyaemr_concept_uuid.isEmpty()) {
+            System.out.println("Invalid kenyaemr_concept_uuid. Cannot proceed.");
+            return null;
+        }
 
         if (existingObservations.isEmpty()) {
             AMRSObs ao = new AMRSObs();
             ao.setConceptId(conceptId);
             ao.setPatientId(personId);
-            ao.setKenyaemrconceptuuid(amrsConceptReader.translater(conceptId));
+            ao.setKenyaemrconceptuuid(kenyaemr_concept_uuid);
             ao.setEncounterID(encounterId);
             ao.setValueType(rs.getString("value_type"));
             ao.setEncounterType(rs.getString("encounter_type"));
@@ -1869,12 +1884,13 @@ public class MigrateCareData {
             ao.setValue(rs.getString("value"));
             ao.setKenyaemrlocationuuid(location);
             ao.setKenyaemrpersonuuid(patientUuid);
+            ao.setKenyaemrencounteruuid(kenyaemr_encounter_uuid);
             System.out.println("New AMRS obs: " + ao);
             return ao;
-        } else {
-            System.out.println("Existing observation found");
-            return null;
         }
+
+        System.out.println("Existing observation found");
+        return null;
     }
 
     public static void programSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
@@ -2586,6 +2602,7 @@ public class MigrateCareData {
 
         }
     }
+
     public static void tcas(String server, String username, String password, String locations, String parentUUID, AMRSTCAService amrstcaService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
 
@@ -3157,4 +3174,5 @@ public class MigrateCareData {
 
     }
 }
+
 

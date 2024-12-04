@@ -34,6 +34,8 @@ public class AMRSObs {
     private String kenyaemrencounteruuid;
     @Column(name="amrs_encounter_uuid")
     private String amrsencounteruuid;
+    @Column(name = "response_code")
+    private  String responseCode;
 
     public Integer getId() {
         return id;
@@ -85,6 +87,14 @@ public class AMRSObs {
 
     public String getKenyaemrpersonuuid() {
         return kenyaemrpersonuuid;
+    }
+
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
     }
 
     public void setKenyaemrpersonuuid(String kenyaemrpersonuuid) {
