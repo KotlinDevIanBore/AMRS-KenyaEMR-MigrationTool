@@ -67,6 +67,7 @@ public class CronTasks {
     @Autowired
     private AMRSTCAService amrstcaService;
 
+    @Autowired
     private AMRSMappingService amrsMappingService;
 
     @Autowired
@@ -75,7 +76,7 @@ public class CronTasks {
     @Autowired
     private AMRSTranslater amrsTranslater;
 
-  @Value("${mapping.endpoint:http://localhost:8082/mappings/concepts}")
+    @Value("${mapping.endpoint:http://localhost:8082/mappings/concepts}")
     private String mappingEndpoint;
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -138,7 +139,7 @@ public class CronTasks {
 
     }
 
-    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+     @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessTriage() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
@@ -154,7 +155,7 @@ public class CronTasks {
 
     }
     //@Scheduled(cron = "0 */1 * ? * *")
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessOrders() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
@@ -178,24 +179,19 @@ public class CronTasks {
     MigrateCareData.programEnrollments(server, username, password, locationId,parentUuid, amrsEnrollmentService, amrsEncounterService, amrsConceptMappingService, OpenMRSURL, auth);
   }
 
-//    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
-  public void civilStatus() throws JSONException, ParseException, SQLException, IOException {
-  }
   //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
-  public void patientStatus() throws JSONException, ParseException, SQLException, IOException {
-
+  public void civilStatus() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         MigrateCareData.patientStatus(server, username, password, locationId,parentUuid, amrsPatientStatusService, amrsConceptMappingService, amrsPatientServices, OpenMRSURL, auth);
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessTCAs() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         MigrateCareData.tcas(server,username,password,locationId,parentUuid, amrstcaService, amrsPatientServices, amrsEncounterMappingService, amrsConceptMappingService,amrsEncounterService, OpenMRSURL,auth);
     }
-
 
 
     // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)

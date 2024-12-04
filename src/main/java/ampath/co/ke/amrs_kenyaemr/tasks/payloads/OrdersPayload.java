@@ -14,12 +14,18 @@ import java.util.List;
 public class OrdersPayload {
     public static void orders(AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, String url, String auth) throws JSONException, IOException {
         List<AMRSOrders> amrsOrders = amrsOrderService.findByResponseCodeIsNull();
+        System.out.println("Nimefika hapa kwa Payload");
         if(amrsOrders.size() > 0) {
+
+            System.out.println("Size ndo hii "+ amrsOrders.size());
+
             for (int x = 0; x < amrsOrders.size(); x++) {
                 AMRSOrders amrsOrders1 = amrsOrders.get(x);
-                if(amrsOrders1.getKenyaemrOrderId() == null) {
+                if(amrsOrders1.getResponseCode() == null) {
+
                     List<AMRSPatients> patientsList = amrsPatientServices.getByPatientID(amrsOrders1.getPatientId());
-                    if (!patientsList.isEmpty()) {
+                    System.out.println(" Patient Iko  "+ patientsList.size());
+                    if (patientsList.size()>0) {
                         String pid = patientsList.get(0).getKenyaemrpatientUUID();
                         Integer kenyaemrOrderId = amrsOrders.get(x).getKenyaemrOrderId();
                         String orderNumber = amrsOrders.get(x).getOrderNumber();
@@ -31,12 +37,12 @@ public class OrdersPayload {
                         String careSettings = amrsOrders.get(x).getCareSetting();
                         String orderReason = amrsOrders.get(x).getOrderReason();
                         String concept_uuid=amrsOrders.get(x).getKenyaemrConceptUuid();
-                        if(concept_uuid==null) {
+                        if(concept_uuid !=null) {
 
                             JSONObject jsonOrder = new JSONObject();
 //                        jsonOrder.put("patient", pid);
 //                        jsonOrder.put("orderId", kenyaemrOrderId);
-//                        jsonOrder.put("orderNumber", orderNumber);
+                         //jsonOrder.put("orderNumber", orderNumber);
 //                        jsonOrder.put("orderType", orderType);
                             jsonOrder.put("urgency", urgency);
 //                        jsonOrder.put("orderer", orderer);
@@ -56,6 +62,9 @@ public class OrdersPayload {
 
                             if (amrsOrders.get(0).getKenyaEmrEncounterUuid() != null) {
                                 System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX---------------" + amrsOrders.get(0).getKenyaemrPatientUuid());
+                            }else{
+                                System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX- Missing Endcounter--------------" + amrsOrders.get(0).getKenyaemrPatientUuid());
+
                             }
 
                             OkHttpClient client = new OkHttpClient();
@@ -73,8 +82,7 @@ public class OrdersPayload {
                             String responseBody = response.body().string(); // Get the response as a string
 //                        System.out.println("Response ndo hii " + responseBody + " More message " + response.message() + " reponse code " + response.code());
                             JSONObject jsonObject = new JSONObject(responseBody);
-                            // System.out.println("Response ndo hii " + jsonUser.toString());
-//                        System.out.println("Response ndo hii " + response);
+                            System.out.println("Response ndo hii " + response);
 //                        System.out.println("Response Payload " + jsonOrder.toString());
                             if (response.code() == 201) {
 //                            Integer orderUuid = Integer.valueOf(jsonObject.getString("uuid"));
@@ -82,6 +90,8 @@ public class OrdersPayload {
                                 amrsOrders1.setKenyaemrOrderUuid(orderUuid);
                                 amrsOrders1.setResponseCode(String.valueOf(response.code()));
                                 amrsOrderService.save(amrsOrders1);
+                            }else{
+                                System.out.println("Response ndo hii " + response.code());
                             }
                         }
                     } else {
