@@ -121,7 +121,7 @@ public class MigrateCareData {
             }
 
             //Migate Programs
-            CareOpenMRSPayload.programs(amrsProgramService, locations, parentUUID, url, auth);
+          //  CareOpenMRSPayload.programs(amrsProgramService, locations, parentUUID, url, auth);
 
         }
 
@@ -1298,13 +1298,14 @@ public class MigrateCareData {
                 at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
                 amrsTriageService.save(at);
 
-                CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
+             //   CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
                 System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
             } else {
                 System.out.println("Existing Patient_id " + patientId + "encounterID " + encounterID);
 
             }
 
+            CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
 
         }
     }
