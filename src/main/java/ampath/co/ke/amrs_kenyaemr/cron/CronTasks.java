@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -64,9 +65,8 @@ public class CronTasks {
     private AMRSPatientStatusService amrsPatientStatusService;
 
     @Autowired
-<<<<<<< HEAD
     private AMRSTCAService amrstcaService;
-=======
+
     private AMRSMappingService amrsMappingService;
 
     @Autowired
@@ -74,7 +74,11 @@ public class CronTasks {
 
     @Autowired
     private AMRSTranslater amrsTranslater;
->>>>>>> 756a30f2ba7b3b3f32ea10b4e17fa0f70d329580
+
+  @Value("${mapping.endpoint:http://localhost:8082/mappings/concepts}")
+    private String mappingEndpoint;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
    // @Scheduled(cron = "0 */1 * ? * *")
    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
@@ -192,5 +196,16 @@ public class CronTasks {
         MigrateCareData.tcas(server,username,password,locationId,parentUuid, amrstcaService, amrsPatientServices, amrsEncounterMappingService, amrsConceptMappingService,amrsEncounterService, OpenMRSURL,auth);
     }
 
+
+
+    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    public void callEndpoint() {
+        try {
+            String response = restTemplate.getForObject(mappingEndpoint, String.class);
+            System.out.println("Endpoint response: " + response);
+        } catch (Exception e) {
+            System.err.println("Error calling the endpoint: " + e.getMessage());
+        }
+    }
 
 }
