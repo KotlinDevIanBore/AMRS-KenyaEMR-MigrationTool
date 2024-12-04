@@ -100,21 +100,24 @@ public class CareOpenMRSPayload {
 
                     JSONObject jsonObservation = new JSONObject();
                     String value = amrsTriageEncounters.get(x).getValue();
-                    jsonObservation.put("person", amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
-                    jsonObservation.put("concept", amrsTriageEncounters.get(x).getKenyaemConceptId());///String.valueOf(conceptsetId));
-                    if (isDecimal(value)) {
+                   // jsonObservation.put("person", amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
+                   // jsonObservation.put("concept", amrsTriageEncounters.get(x).getKenyaemConceptId());///String.valueOf(conceptsetId));
+                  /*  if (isDecimal(value)) {
                         jsonObservation.put("value", Double.parseDouble(amrsTriageEncounters.get(x).getValue()));
 
                     } else {
                         jsonObservation.put("value", Double.parseDouble(amrsTriageEncounters.get(x).getValue()));
-                    }
-                    // jsonObservation.put("person",amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
-                    //  jsonObservation.put("concept",amrsTriageEncounters.get(x).getKenyaemrFormUuid());///String.valueOf(conceptsetId));
-                    //  jsonObservation.put("value", Decimal.p(amrsTriageEncounters.get(x).getValue()));
+                    }*/
+                      jsonObservation.put("person",amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
+                      jsonObservation.put("concept",amrsTriageEncounters.get(x).getKenyaemrFormUuid());///String.valueOf(conceptsetId));
+                      jsonObservation.put("value", amrsTriageEncounters.get(x).getValue());
                     jsonObservations.put(jsonObservation);
                 }
+
+                System.out.println("Payload for is here " + jsonObservations.toString());
+
                 List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
-                if (amrsEncounters.size() > 0) {
+               /* if (amrsEncounters.size() > 0) {
                     JSONObject jsonEncounter = new JSONObject();
                     jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                     jsonEncounter.put("obs", jsonObservations);
@@ -148,7 +151,7 @@ public class CareOpenMRSPayload {
                             amrsTriageService.save(at);
                         }
                     }
-                }
+                }*/
             }
 
 

@@ -125,7 +125,7 @@ public class MigrateRegistration {
     }
 
     //Patients
-    public static void patients(String server, String username, String password, String locations, String parentUUID, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService, AMRSPersonAtrributesService amrsPersonAtrributesService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void patients(String server, String username, String password, String locations, String parentUUID, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService, AMRSPersonAtrributesService amrsPersonAtrributesService,AMRSPatientStatusService amrsPatientStatusService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         List<AMRSPatients> patientsListt = amrsPatientServices.findFirstByOrderByIdDesc();
 
         String sql = "";
@@ -211,10 +211,10 @@ public class MigrateRegistration {
                     "                   pa.county_district, \n" +
                     "                   pa.address3 landmark \n" +
                     "                   from amrs.encounter e  \n" +
-                    "                   inner join amrs.patient pt on e.patient_id =pt.patient_id \n" +
-                    "                   inner join amrs.person p on p.person_id=pt.patient_id \n" +
-                    "                   inner join amrs.person_name pn on pn.person_id=p.person_id \n" +
-                    "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 \n" +
+                    "                   inner join amrs.patient pt on e.patient_id =pt.patient_id and pt.voided=0 \n" +
+                    "                   inner join amrs.person p on p.person_id=pt.patient_id and p.voided=0 \n" +
+                    "                   inner join amrs.person_name pn on pn.person_id=p.person_id and pn.voided=0 \n" +
+                    "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 and pa.voided=0 \n" +
                     "                   inner join amrs.location l on e.location_id=l.location_id \n" +
                     "                   where l.uuid in ( " + locations + " ) and p.voided=0  and p.person_id in ( " + samplePatientList + ") and p.voided=0  -- and p.person_id >  + pid +    \n" +
                     "                   group by pt.patient_id \n" +
@@ -306,10 +306,10 @@ public class MigrateRegistration {
                     "                   pa.county_district, \n" +
                     "                   pa.address3 landmark \n" +
                     "                   from amrs.encounter e  \n" +
-                    "                   inner join amrs.patient pt on e.patient_id =pt.patient_id \n" +
-                    "                   inner join amrs.person p on p.person_id=pt.patient_id \n" +
-                    "                   inner join amrs.person_name pn on pn.person_id=p.person_id \n" +
-                    "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 \n" +
+                    "                   inner join amrs.patient pt on e.patient_id =pt.patient_id and pt.voided=0\n" +
+                    "                   inner join amrs.person p on p.person_id=pt.patient_id  and p.voided=0\n" +
+                    "                   inner join amrs.person_name pn on pn.person_id=p.person_id and pn.voided=0 \n" +
+                    "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 and pa.voided=0 \n" +
                     "                   inner join amrs.location l on e.location_id=l.location_id \n" +
                     "where l.uuid in (" + locations + ") and p.voided=0  and  p.person_id in (" + samplePatientList + ") \n" + //and p.person_id >"+ pid +"
                     "group by pt.patient_id\n" +
@@ -463,10 +463,136 @@ public class MigrateRegistration {
 
                     }
                     //End of Person Attributes
+                    //Person Civilstatus
+                    String piddd = rs.getString("person_id");
+                    String pstatusSQl = "SELECT  \n" +
+                            "                     pa.person_id, \n" +
+                            "                    pt.person_attribute_type_id, \n" +
+                            "                    case when pt.person_attribute_type_id =5 then '1054' \n" +
+                            "                    when pt.person_attribute_type_id =42 then '1542' \n" +
+                            "                    when pt.person_attribute_type_id =73 then '1712' \n" +
+                            "                    end kenyaemr_concept, \n" +
+                            "                    case when pt.person_attribute_type_id =5 then '1054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                            "                    when pt.person_attribute_type_id =42 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                            "                    when pt.person_attribute_type_id =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                            "                    end kenyaemr_concept_uuid, \n" +
+                            "                    pt.name, \n" +
+                            "                    cn.name as name_value,\n" +
+                            "                    pa.value,\n" +
+                            "                    case when pa.value =5555 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                            "                    when pa.value =1966 then '1542AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                            "                    when pa.value =73 then '1712AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                            "                    when pa.value = 1059 then '1059AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1057 then '1057AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' -- never married / single\n" +
+                            "                    when pa.value = 1175 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1056 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1055 then '5555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1060 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 5618 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6290 then '159715AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1670 then '1060AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 10479 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1058 then '1058AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value =  8714 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1967 then '1538AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 8711 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1968 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1966 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6966 then '159466AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6284 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1971 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6408 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1832 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 8589 then '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6280 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1969 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1970 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6580 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 5619 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value =  6401 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1678 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 8407 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 10368 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 10369 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 11283 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1496 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 5507 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 8713 then '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 8710 then  '1540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 12263 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 12265 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 12262 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 12264 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1602 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1604 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1600 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6216 then '159785AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6214 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 6215 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1601 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 7583 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 5629 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 1603 then '1714AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    when pa.value = 7549 then '1713AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                            "                    end kenyaemr_value_uuid, \n" +
+                            "                    pa.date_created  \n" +
+                            "                     \n" +
+                            "                FROM \n" +
+                            "                    amrs.person_attribute pa \n" +
+                            "                        INNER JOIN \n" +
+                            "                    amrs.person_attribute_type pt ON pa.person_attribute_type_id = pt.person_attribute_type_id and pt.person_attribute_type_id in(42,73,5) \n" +
+                            "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
+                            "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
+                            "                WHERE \n" +
+                            "                       pa.person_id IN (" + piddd + ") \n" +
+                            "                        AND  \n" +
+                            " pa.voided = 0 order by  pa.person_id  asc";
+
+                    Statement stmtPAStatus = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                            ResultSet.CONCUR_READ_ONLY);
+                    ResultSet rsPAStatus = stmtPAStatus.executeQuery(pstatusSQl);
+                    rsPAStatus.last();
+                    x = rsPAStatus.getRow();
+                    rsPAStatus.beforeFirst();
+                    while (rsPAStatus.next()) {
+
+                        String personId = rsPAStatus.getString("person_id");
+                        String personAttributeTypeId = rsPAStatus.getString("person_attribute_type_id");
+                        String kenyaEmrConcept = rsPAStatus.getString("kenyaemr_concept");
+                        String name = rsPAStatus.getString("name");
+                        String value = rsPAStatus.getString("value");
+                        String kenyaemr_concept_uuid = rsPAStatus.getString("kenyaemr_concept_uuid");
+                        String kenyaemr_value_uuid = rsPAStatus.getString("kenyaemr_value_uuid");
+                        String name_value = rsPAStatus.getString("name_value");
+                        String patientid = rsPAStatus.getString("person_id");
+                        String date_created = rsPAStatus.getString("date_created");
+                        List<AMRSPatientStatus> amrsPatientStatusList = amrsPatientStatusService.findByPersonIdAndPersonAttributeTypeId(patientid, personAttributeTypeId);
+                        if (amrsPatientStatusList.size() == 0) {
+                            AMRSPatientStatus cs = new AMRSPatientStatus();
+                            cs.setPersonId(personId);
+                            cs.setPersonAttributeTypeId(personAttributeTypeId);
+                            cs.setKenyaEmrConcept(kenyaEmrConcept);
+                            cs.setName(name);
+                            cs.setValue(value);
+                            cs.setKenyaEmrConceptUuid(kenyaemr_concept_uuid);
+                            cs.setKenyaEmrValueUuid(kenyaemr_value_uuid);
+                            cs.setValueName(name_value);
+                            // cs.setKenyaPatientUuid(kenyaemrPatientUuid);
+                            cs.setObsDateTime(date_created);
+                            System.out.println("Tumefika Hapa!!!" + parentUUID);
+                            amrsPatientStatusService.save(cs);
+                        }
+
+                    }
+                    //End of Person CivilStatus
 
                 }
                 //Migate Patient
-                RegisterOpenMRSPayload.patient(ae, amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService, url, auth);
+                RegisterOpenMRSPayload.patient(ae, amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService,amrsPatientStatusService, url, auth);
 
             }
 
@@ -482,10 +608,21 @@ public class MigrateRegistration {
                 " rt.a_is_to_b,\n" +
                 " rt.b_is_to_a,\n" +
                 " rt.uuid,\n" +
-                " r.person_b\n" +
+                " r.person_b,\n" +
+                "case when relationship =1 then '8d919b58-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                "                  when relationship =2 then '8d91a01c-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                "                  when relationship =3 then '8d91a210-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                "                  when relationship =4 then '8d91a3dc-c2cc-11de-8d13-0010c6dffd0f'\n" +
+                "                  when relationship =5 then '5f115f62-68b7-11e3-94ee-6bef9086de92'\n" +
+                "                  when relationship =6 then 'd6895098-5d8d-11e3-94ee-b35a4132a5e3'\n" +
+                "                  when relationship =7 then '007b765f-6725-4ae9-afee-9966302bace4'\n" +
+                "                  when relationship =8 then '2ac0d501-eadc-4624-b982-563c70035d46'\n" +
+                "                  when relationship =9 then '58da0d1e-9c89-42e9-9412-275cef1e0429'\n" +
+                "                  when relationship =10 then 'a8058424-5ddf-4ce2-a5ee-6e08d01b5960'\n" +
+                "                  end as kenyaemr_uuid\n"+
                 " FROM amrs.relationship r \n" +
                 " inner join amrs.relationship_type rt on rt.relationship_type_id=r.relationship\n" +
-                " where voided =0 and person_a in ("+ samplePatientList +") and person_b in("+ samplePatientList +")";
+                " where voided =0 and person_a in ("+ samplePatientList +")";
 
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -502,23 +639,34 @@ public class MigrateRegistration {
             String relationshipuuid =rs.getString("uuid");
             String aIsToB =rs.getString("a_is_to_b");
             String bIsToA =rs.getString("b_is_to_a");
+            String kenyaemruuid =rs.getString("kenyaemr_uuid");
+
+            System.out.println("aIsToB "+ aIsToB);
+            System.out.println("bIsToA "+ bIsToA);
 
             List<AMRSPatientRelationship> amrsPatientRelationships = amrsPatientRelationshipService.findByPersonAAndPeronBAndRelationship(persona,personb,relationshipType);
+            System.out.println("Totals size  "+ amrsPatientRelationships.size());
             if (amrsPatientRelationships.size() == 0) {
                 AMRSPatientRelationship pr =new AMRSPatientRelationship();
+                System.out.println("aIsToB "+ aIsToB);
+                System.out.println("bIsToA "+ bIsToA);
                 pr.setAistob(aIsToB);
                 pr.setBistoa(bIsToA);
                 pr.setPersonA(persona);
                 pr.setPersonB(personb);
+                pr.setRelationshipUuid(kenyaemruuid);
                 pr.setRelationshipType(relationshipType);
-                pr.setRelationshipUuid(relationshipuuid);
-                pr.setRelationshipUuid(amrsTranslater.KenyaemrPatientUuid(persona));
-                pr.setRelationshipUuid(amrsTranslater.KenyaemrPatientUuid(personb));
+               // pr.setRelationshipUuid(relationshipuuid);
+                String puuida =   amrsTranslater.KenyaemrPatientUuid(persona);
+                String puuidb =   amrsTranslater.KenyaemrPatientUuid(personb);
+                System.out.println("bIsToA "+ puuida +" puuida "+ puuidb);
+                pr.setKenyaemrpersonAUuid(amrsTranslater.KenyaemrPatientUuid(persona));
+                pr.setKenyaemrpersonBUuid(amrsTranslater.KenyaemrPatientUuid(personb));
                 amrsPatientRelationshipService.save(pr);
 
             }
 
-            RegisterOpenMRSPayload.relationship(amrsPatientRelationshipService, url, auth);
+           RegisterOpenMRSPayload.relationship(amrsPatientRelationshipService, url, auth);
 
         }
     }

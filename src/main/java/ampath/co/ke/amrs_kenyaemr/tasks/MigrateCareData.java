@@ -442,7 +442,6 @@ public class MigrateCareData {
                     " where e.voided =0 and l.uuid in (" + locations + ") and e.encounter_id>" + EncounterID + " and e.patient_id in (" + pid + ")  \n" +
                     " order by e.encounter_id asc ";
 
-
         } else {
 
             sql = "select patient_id as person_id, \n" +
@@ -996,6 +995,7 @@ public class MigrateCareData {
         for (int y = 0; y < amrsPatientsList.size(); y++) {
             pidss += amrsPatientsList.get(y).getPersonId() + ",";
         }
+
         String pid = pidss.substring(0, pidss.length() - 1);
 
         System.out.println("Patient Id " + pid);
@@ -1059,6 +1059,8 @@ public class MigrateCareData {
                 ao.setOrderNumber(orderNumber);
                 ao.setOrderAction(orderAction);
                 ao.setCareSetting(careSetting);
+               System.out.println("Concept ID is "+ conceptId);
+
                 List<AMRSMappings> amrsMappings = amrsMappingService.findByAmrsConceptID(conceptId);
                 if(amrsMappings.size()>0){
                     ao.setKenyaemrConceptUuid(amrsMappings.get(0).getKenyaemrConceptUuid());
@@ -1092,35 +1094,29 @@ public class MigrateCareData {
                 }
 
                 amrsOrderService.save(ao);
+
+                System.out.println("Niko hapa sahi");
+                // orders
+               OrdersPayload.orders(amrsOrderService, amrsPatientServices, url, auth);
             }else{
                 System.out.println("Order already Shipped");
             }
             // orders
-            OrdersPayload.orders(amrsOrderService, amrsPatientServices, url, auth);
-
+          //  System.out.println("Order already Shipped");
+           // OrdersPayload.orders(amrsOrderService, amrsPatientServices, url, auth);
         }
     }
 
     public static void triage(String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        String prevEncounterID = null; // Declare the variable
-        List<AMRSTriage> amrsTriages = amrsTriageService.findFirstByOrderByIdDesc();
-        if (amrsTriages != null && !amrsTriages.isEmpty()) {
-            prevEncounterID = amrsTriages.get(0).getEncounterId();
-        }
-
 
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss = "";
         for (int y = 0; y < amrsPatientsList.size(); y++) {
-            pidss += amrsPatientsList.get(y).getPersonId() + ",";
+            String pid = amrsPatientsList.get(y).getPersonId();
 
-        }
-        String pid = pidss.substring(0, pidss.length() - 1);
-        System.out.println("PtientIDs " + pid);
-
+        System.out.println("PatientIDs " + pid);
         String sql = "";
-        if (amrsTriages == null || amrsTriages.isEmpty()) {
             sql = "WITH cte_vitals_concepts as (\n" +
                     "SELECT \n" +
                     "    concept_id, uuid\n" +
@@ -1169,61 +1165,7 @@ public class MigrateCareData {
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
                     "AND l.uuid IN(" + locations + ") \n" +
                     " AND o.person_id in ( " + pid + " )\n" +
-                    "GROUP BY o.person_id, o.encounter_id ";
-        } else {
-            sql = "WITH cte_vitals_concepts as (\n" +
-                    "SELECT \n" +
-                    "    concept_id, uuid\n" +
-                    "FROM\n" +
-                    "    amrs.concept\n" +
-                    "WHERE\n" +
-                    "    uuid IN (\n" +
-                    "\t\t'a8a65d5a-1350-11df-a1f1-0026b9348838', \n" +
-                    "        'a8a65e36-1350-11df-a1f1-0026b9348838',\n" +
-                    "        'a8a65f12-1350-11df-a1f1-0026b9348838',\n" +
-                    "        'a8a6f71a-1350-11df-a1f1-0026b9348838',\n" +
-                    "        'a8a65fee-1350-11df-a1f1-0026b9348838',\n" +
-                    "        'a8a660ca-1350-11df-a1f1-0026b9348838',\n" +
-                    "        'a8a6619c-1350-11df-a1f1-0026b9348838',\n" +
-                    "        '5099d8a8-36c1-4574-a568-9bc49c15c08c',\n" +
-                    "        '507f48e7-26fc-490b-a521-35d7c5aa8e9f',\n" +
-                    "        'a8a66354-1350-11df-a1f1-0026b9348838',\n" +
-                    "        'a89c60c0-1350-11df-a1f1-0026b9348838',\n" +
-                    "        '9061e5d5-8478-4d16-be44-bfec05b6705a',\n" +
-                    "        'a89c6188-1350-11df-a1f1-0026b9348838')\n" +
-                    ")\n" +
-                    "\n" +
-                    "SELECT \n" +
-                    "o.person_id,\n" +
-                    "o.encounter_id, \n" +
-                    "e.encounter_datetime,\n" +
-                    "e.visit_id,\n" +
-                    "o.location_id,\n" +
-                    "o.concept_id,\n" +
-                    "case  when o.concept_id=1342 then '1342AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=1343 then '1343AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=5085 then '5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=5086 then '5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=5087 then '5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=5088 then '5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=5089 then '5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=5090 then '5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=5092 then '5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "  when o.concept_id=5242 then '5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    " end  kenyaemr_uuid,\n" +
-                    "o.obs_datetime,\n" +
-                    "o.value_numeric\n" +
-                    "FROM amrs.obs o \n" +
-                    "INNER JOIN amrs.encounter e using(encounter_id)\n" +
-                    "INNER JOIN amrs.location l on l.location_id= e.location_id\n" +
-                    "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
-
-                    " AND l.uuid IN (" + locations + ") \n" +
-                    " AND o.person_id  in (" + pid + ") \n" +
-                    " AND o.encounter_id > " + prevEncounterID + "  \n" +
-                    "GROUP BY o.person_id, o.encounter_id ";
-
-        }
+                    "GROUP BY o.person_id, o.encounter_id,o.concept_id";
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
@@ -1235,7 +1177,6 @@ public class MigrateCareData {
         x = rs.getRow();
         rs.beforeFirst();
         while (rs.next()) {
-
             String patientId = rs.getString("person_id");
             String encounterID = rs.getString("encounter_id");
             String encounterDateTime = rs.getString("encounter_datetime");
@@ -1245,31 +1186,12 @@ public class MigrateCareData {
             String obsValue = rs.getString("value_numeric");
             String conceptid = rs.getString("concept_id");
             String kenyaemr_uuid = rs.getString("kenyaemr_uuid");
-
             String kenyaemrPatientUuid = "";
 
             List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
             if (amrsPatients.size() > 0) {
                 kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
             }
-
-
-             /* String heightAgeZscore = rs.getString("height_age_zscore");
-             String weightHeightZscore = rs.getString("weight_height_zscore");
-             String bmiAgeZscore = rs.getString("bmi_age_zscore");
-             String bmi = rs.getString("bmi");
-             String muacMm = rs.getString("muac_mm");
-             String systolicBp = rs.getString("systolic_bp");
-             String diastolicBp = rs.getString("diastolic_bp");
-             String pulse = rs.getString("pulse");
-             String temperature = rs.getString("temperature");
-             String spo2 = rs.getString("spo2");
-             String rr = rs.getString("rr");
-             String weight = rs.getString("weight");
-             String height = rs.getString("height");
-            */
-
-
             List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID, conceptid);
             if (amrsTriageList.isEmpty()) {
                 AMRSTriage at = new AMRSTriage();
@@ -1283,32 +1205,23 @@ public class MigrateCareData {
                 at.setConceptId(conceptid);
                 at.setKenyaemrEncounterUuid(kenyaemrPatientUuid);
                 at.setKenyaemConceptId(kenyaemr_uuid);
-                /*at.setHeightAgeZscore(heightAgeZscore);
-                at.setWeightHeightZscore(weightHeightZscore);
-                at.setBmiAgeZscore(bmiAgeZscore);
-                at.setBmi(bmi);
-                at.setMuacMm(muacMm);
-                at.setSystolicBp(systolicBp);
-                at.setDiastolicBp(diastolicBp);
-                at.setPulse(pulse);
-                at.setTemperature(temperature);
-                at.setSpo2(spo2);
-                at.setRr(rr);
-                at.setWeight(weight);
-                at.setHeight(height);*/
                 at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
                 amrsTriageService.save(at);
-
-             //   CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
+                //   CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
                 System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
             } else {
                 System.out.println("Existing Patient_id " + patientId + "encounterID " + encounterID);
 
             }
+        }
 
-            CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
+          //  System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
+
+
+          //  CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
 
         }
+
     }
 
     public static void encounterMappings(String server, String username, String password, String locations, String parentUUID, AMRSEncounterMappingService amrsEncounterMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {

@@ -99,7 +99,7 @@ public class RegisterOpenMRSPayload {
 
     }
 
-    public static void patient(AMRSPatients amrsPatients, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,AMRSPersonAtrributesService amrsPersonAtrributesService,String url,String auth) throws JSONException, ParseException, IOException {
+    public static void patient(AMRSPatients amrsPatients, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,AMRSPersonAtrributesService amrsPersonAtrributesService,AMRSPatientStatusService amrsPatientStatusService,String url,String auth) throws JSONException, ParseException, IOException {
         //OpenMRS Payload
         //identifier
         List<AMRSIdentifiers> identifiers = amrsIdentifiersService.getByPatientID(amrsPatients.getPersonId());
@@ -251,7 +251,7 @@ public class RegisterOpenMRSPayload {
 
                 AMRSPatientRelationship amrsPatientRelationship = amrsPatientRelationships.get(x);
 
-                if(amrsPatientRelationship.getKenyaemrpersonAUuid() !="") {
+                if(amrsPatientRelationship.getKenyaemrpersonAUuid() !="" && amrsPatientRelationship.getKenyaemrpersonBUuid()!="" ) {
 
                     JSONObject patientObject = new JSONObject();
                     patientObject.put("personA", amrsPatientRelationship.getKenyaemrpersonAUuid());
