@@ -1,13 +1,7 @@
 package ampath.co.ke.amrs_kenyaemr.tasks.payloads;
 
-import ampath.co.ke.amrs_kenyaemr.models.AMRSIdentifiers;
-import ampath.co.ke.amrs_kenyaemr.models.AMRSPatientAttributes;
-import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
-import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSIdentifiersService;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSPersonAtrributesService;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSUserServices;
+import ampath.co.ke.amrs_kenyaemr.models.*;
+import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.IdentifierGenerator;
 import ampath.co.ke.amrs_kenyaemr.tasks.Mappers;
 import okhttp3.*;
@@ -215,11 +209,6 @@ public class RegisterOpenMRSPayload {
         patientObject.put("identifiers", Identifierarray);
         patientObject.put("person", jsonPerson);
 
-        // Basic Authentication
-        // String auth = "admin" + ":" + "Admin123";
-        // String encodedAuth = java.util.Base64.getEncoder().encodeToString(auth.getBytes());
-        // String url = "http://192.168.100.48:8080/openmrs/ws/rest/v1/";
-
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, patientObject.toString());
@@ -248,10 +237,55 @@ public class RegisterOpenMRSPayload {
             // System.out.println("Response ndo hii " + jsonUser.toString());
             System.out.println("Response ndo hii " + response.request() + " More message " + response.message());
             amrsPatients.setMigrated(1);
-            amrsPatients.setResponse_code(response.code());
+            amrsPatients.setResponseCode(String.valueOf(response.code()));
             amrsPatients.setKenyaemrpatientUUID(personUuid);
             amrsPatientServices.save(amrsPatients);
         }
             System.out.println("identifers ndo hii " + patientObject.toString());
+    }
+    public static void relationship( AMRSPatientRelationshipService amrsPatientRelationshipService, String url, String auth ) throws JSONException, ParseException, IOException {
+        List<AMRSPatientRelationship> amrsPatientRelationships = amrsPatientRelationshipService.findByResponseCodeIsNull();
+        if(amrsPatientRelationships.size()>0){
+
+            for(int x=0;x<amrsPatientRelationships.size();x++) {
+
+                AMRSPatientRelationship amrsPatientRelationship = amrsPatientRelationships.get(x);
+
+                if(amrsPatientRelationship.getKenyaemrpersonAUuid() !="") {
+
+                    JSONObject patientObject = new JSONObject();
+                    patientObject.put("personA", amrsPatientRelationship.getKenyaemrpersonAUuid());
+                    patientObject.put("personB", amrsPatientRelationship.getKenyaemrpersonBUuid());
+                    patientObject.put("relationshipType", amrsPatientRelationship.getRelationshipUuid());
+
+                    System.out.println("Payload ndo hii" +patientObject.toString());
+
+                    OkHttpClient client = new OkHttpClient();
+                    MediaType mediaType = MediaType.parse("application/json");
+                    RequestBody body = RequestBody.create(mediaType, patientObject.toString());
+                    Request request = new Request.Builder()
+                            .url(url + "relationship")
+                            .method("POST", body)
+                            .addHeader("Authorization", "Basic " + auth)
+                            .addHeader("Content-Type", "application/json")
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    String responseBody = response.body().string(); // Get the response as a string
+                    System.out.println("Response ndo hii " + responseBody + " More message " + response.message() + " reponse code " + response.code());
+                    JSONObject jsonObject = new JSONObject(responseBody);
+
+                    if (response.code() == 201) {
+                        amrsPatientRelationship.setResponseCode("201");
+                        amrsPatientRelationshipService.save(amrsPatientRelationship);
+
+                    } else {
+                        System.out.println("Error Iko Hapa");
+
+                    }
+                }
+            }
+
         }
-}
+    }
+
+    }
