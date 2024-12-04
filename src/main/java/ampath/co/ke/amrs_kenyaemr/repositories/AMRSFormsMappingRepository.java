@@ -9,7 +9,7 @@ import java.util.List;
 @Repository("AMRSFormsMappingRepository")
 public interface AMRSFormsMappingRepository extends JpaRepository<AMRSFormsMapper, Long> {
     AMRSFormsMapper findByAmrsFormId(String amrsFormId);
-    List<AMRSFormsMapper> getAll();
+    List<AMRSFormsMapper> findAll();
     List<AMRSFormsMapper> findByAmrsEncounterTypeId(String encounterTypeid);
     List<AMRSFormsMapper> findBykenyaemrFormUuid(String kenyaemrFormUuid);
     List<AMRSFormsMapper> findByAmrsMigrationStatus(boolean migrationStatus);

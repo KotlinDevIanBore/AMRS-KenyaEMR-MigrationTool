@@ -8,7 +8,7 @@ mvn spring-boot:run
 
 mvn clean spring-boot:run
 
-mvn package`-DskipTests`
+mvn package -DskipTests
 
 use openmrs;
 call create_etl_tables();

@@ -19,7 +19,7 @@ public class AMRSFormsMapper {
     private String kenyaemrFormUuid;
     @Column(name = "amrs_migration_status")
     private boolean amrsMigrationStatus;
-    @Column(name = "amrs_migration_error_description",nullable = false)
+    @Column(name = "amrs_migration_error_description",nullable = true)
     private String amrsMigrationErrorDescription;
 
 
