@@ -324,6 +324,9 @@ public class CareOpenMRSPayload {
         }
     }
 
+    public static void ordersResults(AMRSOrdersResultsService amrsOrdersResultsService, String parentUUID, String locations, String auth, String url) {
+    }
+
            /* for(int x =0;x<amrsPatientStatusList.size();x++) {
 
 
