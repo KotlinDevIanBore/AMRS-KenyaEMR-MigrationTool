@@ -72,6 +72,8 @@ public class AMRSOrders {
     @Column(name = "response_code")
     private  String responseCode;
 
+    private  String kenyaemrConceptUuid;
+
     @Column(name = "accession_number")
     private String accessionNumber;
 
@@ -427,6 +429,14 @@ public class AMRSOrders {
 
     public void setKenyaemrOrderId(Integer kenyaemrOrderId) {
         this.kenyaemrOrderId = kenyaemrOrderId;
+    }
+
+    public String getKenyaemrConceptUuid() {
+        return kenyaemrConceptUuid;
+    }
+
+    public void setKenyaemrConceptUuid(String kenyaemrConceptUuid) {
+        this.kenyaemrConceptUuid = kenyaemrConceptUuid;
     }
 }
 
