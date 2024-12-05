@@ -115,7 +115,7 @@ public class ObsPayload {
                             jsonObservations.put(jsonObservation);
                         }
 
-                        formuuid = amrsTranslater.formtranslater(amrsObsEncounter.get(x).getFormId());
+                        formuuid = amrsTranslater.formtranslater(amrsObsEncounter.get(x).getFormId(), amrsObsEncounter.get(x).getEncounterType());
 
 
                         //  }

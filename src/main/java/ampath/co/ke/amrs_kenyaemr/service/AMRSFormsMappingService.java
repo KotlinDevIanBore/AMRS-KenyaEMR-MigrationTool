@@ -23,6 +23,9 @@ public class AMRSFormsMappingService {
     public List<AMRSFormsMapper> findByAmrsFormId(String FormId) {
         return amrsFormsMappingRepository.findByAmrsFormId(FormId);
     }
+    public List<AMRSFormsMapper> findByAmrsFormIdAndEncounterTypeId(String FormId, String encounterTypeId) {
+        return amrsFormsMappingRepository.findByAmrsFormIdAndAmrsEncounterTypeId(FormId, encounterTypeId);
+    }
     public List<AMRSFormsMapper> getAll() {
         return amrsFormsMappingRepository.findAll();
     }

@@ -2563,30 +2563,39 @@ public class MigrateCareData {
     public static void formsMappings(String server, String username, String password, String locations, String parentUUID, AMRSFormsMappingService amrsFormsMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException{
         String sql = "select distinct(e.form_id), \n" +
                 "e.encounter_type ,\n" +
-                "f.name,\n" +
+                "e.name,\n" +
                 "case \n" +
-                "when e.form_id in(14,16,17,44,49,59,61,85,84,89,87,94,88,93,98,105,118,119,121,133,135,124,80,232,236,241,247,254,252,251,250)  then '22c68f86-bbf0-49ba-b2d1-23fa7ccf0259' -- adult return\n" +
-                "when e.form_id in(15,34,43,50,58,35,96,111,120,134,136,230,235) then 'e4b506c1-7379-42b6-a374-284469cba8da' -- adult initial\n" +
-                "when e.form_id in(30,22,19,18,20,21) then '2cdeded1-3f69-3bda-beff-1ed2ead94eaf' -- lab\n" +
-                "when e.form_id in(64,65,69,70,109,110,231) then '83fb6ab2-faec-4d87-a714-93e77a28a201' -- art fast track\n" +
-                "when e.form_id in(66,91,112) then 'a1a62d1e-2def-11e9-b210-d663bd873d93' -- defaulter tracing\n" +
-                "when e.form_id = 68 then 'c483f10f-d9ee-4b0d-9b8c-c24c1ec24701'\n" +
-                "when e.form_id = 71 then '5cf01528-09da-11ea-8d71-362b9e155667'\n" +
-                "when e.form_id = 52 then 'b8357314-0f6a-4fc9-a5b7-339f47095d62'\n" +
-                "when e.form_id in(97,248) then 'e8f98494-af35-4bb8-9fc7-c409c8fed843' -- anc\n" +
-                "when e.form_id = 31 then '1f76643e-2495-11e9-ab14-d663bd873d93' -- discontinuation\n" +
-                "when e.form_id in(101,239) then '59ed8e62-7f1f-40ae-a2e3-eabe350277ce' -- tb\n" +
-                "when e.form_id in(174,240,249) then '72aa78e0-ee4b-47c3-9073-26f3b9ecc4a7' -- pnc\n" +
-                "when e.form_id = 225 then 'a52c57d4-110f-4879-82ae-907b0d90add6'\n" +
-                "when e.form_id = 244 then '755b59e6-acbb-4853-abaf-be302039f902' -- cwc\n" +
-                "when e.form_id = 164 then '31a371c6-3cfe-431f-94db-4acadad8d209' -- oncology\n" +
+                "when e.form_id in(14,16,17,36,44,49,59,61,79,80,81,85,84,89,87,90,94,88,90,92,93,94,105,116,118,119,121,124,133,135,137,143,144,159,173,179,227,229,232,236,241,245,247,250,251,350,447,466,625,745,907,347,379,485,495,511,512,517,518,522,524,528,\n" +
+                "529,534,540,544,545,550,648,651,689,718,727,728,731,761,789,783,784,800,864,911,912,914,967,968,999,1009,1045,1046,1047,1071,1072,1099,1412,1429,1447,1106,1155,1187,1378,1381,1437,1454,1455,1465,1470,1478,1480,1482,1496,1497)  then '22c68f86-bbf0-49ba-b2d1-23fa7ccf0259' -- adult ped youth return\n" +
+                "when e.form_id in(15,33,34,35,37,43,50,58,60,95,98,111,120,134,136,145,146,148,157,160,226,228,230,235,253,254,357,378,481,484,510,523,530,531,535,546,547,649,650,713,725,726,730,790,801,877,1084,1107,1372,1373,1380,1436,1452,1453,1469,1477,1479,1481,1484,1501,1502,1509,1510,1511) then 'e4b506c1-7379-42b6-a374-284469cba8da' -- adult youth ped initial\n" +
+                "when e.form_id in(30,22,19,18,20,21,32,521,647,822,1110,1407,1408,1425,1537) then '2cdeded1-3f69-3bda-beff-1ed2ead94eaf' -- lab\n" +
+                "when e.form_id in(65,70,82,110,231,527,673,819,820,810,683,703,979,980,981,982,983,1010) then '83fb6ab2-faec-4d87-a714-93e77a28a201' -- art fast track\n" +
+                "when e.form_id in(66,91,112,364,457,525,909,1093,1486,1487) then 'a1a62d1e-2def-11e9-b210-d663bd873d93' -- defaulter tracing\n" +
+                "when e.form_id in(520,542,720,886,1078,1164,1165,1440,1458,1472) then 'c483f10f-d9ee-4b0d-9b8c-c24c1ec24701'  -- EAC\n" +
+                "when e.form_id = 71 then '5cf013e8-09da-11ea-8d71-362b9e155667' -- OVC discontinuation\n" +
+                "when e.form_id in (52,26,353,356,362,532,803,1087) then 'b8357314-0f6a-4fc9-a5b7-339f47095d62' -- Nutrition\n" +
+                "when e.form_id in(27,97,180,183,242,248,344,1109,113,125,257,258,327,328,1438,1439,1534,1535) then 'e8f98494-af35-4bb8-9fc7-c409c8fed843' -- anc \n" +
+                "when e.form_id in (843,933,1168,1324,537,929,1169,114,538,701,1414) then '1f76643e-2495-11e9-ab14-d663bd873d93' -- hiv discontinuation\n" +
+                "when e.form_id in(224,249,348,446,519,1131,1444,1445,1446,1540,174,178,225,305,354,488, 1147,1177) then '72aa78e0-ee4b-47c3-9073-26f3b9ecc4a7' -- pnc\n" +
+                "when e.form_id in(1532,782,1086,1432,1435) then '1bfb09fc-56d7-4108-bd59-b2765fd312b8' -- Prep initial\n" +
+                "when e.form_id in(1499,777,1088,1431,1533,1431) then 'ee3e2017-52c0-4a54-99ab-ebb542fb8984' -- prep return\n" +
+                "when e.form_id = 1434 then '291c03c8-a216-11e9-a2a3-2a2ae2dbcce4' -- Prep monthly refill\n" +
+                "when e.form_id in (29,1121,1441,1442,1443) then '496c7cc3-0eea-4e84-a04c-2292949e2f7f' -- MNCH Delivery\n" +
+                "when e.form_id = 1324 then '5cf013e8-09da-11ea-8d71-362b9e155667' -- OVC Disc\n" +
+                "when e.form_id = 1483 then '3ae95898-0464-11ea-8d71-362b9e155667' -- OTZ enrollment\n" +
+                "when e.form_id = 1484 then '3ae95d48-0464-11ea-8d71-362b9e155667' -- OTZ Activity\n" +
+                "when e.form_id = 1485 then '3ae955dc-0464-11ea-8d71-362b9e155667' -- OTZ Disc\n" +
+                "when e.form_id in (686,687,688,733,811,1531,536) then '755b59e6-acbb-4853-abaf-be302039f902' -- cwc\n" +
+                "when e.form_id in (1356,1174) then '48f2235ca-cc77-49cb-83e6-f526d5a5f174' -- Cervical screening\n" +
+                "when e.form_id in (1302,1316,1397,1424,1303,1359) then '86709f36-1490-11ec-82a8-0242ac130003' -- Covid Screening\n" +
+                "when e.form_id in (1357,1385) then 'ac3152de-1728-4786-828a-7fb4db0fc384' -- Home visit\n" +
+                "when e.form_id in (520,542,720,886,1078,1164,1165,1440,1458,1460,1471) then '37f6bd8d-586a-4169-95fa-5781f987fe62' -- Triage\n" +
+                "when e.form_id in (101,117,239,330,368) then '59ed8e62-7f1f-40ae-a2e3-eabe350277ce' -- TB\n" +
+                "when e.form_id in (1369) and e.encounter_type in (2) then '22c68f86-bbf0-49ba-b2d1-23fa7ccf0259' -- Greencard\n" +
+                "when e.form_id in (1369) and e.encounter_type in (110) then '37f6bd8d-586a-4169-95fa-5781f987fe62' -- Triage\n" +
                 "end kenyaemr_form_uuid\n" +
                 "from \n" +
-                "amrs.encounter e\n" +
-                "inner join\n" +
-                "amrs.form f on f.form_id = e.form_id\n" +
-                " limit 100\n" +
-                " -- where voided=0;";
+                "amrs.form e";
 
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
