@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository("AMRSRegimenSwitchRepository")
 public interface AMRSRegimenSwitchRepository extends JpaRepository<AMRSRegimenSwitch, Long> {
-    List<AMRSRegimenSwitch> findByPatientIdAndEncounterId(String pid, String eid);
+    List<AMRSRegimenSwitch> findByEncounterId(String eid);
 
     List<AMRSRegimenSwitch> findFirstByOrderByIdDesc();
 
