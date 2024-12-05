@@ -109,7 +109,8 @@ public class CareOpenMRSPayload {
                         jsonObservation.put("value", Double.parseDouble(amrsTriageEncounters.get(x).getValue()));
                     }*/
                       jsonObservation.put("person",amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
-                      jsonObservation.put("concept",amrsTriageEncounters.get(x).getKenyaemrFormUuid());///String.valueOf(conceptsetId));
+                      jsonObservation.put("concept",amrsTriageEncounters.get(x).getKenyaemConceptId());///String.valueOf(conceptsetId));
+                      jsonObservation.put("obsDatetime",amrsTriageEncounters.get(x).getObsDateTime());///String.valueOf(conceptsetId));
                       jsonObservation.put("value", amrsTriageEncounters.get(x).getValue());
                     jsonObservations.put(jsonObservation);
                 }
@@ -117,7 +118,7 @@ public class CareOpenMRSPayload {
                 System.out.println("Payload for is here " + jsonObservations.toString());
 
                 List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
-               /* if (amrsEncounters.size() > 0) {
+                if (amrsEncounters.size() > 0) {
                     JSONObject jsonEncounter = new JSONObject();
                     jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                     jsonEncounter.put("obs", jsonObservations);
@@ -141,7 +142,9 @@ public class CareOpenMRSPayload {
 
                     String resBody = response.request().toString();
                     int rescode = response.code();
-                    if (rescode == 201) {
+                    System.out.println("Response Code Hapa " + rescode );
+
+                    if (rescode == 200) {
                         for (int x = 0; x < amrsTriageEncounters.size(); x++) {
                             AMRSTriage at = amrsTriageEncounters.get(x);
                             at.setResponseCode(String.valueOf(rescode));
@@ -151,7 +154,7 @@ public class CareOpenMRSPayload {
                             amrsTriageService.save(at);
                         }
                     }
-                }*/
+                }
             }
 
 

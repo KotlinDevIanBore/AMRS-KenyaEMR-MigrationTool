@@ -584,7 +584,7 @@ public class MigrateRegistration {
                             // cs.setKenyaPatientUuid(kenyaemrPatientUuid);
                             cs.setObsDateTime(date_created);
                             System.out.println("Tumefika Hapa!!!" + parentUUID);
-                            amrsPatientStatusService.save(cs);
+                          //  amrsPatientStatusService.save(cs);
                         }
 
                     }

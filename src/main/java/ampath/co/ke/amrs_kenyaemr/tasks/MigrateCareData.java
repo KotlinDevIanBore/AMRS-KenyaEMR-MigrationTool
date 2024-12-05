@@ -1115,8 +1115,8 @@ public class MigrateCareData {
         for (int y = 0; y < amrsPatientsList.size(); y++) {
             String pid = amrsPatientsList.get(y).getPersonId();
 
-        System.out.println("PatientIDs " + pid);
-        String sql = "";
+            System.out.println("PatientIDs " + pid);
+            String sql = "";
             sql = "WITH cte_vitals_concepts as (\n" +
                     "SELECT \n" +
                     "    concept_id, uuid\n" +
@@ -1167,59 +1167,54 @@ public class MigrateCareData {
                     " AND o.person_id in ( " + pid + " )\n" +
                     "GROUP BY o.person_id, o.encounter_id,o.concept_id";
 
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
-        Connection con = DriverManager.getConnection(server, username, password);
-        int x = 0;
-        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(sql);
-        rs.last();
-        x = rs.getRow();
-        rs.beforeFirst();
-        while (rs.next()) {
-            String patientId = rs.getString("person_id");
-            String encounterID = rs.getString("encounter_id");
-            String encounterDateTime = rs.getString("encounter_datetime");
-            String visitId = rs.getString("visit_id");
-            String locationId = rs.getString("location_id");
-            String obsDateTime = rs.getString("obs_datetime");
-            String obsValue = rs.getString("value_numeric");
-            String conceptid = rs.getString("concept_id");
-            String kenyaemr_uuid = rs.getString("kenyaemr_uuid");
-            String kenyaemrPatientUuid = "";
+            System.out.println("locations " + locations + " parentUUID " + parentUUID);
+            Connection con = DriverManager.getConnection(server, username, password);
+            int x = 0;
+            Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery(sql);
+            rs.last();
+            x = rs.getRow();
+            rs.beforeFirst();
+            while (rs.next()) {
+                String patientId = rs.getString("person_id");
+                String encounterID = rs.getString("encounter_id");
+                String encounterDateTime = rs.getString("encounter_datetime");
+                String visitId = rs.getString("visit_id");
+                String locationId = rs.getString("location_id");
+                String obsDateTime = rs.getString("obs_datetime");
+                String obsValue = rs.getString("value_numeric");
+                String conceptid = rs.getString("concept_id");
+                String kenyaemr_uuid = rs.getString("kenyaemr_uuid");
+                String kenyaemrPatientUuid = "";
 
-            List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
-            if (amrsPatients.size() > 0) {
-                kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+                if (amrsPatients.size() > 0) {
+                    kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                }
+                List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID, conceptid);
+                if (amrsTriageList.isEmpty()) {
+                    AMRSTriage at = new AMRSTriage();
+                    at.setPatientId(patientId);
+                    at.setEncounterDateTime(encounterDateTime);
+                    at.setVisitId(visitId);
+                    at.setEncounterId(encounterID);
+                    at.setLocationId(locationId);
+                    at.setObsDateTime(obsDateTime);
+                    at.setValue(obsValue);
+                    at.setConceptId(conceptid);
+                    at.setKenyaemrEncounterUuid(kenyaemrPatientUuid);
+                    at.setKenyaemConceptId(kenyaemr_uuid);
+                    at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
+                    amrsTriageService.save(at);
+                     System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
+                } else {
+                    System.out.println("Existing Patient_id " + patientId + "encounterID " + encounterID);
+
+                }
             }
-            List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID, conceptid);
-            if (amrsTriageList.isEmpty()) {
-                AMRSTriage at = new AMRSTriage();
-                at.setPatientId(patientId);
-                at.setEncounterDateTime(encounterDateTime);
-                at.setVisitId(visitId);
-                at.setEncounterId(encounterID);
-                at.setLocationId(locationId);
-                at.setObsDateTime(obsDateTime);
-                at.setValue(obsValue);
-                at.setConceptId(conceptid);
-                at.setKenyaemrEncounterUuid(kenyaemrPatientUuid);
-                at.setKenyaemConceptId(kenyaemr_uuid);
-                at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
-                amrsTriageService.save(at);
-                //   CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
-                System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
-            } else {
-                System.out.println("Existing Patient_id " + patientId + "encounterID " + encounterID);
 
-            }
-        }
-
-          //  System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
-
-
-          //  CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
-
+              CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
         }
 
     }
@@ -1915,35 +1910,13 @@ public class MigrateCareData {
     }
 
     public static void programEnrollments(String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-
+        String samplePatientList = AMRSSamples.getPersonIdList();
         AMRSTranslater amrsConceptReader = new AMRSTranslater();
 
         String sql = "";
         List<AMRSEnrollments> amrsEnrollmentsList = amrsEnrollmentService.getAll();
         String nextEncounterID = "";
 
-        List<Integer> numbers = Arrays.asList(
-                1187467, 1207817, 1212603, 1216267, 1225187, 1140933, 1185368,
-                1177985, 1189238, 1191232, 1199830, 1170791, 1174464, 1206185,
-                1176830, 1182705, 1209127, 1177104, 1177467, 1184252, 1192270,
-                1204250, 1212823, 1193179, 1177270, 1191005, 1198509, 1167355,
-                1178369, 1184092, 1189326, 1191369, 1203354, 1203531, 1209140,
-                1226657, 1172517, 1186701, 1195760, 1169969, 1178748, 1206865,
-                1215595, 1180696, 1186078, 1195200, 1177704, 1212906, 1209159,
-                1202124, 1205268, 1208071, 1211667, 1212173, 1220342, 1176467,
-                1178456, 1176379, 1177933, 1179157, 1185422, 1198117, 1203972,
-                1211635, 1185861, 1188709, 1192374, 1194786, 1200228, 1212351,
-                1222698, 198492, 1178019, 1187425, 1176820, 1170115, 1175708,
-                1153475, 1153527, 1153618, 1153684, 1153703, 1153725, 1153811,
-                1153922, 1153931, 1166345, 1167167, 1168996, 1174041, 1174884,
-                1177493, 1180808, 1182235, 1182433, 1187031, 1188132, 1190631,
-                1192399, 1193816, 1196144, 1196454, 1197444, 1199916, 1201312,
-                1202111, 1203658, 1207799, 1207926, 1207939, 1209301, 1226630, 1188938, 827082,
-                33052, 104614, 161550, 839201, 1161908, 1188870, 1170159, 1212828
-        );
-
-        String pist = numbers.toString();
-        String result = pist.substring(1, pist.length() - 1);
 
         if (amrsEnrollmentsList.isEmpty()) {
 
@@ -2055,7 +2028,7 @@ public class MigrateCareData {
                     "\tand e.location_id in (2, 336, 98)\n" +
                     "\tand e.voided = 0\n" +
                     "\tand o.concept_id in (2051, 7013)\n" +
-                    "\tand fhs.is_clinical_encounter = 1 and e.patient_id in (" + result + ")\n" +
+                    "\tand fhs.is_clinical_encounter = 1 and e.patient_id in (" + samplePatientList + ")\n" +
                     "group by\n" +
                     "\te.patient_id";
         } else {
@@ -2167,7 +2140,7 @@ public class MigrateCareData {
                     "\tand e.location_id in (2, 336, 98)\n" +
                     "\tand e.voided = 0\n" +
                     "\tand o.concept_id in (2051, 7013)\n" +
-                    "\tand fhs.is_clinical_encounter = 1 and e.patient_id in (" + result + ")\n" +
+                    "\tand fhs.is_clinical_encounter = 1 and e.patient_id in (" + samplePatientList + ")\n" +
                     "group by\n" +
                     "\te.patient_id";
         }
@@ -2319,7 +2292,6 @@ public class MigrateCareData {
 
         } else {
             System.out.println("List" + amrsCivilStatusList);
-//            nextEncounterID = amrs.get(0).getEncounterID();
             sql = "SELECT  \n" +
                     "                     pa.person_id, \n" +
                     "                    pt.person_attribute_type_id, \n" +
@@ -2551,7 +2523,6 @@ public class MigrateCareData {
         while (rs.next()) {
 
             String patientId = rs.getString("patient_id");
-
             String formId = rs.getString("form_id");
             String conceptId = rs.getString("concept_id");
             String encounterId = rs.getString("encounter_id");
