@@ -22,8 +22,8 @@ public class AMRSRegimenSwitchService {
         this.amrsRegimenSwitchRepository = amrsRegimenSwitchRepository;
     }
 
-    public List<AMRSRegimenSwitch> findByPatientIdAndEncounterId(String pid,String eid) {
-        return amrsRegimenSwitchRepository.findByPatientIdAndEncounterId(pid,eid);
+    public List<AMRSRegimenSwitch> findByEncounterId(String eid) {
+        return amrsRegimenSwitchRepository.findByEncounterId(eid);
     }
 
     public List<AMRSRegimenSwitch> findFirstByOrderByIdDesc() {
