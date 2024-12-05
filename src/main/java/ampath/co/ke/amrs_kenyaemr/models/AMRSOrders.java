@@ -18,114 +18,73 @@ public class AMRSOrders {
 
     private Integer orderId;
 
-    @Column(name = "order_type_id")
     private Integer orderTypeId;
 
-    @Column(name = "concept_id")
     private Integer conceptId;
 
-    @Column(name = "orderer")
     private String orderer;
 
-    @Column(name = "encounter_id")
     private Integer encounterId;
 
-    @Column(name = "instructions")
     private String instructions;
 
-    @Column(name = "date_activated")
     private LocalDateTime dateActivated;
 
-    @Column(name = "auto_expire_date")
-    private LocalDateTime autoExpireDate;
 
-    @Column(name = "date_stopped")
-    private LocalDateTime dateStopped;
-
-    @Column(name = "order_reason")
     private String orderReason;
 
-    @Column(name = "order_reason_non_coded")
-    private String orderReasonNonCoded;
 
-    @Column(name = "creator")
-    private Integer creator;
 
-    @Column(name = "date_created")
     private LocalDateTime dateCreated;
 
-    @Column(name = "voided")
     private Boolean voided;
 
-    @Column(name = "voided_by")
     private Integer voidedBy;
 
-    @Column(name = "date_voided")
     private LocalDateTime dateVoided;
 
-    @Column(name = "void_reason")
     private String voidReason;
 
-    @Column(name = "patient_id")
     private String patientId;
 
-    @Column(name = "response_code")
-    private  String responseCode;
+    private String responseCode;
 
-    private  String kenyaemrConceptUuid;
+    private String kenyaemrConceptUuid;
 
-    @Column(name = "accession_number")
-    private String accessionNumber;
+    private String orderType;
 
-    @Column(name = "amrs_uuid", length = 36)
-    private String uuid;
-
-    @Column(name = "urgency")
-    private String urgency;
-
-    @Column(name = "order_number")
-    private String orderNumber;
-
-    @Column(name = "previous_order_id")
-    private Integer previousOrderId;
-
-    @Column(name = "order_action")
     private String orderAction;
 
-    @Column(name = "comment_to_fulfiller")
-    private String commentToFulfiller;
+    private String urgency;
 
-    @Column(name = "care_setting")
-    private String careSetting;
+    private String orderNumber;
 
-    @Column(name = "scheduled_date")
-    private LocalDateTime scheduledDate;
-
-    @Column(name = "order_group_id")
-    private Integer orderGroupId;
-
-    @Column(name = "sort_weight")
-    private Double sortWeight;
-
-    @Column(name = "fulfiller_comment")
-    private String fulfillerComment;
-
+    private Integer previousOrderId;
 
     private String kenyaemrPatientUuid;
-
-    @Column(name = "fulfiller_status")
-    private String fulfillerStatus;
 
     @Column(name = "migration_uuid", length = 36)
     private String migrationUuid;
 
-    @Column(name = "kenyaemr_order_uuid")
+
     private String kenyaemrOrderUuid;
 
-    @Column(name = "kenyaemr_order_id")
+
     private Integer kenyaemrOrderId;
 
     private String kenyaEmrEncounterUuid;
+
+
+    private String display;
+
+    private String sampleDrawn;
+
+    private String sampleCollectionDate;
+
+
+    private String finalOrderResult;
+
+    private String dateOrdered;
 
     public Integer getId() {
         return Id;
@@ -191,52 +150,12 @@ public class AMRSOrders {
         this.dateActivated = dateActivated;
     }
 
-    public LocalDateTime getAutoExpireDate() {
-        return autoExpireDate;
-    }
-
-    public void setAutoExpireDate(LocalDateTime autoExpireDate) {
-        this.autoExpireDate = autoExpireDate;
-    }
-
-    public LocalDateTime getDateStopped() {
-        return dateStopped;
-    }
-
-    public void setDateStopped(LocalDateTime dateStopped) {
-        this.dateStopped = dateStopped;
-    }
-
     public String getOrderReason() {
         return orderReason;
     }
 
     public void setOrderReason(String orderReason) {
         this.orderReason = orderReason;
-    }
-
-    public String getOrderReasonNonCoded() {
-        return orderReasonNonCoded;
-    }
-
-    public void setOrderReasonNonCoded(String orderReasonNonCoded) {
-        this.orderReasonNonCoded = orderReasonNonCoded;
-    }
-
-    public Integer getCreator() {
-        return creator;
-    }
-
-    public void setCreator(Integer creator) {
-        this.creator = creator;
-    }
-
-    public String getKenyaEmrEncounterUuid() {
-        return kenyaEmrEncounterUuid;
-    }
-
-    public void setKenyaEmrEncounterUuid(String kenyaEmrEncounterUuid) {
-        this.kenyaEmrEncounterUuid = kenyaEmrEncounterUuid;
     }
 
     public LocalDateTime getDateCreated() {
@@ -287,28 +206,36 @@ public class AMRSOrders {
         this.patientId = patientId;
     }
 
-    public String getAccessionNumber() {
-        return accessionNumber;
+    public String getResponseCode() {
+        return responseCode;
     }
 
-    public String getKenyaemrPatientUuid() {
-        return kenyaemrPatientUuid;
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
     }
 
-    public void setKenyaemrPatientUuid(String kenyaemrPatientUuid) {
-        this.kenyaemrPatientUuid = kenyaemrPatientUuid;
+    public String getKenyaemrConceptUuid() {
+        return kenyaemrConceptUuid;
     }
 
-    public void setAccessionNumber(String accessionNumber) {
-        this.accessionNumber = accessionNumber;
+    public void setKenyaemrConceptUuid(String kenyaemrConceptUuid) {
+        this.kenyaemrConceptUuid = kenyaemrConceptUuid;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getOrderType() {
+        return orderType;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
+    public String getOrderAction() {
+        return orderAction;
+    }
+
+    public void setOrderAction(String orderAction) {
+        this.orderAction = orderAction;
     }
 
     public String getUrgency() {
@@ -335,76 +262,12 @@ public class AMRSOrders {
         this.previousOrderId = previousOrderId;
     }
 
-    public String getOrderAction() {
-        return orderAction;
+    public String getKenyaemrPatientUuid() {
+        return kenyaemrPatientUuid;
     }
 
-    public String getResponseCode() {
-        return responseCode;
-    }
-
-    public void setResponseCode(String responseCode) {
-        this.responseCode = responseCode;
-    }
-
-    public void setOrderAction(String orderAction) {
-        this.orderAction = orderAction;
-    }
-
-    public String getCommentToFulfiller() {
-        return commentToFulfiller;
-    }
-
-    public void setCommentToFulfiller(String commentToFulfiller) {
-        this.commentToFulfiller = commentToFulfiller;
-    }
-
-    public String getCareSetting() {
-        return careSetting;
-    }
-
-    public void setCareSetting(String careSetting) {
-        this.careSetting = careSetting;
-    }
-
-    public LocalDateTime getScheduledDate() {
-        return scheduledDate;
-    }
-
-    public void setScheduledDate(LocalDateTime scheduledDate) {
-        this.scheduledDate = scheduledDate;
-    }
-
-    public Integer getOrderGroupId() {
-        return orderGroupId;
-    }
-
-    public void setOrderGroupId(Integer orderGroupId) {
-        this.orderGroupId = orderGroupId;
-    }
-
-    public Double getSortWeight() {
-        return sortWeight;
-    }
-
-    public void setSortWeight(Double sortWeight) {
-        this.sortWeight = sortWeight;
-    }
-
-    public String getFulfillerComment() {
-        return fulfillerComment;
-    }
-
-    public void setFulfillerComment(String fulfillerComment) {
-        this.fulfillerComment = fulfillerComment;
-    }
-
-    public String getFulfillerStatus() {
-        return fulfillerStatus;
-    }
-
-    public void setFulfillerStatus(String fulfillerStatus) {
-        this.fulfillerStatus = fulfillerStatus;
+    public void setKenyaemrPatientUuid(String kenyaemrPatientUuid) {
+        this.kenyaemrPatientUuid = kenyaemrPatientUuid;
     }
 
     public String getMigrationUuid() {
@@ -431,12 +294,52 @@ public class AMRSOrders {
         this.kenyaemrOrderId = kenyaemrOrderId;
     }
 
-    public String getKenyaemrConceptUuid() {
-        return kenyaemrConceptUuid;
+    public String getKenyaEmrEncounterUuid() {
+        return kenyaEmrEncounterUuid;
     }
 
-    public void setKenyaemrConceptUuid(String kenyaemrConceptUuid) {
-        this.kenyaemrConceptUuid = kenyaemrConceptUuid;
+    public void setKenyaEmrEncounterUuid(String kenyaEmrEncounterUuid) {
+        this.kenyaEmrEncounterUuid = kenyaEmrEncounterUuid;
+    }
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(String display) {
+        this.display = display;
+    }
+
+    public String getSampleDrawn() {
+        return sampleDrawn;
+    }
+
+    public void setSampleDrawn(String sampleDrawn) {
+        this.sampleDrawn = sampleDrawn;
+    }
+
+    public String getSampleCollectionDate() {
+        return sampleCollectionDate;
+    }
+
+    public void setSampleCollectionDate(String sampleCollectionDate) {
+        this.sampleCollectionDate = sampleCollectionDate;
+    }
+
+    public String getFinalOrderResult() {
+        return finalOrderResult;
+    }
+
+    public void setFinalOrderResult(String finalOrderResult) {
+        this.finalOrderResult = finalOrderResult;
+    }
+
+    public String getDateOrdered() {
+        return dateOrdered;
+    }
+
+    public void setDateOrdered(String dateOrdered) {
+        this.dateOrdered = dateOrdered;
     }
 }
 

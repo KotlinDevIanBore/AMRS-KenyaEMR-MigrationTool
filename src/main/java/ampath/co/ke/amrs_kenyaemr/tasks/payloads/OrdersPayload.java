@@ -14,8 +14,7 @@ import java.util.List;
 public class OrdersPayload {
     public static void orders(AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, String url, String auth) throws JSONException, IOException {
         List<AMRSOrders> amrsOrders = amrsOrderService.findByResponseCodeIsNull();
-        System.out.println("Nimefika hapa kwa Payload");
-        if(amrsOrders.size() > 0) {
+       if(!amrsOrders.isEmpty()) {
 
             System.out.println("Size ndo hii "+ amrsOrders.size());
 
@@ -31,30 +30,28 @@ public class OrdersPayload {
                         String orderNumber = amrsOrders.get(x).getOrderNumber();
                         Integer orderType = amrsOrders.get(x).getOrderTypeId();
                         String urgency = amrsOrders.get(x).getUrgency();
-                        String orderer = amrsOrders.get(x).getOrderer();
-
-//                        Integer amrs_uuid = Integer.valueOf(amrsOrders.get(x).getUuid());
-                        String careSettings = amrsOrders.get(x).getCareSetting();
                         String orderReason = amrsOrders.get(x).getOrderReason();
                         String concept_uuid=amrsOrders.get(x).getKenyaemrConceptUuid();
+
+                        String result = amrsOrders.get(x).getFinalOrderResult();
+                        String resultsDate = amrsOrders.get(x).getDateOrdered();
+
+                        String orderAction = amrsOrders.get(x).getOrderAction();
                         if(concept_uuid !=null) {
 
                             JSONObject jsonOrder = new JSONObject();
-//                        jsonOrder.put("patient", pid);
-//                        jsonOrder.put("orderId", kenyaemrOrderId);
-                         //jsonOrder.put("orderNumber", orderNumber);
-//                        jsonOrder.put("orderType", orderType);
+
                             jsonOrder.put("urgency", urgency);
-//                        jsonOrder.put("orderer", orderer);
                             jsonOrder.put("orderer", "ae01b8ff-a4cc-4012-bcf7-72359e852e14");
                             jsonOrder.put("orderReason", orderReason);
-//                        jsonOrder.put("amrs_uuid", amrs_uuid);
                             jsonOrder.put("careSetting", "OUTPATIENT");
                             jsonOrder.put("patient", amrsOrders.get(x).getKenyaemrPatientUuid());
                             jsonOrder.put("concept", concept_uuid);
                             jsonOrder.put("encounter", amrsOrders.get(x).getKenyaEmrEncounterUuid());
-                            jsonOrder.put("action", "new");
+                            jsonOrder.put("action", orderAction);
+                            jsonOrder.put("dateActivated", resultsDate);
                             jsonOrder.put("type", "testorder");
+//                            jsonOrder.put("dateStopped",resultsDate);
 
                             System.out.println("---------------------------------------------");
                             System.out.println(jsonOrder.toString());
@@ -85,11 +82,25 @@ public class OrdersPayload {
                             System.out.println("Response ndo hii " + response);
 //                        System.out.println("Response Payload " + jsonOrder.toString());
                             if (response.code() == 201) {
-//                            Integer orderUuid = Integer.valueOf(jsonObject.getString("uuid"));
                                 String orderUuid = jsonObject.getString("uuid");
-                                amrsOrders1.setKenyaemrOrderUuid(orderUuid);
-                                amrsOrders1.setResponseCode(String.valueOf(response.code()));
-                                amrsOrderService.save(amrsOrders1);
+
+                                // update results
+
+                                JSONObject orderResultsObj = new JSONObject();
+                                orderResultsObj.put("person", amrsOrders.get(x).getKenyaemrPatientUuid());
+                                orderResultsObj.put("concept", concept_uuid);
+                                orderResultsObj.put("encounter", amrsOrders.get(x).getKenyaEmrEncounterUuid());
+                                orderResultsObj.put("obsDatetime", resultsDate);
+                                orderResultsObj.put("value", result);
+                                orderResultsObj.put("order",orderUuid);
+
+
+                                if(ordersResults(orderResultsObj,url,auth)){
+                                    amrsOrders1.setKenyaemrOrderUuid(orderUuid);
+                                    amrsOrders1.setResponseCode(String.valueOf(response.code()));
+                                    amrsOrderService.save(amrsOrders1);
+                                }
+
                             }else{
                                 System.out.println("Response ndo hii " + response.code());
                             }
@@ -102,4 +113,32 @@ public class OrdersPayload {
             }
         }
     }
+
+
+    public static boolean ordersResults(JSONObject orderResultObj, String url, String auth) throws JSONException, IOException {
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, orderResultObj.toString());
+        String bodyString = body.toString();
+        Request request = new Request.Builder()
+                .url(url + "obs")
+                .method("POST", body)
+                .addHeader("Authorization", "Basic " + auth)
+                .addHeader("Content-Type", "application/json")
+                .build();
+        Response response = client.newCall(request).execute();
+
+        String responseBody = response.body().string(); // Get the response as a string
+        JSONObject jsonObject = new JSONObject(responseBody);
+        if (response.code() == 201) {
+            return true;
+        } else {
+            System.out.println("failed saving observations " + response.code());
+            return false;
+        }
+
+    }
+
+
+
 }
