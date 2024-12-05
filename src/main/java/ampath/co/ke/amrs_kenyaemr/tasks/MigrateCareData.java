@@ -1219,6 +1219,126 @@ public class MigrateCareData {
 
     }
 
+    public static void newObs(String server, String username, String password, String locations, String parentUUID, AMRSObsService amrsObsService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+
+        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+        String pidss = "";
+        for (int y = 0; y < amrsPatientsList.size(); y++) {
+            String pid = amrsPatientsList.get(y).getPersonId();
+
+            System.out.println("PatientIDs " + pid);
+            String sql = "";
+            sql =  "select  e.patient_id,\n" +
+                    "e.encounter_type,\n" +
+                    "e.encounter_id,\n"+
+                    "e.form_id, \n" +
+                    "o.concept_id, \n" +
+                    "cn.name as question,\n" +
+                    "c.datatype_id,\n" +
+                    "o.obs_datetime, \n" +
+                    "o.obs_group_id,\n" +
+                    "et.name AS encounter_type,\n" +
+                    "COALESCE(cn_answer.name, '') as value_coded_name,\n" +
+                    "COALESCE(drug.name, '') as drug_name,\n" +
+                    "case when o.value_coded is not null then  o.value_coded\n" +
+                    "when o.value_datetime is not null then  o.value_datetime\n" +
+                    "when o.value_text is not null then o.value_text\n" +
+                    "when o.value_numeric is not null then o.value_numeric end\n" +
+                    "as value \n" +
+                    "from amrs.obs o \n" +
+                    "inner join amrs.encounter e on e.encounter_id =o.encounter_id\n" +
+                    "INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+                    "inner join amrs.concept c on o.concept_id =c.concept_id\n" +
+                    "                     AND cn.locale_preferred = 1  and cn.locale='en' and cn .voided=0\n" +
+                    "\t\t\t\t\t\t-- AND cn.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                    "                    LEFT JOIN amrs.encounter_type et ON e.encounter_type = et.encounter_type_id -- and et.voided=0\n" +
+                    "                   LEFT JOIN amrs.location l ON e.location_id = l.location_id\n" +
+                    "                    LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id \n" +
+                    "                        AND cn_answer.locale = 'en' \n" +
+                    "                        AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                    "\t\t\t\tLEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
+                    " where o.person_id=1170115\n" +
+                    " and o.voided =0";
+
+            System.out.println("locations " + locations + " parentUUID " + parentUUID);
+            Connection con = DriverManager.getConnection(server, username, password);
+            int x = 0;
+            Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery(sql);
+            rs.last();
+            x = rs.getRow();
+            rs.beforeFirst();
+            while (rs.next()) {
+
+               /* String conceptId = rs.getString("concept_id");
+                String patientId = rs.getString("patient_id");
+                String encounterId = rs.getString("encounter_id");
+                String encounterType = rs.getString("encounter_type");
+                String datatypeId = rs.getString("datatype_id");
+                String question = rs.getString("question");
+                String formId = rs.getString("form_id");
+                String obsDatetime = rs.getString("obs_datetime");
+                String value = rs.getString("value");
+                String valueCodedName = rs.getString("value_coded_name");
+
+                List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+                String kenyaemrPatientUuid = "";
+                String kenyaemr_concept_uuid = "";
+                String kenyaemr_encounter_uuid = "";
+                if (amrsPatients.size() > 0) {
+                    kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                }
+
+                kenyaemr_concept_uuid = amrsTranslater.translater(conceptId);
+                String kenyaemr_value_uuid="";
+                if(datatypeId.equals("2")) {
+                    kenyaemr_value_uuid = amrsTranslater.translater(value);
+                }else{
+                    kenyaemr_value_uuid = value;
+                }
+
+                List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+                if(!amrsEncounters.isEmpty()) {
+                    kenyaemr_encounter_uuid = amrsEncounters.get(0).getKenyaemrEncounterUuid();
+                }
+
+                List<AMRSObs> amrsObsList = amrsObsService.findByPatientIdAndEncounterIDAndConceptId(patientId, encounterId, conceptId);
+                if (amrsObsList.isEmpty()) {
+                    AMRSObs ao = new AMRSObs();
+                    ao.setConceptId(conceptId);
+                    ao.setPatientId(patientId);
+                    if (kenyaemr_concept_uuid != null || ! kenyaemr_concept_uuid.isEmpty()) {
+                        ao.setKenyaemrconceptuuid(kenyaemr_concept_uuid);
+                    }
+                    ao.setEncounterId(encounterId);
+                    ao.setValueType(value);
+                    ao.setEncounterType(encounterType);
+                    ao.setObsDatetime(obsDatetime);
+                    ao.setDataType(datatypeId);
+                    ao.setValue(value);
+                    ao.setAmrsQuestion(question);
+                    ao.setFormId(formId);
+                    ao.setKenyaemrvalue(kenyaemr_value_uuid);
+                    ao.setValuecodedName(valueCodedName);
+                    ao.setKenyaemrlocationuuid("c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+                    ao.setKenyaemrpersonuuid(kenyaemrPatientUuid);
+                    ao.setKenyaemrencounteruuid(kenyaemr_encounter_uuid);
+                    amrsObsService.save(ao);
+                    System.out.println("Patient_id" + patientId + "ObsID "+  obsDatetime);
+                } else {
+                    System.out.println("Existing Patient_id " + patientId );
+
+                }
+                */
+            }
+
+            ObsPayload.newObs(amrsObsService, amrsPatientServices, amrsEncounterService, url, auth);
+        }
+
+    }
+
     public static void encounterMappings(String server, String username, String password, String locations, String parentUUID, AMRSEncounterMappingService amrsEncounterMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         String sql = "select \n" +
                 " encounter_type_id,\n" +
@@ -1646,7 +1766,7 @@ public class MigrateCareData {
         }
     }
 
-    public static void obs(String server, String username, String password, String locations,
+    /*public static void obs(String server, String username, String password, String locations,
                            String parentUUID, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices,
                            AMRSTranslater amrsConceptReader, String url, String auth) throws SQLException, JSONException,
             ParseException, IOException {
@@ -1680,61 +1800,55 @@ public class MigrateCareData {
             ObsPayload.obs(amrsObsService, amrsPatientServices, url, auth, newObservations);
         }
     }
+    */
 
-    private static List<AMRSObs> processPatientObservations(String server, String username,
+   /* private static List<AMRSObs> processPatientObservations(String server, String username,
                                                             String password, String patientId, String location, String patientUuid, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
                                                             AMRSTranslater amrsConceptReader) throws SQLException {
 
         List<AMRSObs> newObservations = new ArrayList<>();
-        String sql = "SELECT \n" +
-                "    o.obs_id,\n" +
-                "    o.concept_id,\n" +
-                "   o.person_id, \n" +
-                "    o.obs_datetime,\n" +
-                "    o.encounter_id,\n" +
-                "         CASE \n" +
-                "        WHEN o.value_numeric IS NOT NULL THEN 'Value Numeric'\n" +
-                "        WHEN o.value_coded IS NOT NULL THEN 'Value Coded'\n" +
-                "        WHEN o.value_text IS NOT NULL THEN 'Value Text'\n" +
-                "        ELSE 'null'\n" +
-                "    END AS value_type,\n" +
-                "       CASE \n" +
-                "        WHEN o.value_numeric IS NOT NULL THEN o.value_numeric\n" +
-                "        WHEN o.value_coded IS NOT NULL THEN o.value_coded\n" +
-                "        WHEN o.value_text IS NOT NULL THEN o.value_text\n" +
-                "         WHEN o.value_datetime IS NOT NULL THEN o.value_datetime\n" +
-                "        ELSE 'null'\n" +
-                "    END AS value,\n" +
-                "    e.encounter_datetime,\n" +
-                "    e.uuid AS amrs_encounter_uuid, \n" +
-                "    et.name AS encounter_type,\n" +
-                "    COALESCE(cn_answer.name, '') as value_coded_name,\n" +
-                "    COALESCE(drug.name, '') as drug_name\n" +
-                "FROM \n" +
-                "    amrs.obs o\n" +
-                "    INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
-                "        AND cn.locale = 'en' \n" +
-                "        -- AND cn.concept_name_type = 'FULLY_SPECIFIED'\n" +
-                "    LEFT JOIN amrs.encounter e ON o.encounter_id = e.encounter_id\n" +
-                "    LEFT JOIN amrs.encounter_type et ON e.encounter_type = et.encounter_type_id\n" +
-                "    LEFT JOIN amrs.location l ON e.location_id = l.location_id\n" +
-                "    LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id \n" +
-                "        AND cn_answer.locale = 'en' \n" +
-                "        -- AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
-                "    LEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
-                "WHERE \n" +
-                "     o.person_id = ? \n" +
-                "    AND o.voided = 0\n" +
-                "ORDER BY \n" +
-                "    o.obs_datetime DESC" +
-                "   LIMIT 10";
+        String sql = "select  e.patient_id,\n" +
+                "e.encounter_type,\n" +
+                "e.form_id, \n" +
+                "o.concept_id, \n" +
+                "cn.name as question,\n" +
+                "c.datatype_id,\n" +
+                "o.obs_datetime, \n" +
+                "o.obs_group_id,\n" +
+                "et.name AS encounter_type,\n" +
+                "COALESCE(cn_answer.name, '') as value_coded_name,\n" +
+                "COALESCE(drug.name, '') as drug_name,\n" +
+                "case when o.value_coded is not null then  o.value_coded\n" +
+                "when o.value_datetime is not null then  o.value_datetime\n" +
+                "when o.value_text is not null then o.value_text\n" +
+                "when o.value_numeric is not null then o.value_numeric end\n" +
+                "as value \n" +
+                "from amrs.obs o \n" +
+                "inner join amrs.encounter e on e.encounter_id =o.encounter_id\n" +
+                "INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+                "inner join amrs.concept c on o.concept_id =c.concept_id\n" +
+                "                     AND cn.locale_preferred = 1  and cn.locale='en' and cn .voided=0\n" +
+                "\t\t\t\t\t\t-- AND cn.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                "                    LEFT JOIN amrs.encounter_type et ON e.encounter_type = et.encounter_type_id -- and et.voided=0\n" +
+                "                   LEFT JOIN amrs.location l ON e.location_id = l.location_id\n" +
+                "                    LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id \n" +
+                "                        AND cn_answer.locale = 'en' \n" +
+                "                        AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                "\t\t\t\tLEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
+                " where o.person_id=1169125\n" +
+                " and o.voided =0";
 
         try (Connection con = DriverManager.getConnection(server, username, password);
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setString(1, patientId);
+            //stmt.setString(1, patientId);
             try (ResultSet rs = stmt.executeQuery()) {
+                int x = 0;
+                rs.last();
+                x = rs.getRow();
+                rs.beforeFirst();
                 while (rs.next()) {
+
                     AMRSObs observation = processObservationRow(rs, amrsEncounterService, amrsObsService, amrsConceptReader, location, patientUuid);
                     if (observation != null) {
 
@@ -1746,13 +1860,21 @@ public class MigrateCareData {
         }
         return newObservations;
     }
+    */
 
-    private static AMRSObs processObservationRow(ResultSet rs, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
+   /* private static AMRSObs processObservationRow(ResultSet rs, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
                                                  AMRSTranslater amrsConceptReader, String location, String patientUuid) throws SQLException {
 
         String conceptId = rs.getString("concept_id");
         String personId = rs.getString("person_id");
         String encounterId = rs.getString("encounter_id");
+        String encounterType = rs.getString("encounter_type");
+        String datatypeId = rs.getString("datatype_id");
+        String question = rs.getString("question");
+        String formId = rs.getString("form_id");
+        String obsDatetime = rs.getString("obs_datetime");
+        String value = rs.getString("value");
+        String valueCodedName = rs.getString("value_coded_name");
 
         Map<String, AMRSObs> existingObservations = amrsObsService
                 .findByPatientIdAndEncounterIDAndConceptId(personId, encounterId, conceptId)
@@ -1784,12 +1906,14 @@ public class MigrateCareData {
             ao.setPatientId(personId);
             ao.setKenyaemrconceptuuid(kenyaemr_concept_uuid);
             ao.setEncounterID(encounterId);
-            ao.setValueType(rs.getString("value_type"));
-            ao.setEncounterType(rs.getString("encounter_type"));
-            ao.setEncounterDatetime(rs.getString("encounter_datetime"));
-            ao.setObsDatetime(rs.getString("obs_datetime"));
-            ao.setAmrsencounteruuid(rs.getString("amrs_encounter_uuid"));
-            ao.setValue(rs.getString("value"));
+            ao.setValueType(value);
+            ao.setEncounterType(encounterType);
+            ao.setObsDatetime(obsDatetime);
+            ao.setDataType(datatypeId);
+            ao.setValue(value);
+            ao.setAmrsQuestion(question);
+            ao.setFormId(formId);
+            ao.setValuecodedName(valueCodedName);
             ao.setKenyaemrlocationuuid(location);
             ao.setKenyaemrpersonuuid(patientUuid);
             ao.setKenyaemrencounteruuid(kenyaemr_encounter_uuid);
@@ -1800,6 +1924,7 @@ public class MigrateCareData {
         System.out.println("Existing observation found");
         return null;
     }
+    */
 
     public static void programSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 

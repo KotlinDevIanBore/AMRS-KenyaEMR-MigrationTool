@@ -22,8 +22,13 @@ public class AMRSObsService {
         return amrsObsRepository.findAll();
     }
     public List<AMRSObs> findByPatientIdAndEncounterIDAndConceptId(String pid, String encountid, String concept) {
-        return amrsObsRepository.findByPatientIdAndEncounterIDAndConceptId( pid, encountid, concept);
+        return amrsObsRepository.findByPatientIdAndEncounterIdAndConceptId( pid, encountid, concept);
     }
+    public List<AMRSObs> findByEncounterId( String encountid) {
+        return amrsObsRepository.findByEncounterId(encountid);
+    }
+
+
 
 
 
