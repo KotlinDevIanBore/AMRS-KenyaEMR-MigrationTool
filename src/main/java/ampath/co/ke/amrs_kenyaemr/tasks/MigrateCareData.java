@@ -3019,7 +3019,10 @@ public class MigrateCareData {
             form.setKenyaemrFormUuid(kenyaEmrFormUuid);
             form.setAmrsFormName(amrsFormName);
             form.setAmrsMigrationErrorDescription(null);
-            amrsFormsMappingService.save(form);
+            List<AMRSFormsMapper> amrsFormsMappers = amrsFormsMappingService.findByAmrsFormIdAndEncounterTypeId(amrsFormId,encounterType);
+            if(amrsFormsMappers.isEmpty()) {
+                amrsFormsMappingService.save(form);
+            }
 
         }
     }
