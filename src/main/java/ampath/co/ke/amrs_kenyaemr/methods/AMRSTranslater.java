@@ -23,6 +23,9 @@ public class AMRSTranslater {
         List<AMRSMappings> amrsMappingsList = amrsMappingService.findByAmrsConceptID(amrsConceptId);
 
         if(amrsMappingsList.size() > 0) {
+           if (amrsMappingsList.size() > 1)
+           {System.out.println("Translated more than once : " + amrsConceptId);}
+
             kenyaEmrConceptUuid = amrsMappingsList.get(0).getKenyaemrConceptUuid();
         }
         return kenyaEmrConceptUuid;

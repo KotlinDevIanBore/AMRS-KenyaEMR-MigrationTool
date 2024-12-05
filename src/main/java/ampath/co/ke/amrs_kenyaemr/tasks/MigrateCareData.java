@@ -1622,6 +1622,126 @@ public class MigrateCareData {
 
     }
 
+    public static void newObs(String server, String username, String password, String locations, String parentUUID, AMRSObsService amrsObsService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+
+        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+        String pidss = "";
+        for (int y = 0; y < amrsPatientsList.size(); y++) {
+            String pid = amrsPatientsList.get(y).getPersonId();
+
+            System.out.println("PatientIDs " + pid);
+            String sql = "";
+            sql =  "select  e.patient_id,\n" +
+                    "e.encounter_type,\n" +
+                    "e.encounter_id,\n"+
+                    "e.form_id, \n" +
+                    "o.concept_id, \n" +
+                    "cn.name as question,\n" +
+                    "c.datatype_id,\n" +
+                    "o.obs_datetime, \n" +
+                    "o.obs_group_id,\n" +
+                    "et.name AS encounter_type,\n" +
+                    "COALESCE(cn_answer.name, '') as value_coded_name,\n" +
+                    "COALESCE(drug.name, '') as drug_name,\n" +
+                    "case when o.value_coded is not null then  o.value_coded\n" +
+                    "when o.value_datetime is not null then  o.value_datetime\n" +
+                    "when o.value_text is not null then o.value_text\n" +
+                    "when o.value_numeric is not null then o.value_numeric end\n" +
+                    "as value \n" +
+                    "from amrs.obs o \n" +
+                    "inner join amrs.encounter e on e.encounter_id =o.encounter_id\n" +
+                    "INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+                    "inner join amrs.concept c on o.concept_id =c.concept_id\n" +
+                    "                     AND cn.locale_preferred = 1  and cn.locale='en' and cn .voided=0\n" +
+                    "\t\t\t\t\t\t-- AND cn.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                    "                    LEFT JOIN amrs.encounter_type et ON e.encounter_type = et.encounter_type_id -- and et.voided=0\n" +
+                    "                   LEFT JOIN amrs.location l ON e.location_id = l.location_id\n" +
+                    "                    LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id \n" +
+                    "                        AND cn_answer.locale = 'en' \n" +
+                    "                        AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                    "\t\t\t\tLEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
+                    " where o.person_id=1170115\n" +
+                    " and o.voided =0";
+
+            System.out.println("locations " + locations + " parentUUID " + parentUUID);
+            Connection con = DriverManager.getConnection(server, username, password);
+            int x = 0;
+            Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery(sql);
+            rs.last();
+            x = rs.getRow();
+            rs.beforeFirst();
+            while (rs.next()) {
+
+               /* String conceptId = rs.getString("concept_id");
+                String patientId = rs.getString("patient_id");
+                String encounterId = rs.getString("encounter_id");
+                String encounterType = rs.getString("encounter_type");
+                String datatypeId = rs.getString("datatype_id");
+                String question = rs.getString("question");
+                String formId = rs.getString("form_id");
+                String obsDatetime = rs.getString("obs_datetime");
+                String value = rs.getString("value");
+                String valueCodedName = rs.getString("value_coded_name");
+
+                List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+                String kenyaemrPatientUuid = "";
+                String kenyaemr_concept_uuid = "";
+                String kenyaemr_encounter_uuid = "";
+                if (amrsPatients.size() > 0) {
+                    kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                }
+
+                kenyaemr_concept_uuid = amrsTranslater.translater(conceptId);
+                String kenyaemr_value_uuid="";
+                if(datatypeId.equals("2")) {
+                    kenyaemr_value_uuid = amrsTranslater.translater(value);
+                }else{
+                    kenyaemr_value_uuid = value;
+                }
+
+                List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+                if(!amrsEncounters.isEmpty()) {
+                    kenyaemr_encounter_uuid = amrsEncounters.get(0).getKenyaemrEncounterUuid();
+                }
+
+                List<AMRSObs> amrsObsList = amrsObsService.findByPatientIdAndEncounterIDAndConceptId(patientId, encounterId, conceptId);
+                if (amrsObsList.isEmpty()) {
+                    AMRSObs ao = new AMRSObs();
+                    ao.setConceptId(conceptId);
+                    ao.setPatientId(patientId);
+                    if (kenyaemr_concept_uuid != null || ! kenyaemr_concept_uuid.isEmpty()) {
+                        ao.setKenyaemrconceptuuid(kenyaemr_concept_uuid);
+                    }
+                    ao.setEncounterId(encounterId);
+                    ao.setValueType(value);
+                    ao.setEncounterType(encounterType);
+                    ao.setObsDatetime(obsDatetime);
+                    ao.setDataType(datatypeId);
+                    ao.setValue(value);
+                    ao.setAmrsQuestion(question);
+                    ao.setFormId(formId);
+                    ao.setKenyaemrvalue(kenyaemr_value_uuid);
+                    ao.setValuecodedName(valueCodedName);
+                    ao.setKenyaemrlocationuuid("c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+                    ao.setKenyaemrpersonuuid(kenyaemrPatientUuid);
+                    ao.setKenyaemrencounteruuid(kenyaemr_encounter_uuid);
+                    amrsObsService.save(ao);
+                    System.out.println("Patient_id" + patientId + "ObsID "+  obsDatetime);
+                } else {
+                    System.out.println("Existing Patient_id " + patientId );
+
+                }
+                */
+            }
+
+            ObsPayload.newObs(amrsObsService, amrsPatientServices, amrsEncounterService, url, auth);
+        }
+
+    }
+
     public static void encounterMappings(String server, String username, String password, String locations, String parentUUID, AMRSEncounterMappingService amrsEncounterMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         String sql = "select \n" +
                 " encounter_type_id,\n" +
@@ -2049,7 +2169,7 @@ public class MigrateCareData {
         }
     }
 
-    public static void obs(String server, String username, String password, String locations,
+    /*public static void obs(String server, String username, String password, String locations,
                            String parentUUID, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices,
                            AMRSTranslater amrsConceptReader, String url, String auth) throws SQLException, JSONException,
             ParseException, IOException {
@@ -2083,61 +2203,55 @@ public class MigrateCareData {
             ObsPayload.obs(amrsObsService, amrsPatientServices, url, auth, newObservations);
         }
     }
+    */
 
-    private static List<AMRSObs> processPatientObservations(String server, String username,
+   /* private static List<AMRSObs> processPatientObservations(String server, String username,
                                                             String password, String patientId, String location, String patientUuid, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
                                                             AMRSTranslater amrsConceptReader) throws SQLException {
 
         List<AMRSObs> newObservations = new ArrayList<>();
-        String sql = "SELECT \n" +
-                "    o.obs_id,\n" +
-                "    o.concept_id,\n" +
-                "   o.person_id, \n" +
-                "    o.obs_datetime,\n" +
-                "    o.encounter_id,\n" +
-                "         CASE \n" +
-                "        WHEN o.value_numeric IS NOT NULL THEN 'Value Numeric'\n" +
-                "        WHEN o.value_coded IS NOT NULL THEN 'Value Coded'\n" +
-                "        WHEN o.value_text IS NOT NULL THEN 'Value Text'\n" +
-                "        ELSE 'null'\n" +
-                "    END AS value_type,\n" +
-                "       CASE \n" +
-                "        WHEN o.value_numeric IS NOT NULL THEN o.value_numeric\n" +
-                "        WHEN o.value_coded IS NOT NULL THEN o.value_coded\n" +
-                "        WHEN o.value_text IS NOT NULL THEN o.value_text\n" +
-                "         WHEN o.value_datetime IS NOT NULL THEN o.value_datetime\n" +
-                "        ELSE 'null'\n" +
-                "    END AS value,\n" +
-                "    e.encounter_datetime,\n" +
-                "    e.uuid AS amrs_encounter_uuid, \n" +
-                "    et.name AS encounter_type,\n" +
-                "    COALESCE(cn_answer.name, '') as value_coded_name,\n" +
-                "    COALESCE(drug.name, '') as drug_name\n" +
-                "FROM \n" +
-                "    amrs.obs o\n" +
-                "    INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
-                "        AND cn.locale = 'en' \n" +
-                "        -- AND cn.concept_name_type = 'FULLY_SPECIFIED'\n" +
-                "    LEFT JOIN amrs.encounter e ON o.encounter_id = e.encounter_id\n" +
-                "    LEFT JOIN amrs.encounter_type et ON e.encounter_type = et.encounter_type_id\n" +
-                "    LEFT JOIN amrs.location l ON e.location_id = l.location_id\n" +
-                "    LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id \n" +
-                "        AND cn_answer.locale = 'en' \n" +
-                "        -- AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
-                "    LEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
-                "WHERE \n" +
-                "     o.person_id = ? \n" +
-                "    AND o.voided = 0\n" +
-                "ORDER BY \n" +
-                "    o.obs_datetime DESC" +
-                "   LIMIT 10";
+        String sql = "select  e.patient_id,\n" +
+                "e.encounter_type,\n" +
+                "e.form_id, \n" +
+                "o.concept_id, \n" +
+                "cn.name as question,\n" +
+                "c.datatype_id,\n" +
+                "o.obs_datetime, \n" +
+                "o.obs_group_id,\n" +
+                "et.name AS encounter_type,\n" +
+                "COALESCE(cn_answer.name, '') as value_coded_name,\n" +
+                "COALESCE(drug.name, '') as drug_name,\n" +
+                "case when o.value_coded is not null then  o.value_coded\n" +
+                "when o.value_datetime is not null then  o.value_datetime\n" +
+                "when o.value_text is not null then o.value_text\n" +
+                "when o.value_numeric is not null then o.value_numeric end\n" +
+                "as value \n" +
+                "from amrs.obs o \n" +
+                "inner join amrs.encounter e on e.encounter_id =o.encounter_id\n" +
+                "INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+                "inner join amrs.concept c on o.concept_id =c.concept_id\n" +
+                "                     AND cn.locale_preferred = 1  and cn.locale='en' and cn .voided=0\n" +
+                "\t\t\t\t\t\t-- AND cn.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                "                    LEFT JOIN amrs.encounter_type et ON e.encounter_type = et.encounter_type_id -- and et.voided=0\n" +
+                "                   LEFT JOIN amrs.location l ON e.location_id = l.location_id\n" +
+                "                    LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id \n" +
+                "                        AND cn_answer.locale = 'en' \n" +
+                "                        AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
+                "\t\t\t\tLEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
+                " where o.person_id=1169125\n" +
+                " and o.voided =0";
 
         try (Connection con = DriverManager.getConnection(server, username, password);
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setString(1, patientId);
+            //stmt.setString(1, patientId);
             try (ResultSet rs = stmt.executeQuery()) {
+                int x = 0;
+                rs.last();
+                x = rs.getRow();
+                rs.beforeFirst();
                 while (rs.next()) {
+
                     AMRSObs observation = processObservationRow(rs, amrsEncounterService, amrsObsService, amrsConceptReader, location, patientUuid);
                     if (observation != null) {
 
@@ -2149,13 +2263,21 @@ public class MigrateCareData {
         }
         return newObservations;
     }
+    */
 
-    private static AMRSObs processObservationRow(ResultSet rs, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
+   /* private static AMRSObs processObservationRow(ResultSet rs, AMRSEncounterService amrsEncounterService, AMRSObsService amrsObsService,
                                                  AMRSTranslater amrsConceptReader, String location, String patientUuid) throws SQLException {
 
         String conceptId = rs.getString("concept_id");
         String personId = rs.getString("person_id");
         String encounterId = rs.getString("encounter_id");
+        String encounterType = rs.getString("encounter_type");
+        String datatypeId = rs.getString("datatype_id");
+        String question = rs.getString("question");
+        String formId = rs.getString("form_id");
+        String obsDatetime = rs.getString("obs_datetime");
+        String value = rs.getString("value");
+        String valueCodedName = rs.getString("value_coded_name");
 
         Map<String, AMRSObs> existingObservations = amrsObsService
                 .findByPatientIdAndEncounterIDAndConceptId(personId, encounterId, conceptId)
@@ -2187,12 +2309,14 @@ public class MigrateCareData {
             ao.setPatientId(personId);
             ao.setKenyaemrconceptuuid(kenyaemr_concept_uuid);
             ao.setEncounterID(encounterId);
-            ao.setValueType(rs.getString("value_type"));
-            ao.setEncounterType(rs.getString("encounter_type"));
-            ao.setEncounterDatetime(rs.getString("encounter_datetime"));
-            ao.setObsDatetime(rs.getString("obs_datetime"));
-            ao.setAmrsencounteruuid(rs.getString("amrs_encounter_uuid"));
-            ao.setValue(rs.getString("value"));
+            ao.setValueType(value);
+            ao.setEncounterType(encounterType);
+            ao.setObsDatetime(obsDatetime);
+            ao.setDataType(datatypeId);
+            ao.setValue(value);
+            ao.setAmrsQuestion(question);
+            ao.setFormId(formId);
+            ao.setValuecodedName(valueCodedName);
             ao.setKenyaemrlocationuuid(location);
             ao.setKenyaemrpersonuuid(patientUuid);
             ao.setKenyaemrencounteruuid(kenyaemr_encounter_uuid);
@@ -2203,6 +2327,7 @@ public class MigrateCareData {
         System.out.println("Existing observation found");
         return null;
     }
+    */
 
     public static void programSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
@@ -2837,7 +2962,7 @@ public class MigrateCareData {
 
     }
 
-    public static void formsMappings(String server, String username, String password, String locations, String parentUUID, AMRSFormsMappingService amrsFormsMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void formsMappings(String server, String username, String password, String locations, String parentUUID, AMRSFormsMappingService amrsFormsMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException{
         String sql = "select distinct(e.form_id), \n" +
                 "e.encounter_type ,\n" +
                 "f.name,\n" +
@@ -2985,6 +3110,536 @@ public class MigrateCareData {
         }
     }
 
- }
+    public static void ordersResults(String server, String username, String password, String locations, String parentUUID, AMRSOrdersResultsService amrsOrdersResultsService, AMRSConceptMappingService amrsConceptMappingService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+        String sql = "";
+        List<AMRSOrdersResults> amrsOrdersResultsList = amrsOrdersResultsService.findFirstByOrderByIdDesc();
+        String nextEncounterID = "";
+        String samplePatientList = AMRSSamples.getPersonIdList();
+        if (amrsOrdersResultsList.isEmpty()) {
+
+            sql = "WITH cte_patient_id as (\n" +
+                    "(" + samplePatientList +")" +
+                    "),\n" +
+                    "\n" +
+                    "cte_orders as (\n" +
+                    "\tSELECT \n" +
+                    "    t1.patient_id,\n" +
+                    "    t1.order_id,\n" +
+                    "    t1.order_number AS orderNumber,\n" +
+                    "    t1.concept_id AS order_type,\n" +
+                    "    case when t1.concept_id = 856 then 'VIRAL LOAD' ELSE t2.name end AS display,\n" +
+                    "    t3.value_numeric as order_result,\n" +
+                    "    -- o.order_value,\n" +
+                    "    t1.date_activated AS date_ordered,\n" +
+                    "    t4.name AS sample_drawn,\n" +
+                    "    DATE(t5.obs_datetime) AS sample_collection_date\n" +
+                    "FROM\n" +
+                    "    amrs.encounter e\n" +
+                    "        INNER JOIN\n" +
+                    "    amrs.patient p USING (patient_id)\n" +
+                    "        INNER JOIN\n" +
+                    "    amrs.person per ON (per.person_id = p.patient_id)\n" +
+                    "\t\tINNER JOIN \n" +
+                    "\tamrs.orders t1 ON(e.encounter_id = t1.encounter_id)\n" +
+                    "        LEFT OUTER JOIN\n" +
+                    "\tamrs.obs t5 ON (t1.order_id = t5.order_id\n" +
+                    "        AND (t5.voided IS NULL || t5.voided = 0)\n" +
+                    "        AND t5.concept_id = 10189)\n" +
+                    "\t\tLEFT OUTER JOIN\n" +
+                    "    amrs.obs t3 ON (t1.concept_id = t3.concept_id\n" +
+                    "        AND (t3.voided IS NULL || t3.voided = 0) AND t1.encounter_id = t3.encounter_id)    \n" +
+                    "        LEFT OUTER JOIN\n" +
+                    "    amrs.concept_name t4 ON (t5.value_coded = t4.concept_id)\n" +
+                    "        LEFT OUTER JOIN\n" +
+                    "    amrs.concept_name t2 ON (t1.concept_id = t2.concept_id)\n" +
+                    "WHERE\n" +
+                    "\t\tp.voided = 0 AND e.voided = 0\n" +
+                    "        AND e.location_id IN (2 , 339, 98, 379) \n" +
+                    "        AND (t1.voided IS NULL || t1.voided = 0)\n" +
+                    "        AND t1.patient_id IN(SELECT patient_id FROM cte_patient_id)\n" +
+                    "GROUP BY t1.patient_id, t1.order_number\n" +
+                    "ORDER BY t1.patient_id, t1.date_activated desc\n" +
+                    "),\n" +
+                    "cte_vls AS(\n" +
+                    "SELECT \n" +
+                    "    f.person_id, \n" +
+                    "    f.concept_id, \n" +
+                    "    f.order_id, \n" +
+                    "    f.obs_date, \n" +
+                    "    f.order_value \n" +
+                    "FROM (\n" +
+                    "    SELECT \n" +
+                    "        t.row_id, \n" +
+                    "        t.person_id, \n" +
+                    "        t.order_type as concept_id, \n" +
+                    "        t.encounter_id, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id = 856 THEN t.order_id\n" +
+                    "        WHEN LEAD(t.order_id) OVER (ORDER BY t.row_id ASC) IS NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id THEN t.order_id\n" +
+                    "        ELSE NULL END AS order_id, \n" +
+                    "        t.obs_date, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id = 856 THEN t.value_numeric\n" +
+                    "        WHEN t.order_id IS NOT NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id AND t.order_type = 856 THEN LEAD(t.value_numeric) OVER (ORDER BY t.row_id ASC)\n" +
+                    "        ELSE NULL END AS order_value\n" +
+                    "    FROM (\n" +
+                    "        SELECT \n" +
+                    "            ROW_NUMBER() OVER (ORDER BY o.person_id, o.obs_id ASC) AS row_id, \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            o.encounter_id, \n" +
+                    "            o.order_id,\n" +
+                    "            d.concept_id as order_type,\n" +
+                    "            DATE(o.obs_datetime) AS obs_date, \n" +
+                    "            o.value_numeric, \n" +
+                    "            o.location_id, \n" +
+                    "            o.voided\n" +
+                    "        FROM \n" +
+                    "            amrs.obs o\n" +
+                    "\t\tLEFT JOIN \n" +
+                    "\t\t\tamrs.orders d using(order_id)\n" +
+                    "        WHERE \n" +
+                    "            o.person_id in(SELECT * FROM temp_patients) AND \n" +
+                    "            o.concept_id IN (10189, 856) AND \n" +
+                    "            o.encounter_id IS NULL\n" +
+                    "        GROUP BY \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            DATE(o.obs_datetime)\n" +
+                    "        ORDER BY \n" +
+                    "        o.person_id, o.obs_id ASC\n" +
+                    "    ) t\n" +
+                    ") f \n" +
+                    "WHERE f.order_id IS NOT NULL\n" +
+                    "),\n" +
+                    "cte_dna_pcr AS(\n" +
+                    "SELECT \n" +
+                    "    f.person_id, \n" +
+                    "    f.concept_id, \n" +
+                    "    f.order_id, \n" +
+                    "    f.obs_date, \n" +
+                    "    f.order_value \n" +
+                    "FROM (\n" +
+                    "    SELECT \n" +
+                    "        t.row_id, \n" +
+                    "        t.person_id, \n" +
+                    "        t.order_type as concept_id, \n" +
+                    "        t.encounter_id, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id = 1030 THEN t.order_id\n" +
+                    "        WHEN LEAD(t.order_id) OVER (ORDER BY t.row_id ASC) IS NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id THEN t.order_id\n" +
+                    "        ELSE NULL END AS order_id, \n" +
+                    "        t.obs_date, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id = 1030 THEN t.value_coded\n" +
+                    "        WHEN t.order_id IS NOT NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id AND t.order_type = 1030 THEN LEAD(t.value_coded) OVER (ORDER BY t.row_id ASC)\n" +
+                    "        ELSE NULL END AS order_value\n" +
+                    "    FROM (\n" +
+                    "        SELECT \n" +
+                    "            ROW_NUMBER() OVER (ORDER BY o.person_id, o.obs_id ASC) AS row_id, \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            o.encounter_id, \n" +
+                    "            o.order_id,\n" +
+                    "            d.concept_id as order_type,\n" +
+                    "            DATE(o.obs_datetime) AS obs_date, \n" +
+                    "            o.value_coded, \n" +
+                    "            o.location_id, \n" +
+                    "            o.voided\n" +
+                    "        FROM \n" +
+                    "            amrs.obs o\n" +
+                    "\t\tLEFT JOIN \n" +
+                    "\t\t\tamrs.orders d using(order_id)\n" +
+                    "        WHERE \n" +
+                    "            o.person_id in(SELECT * FROM temp_patients) AND \n" +
+                    "            o.concept_id IN (10189, 1030) AND \n" +
+                    "            o.encounter_id IS NULL\n" +
+                    "        GROUP BY \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            DATE(o.obs_datetime)\n" +
+                    "        ORDER BY \n" +
+                    "        o.person_id, o.obs_id ASC\n" +
+                    "    ) t\n" +
+                    ") f \n" +
+                    "WHERE f.order_id IS NOT NULL\n" +
+                    "),\n" +
+                    "cte_cd4 AS(\n" +
+                    "SELECT \n" +
+                    "    f.person_id, \n" +
+                    "    f.concept_id, \n" +
+                    "    f.order_id, \n" +
+                    "    f.obs_date, \n" +
+                    "    f.order_value \n" +
+                    "FROM (\n" +
+                    "    SELECT \n" +
+                    "        t.row_id, \n" +
+                    "        t.person_id, \n" +
+                    "        t.order_type as concept_id, \n" +
+                    "        t.encounter_id, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id in(657, 5497) THEN t.order_id\n" +
+                    "        WHEN LEAD(t.order_id) OVER (ORDER BY t.row_id ASC) IS NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id THEN t.order_id\n" +
+                    "        ELSE NULL END AS order_id, \n" +
+                    "        t.obs_date, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id in(657, 5497) THEN t.value_numeric\n" +
+                    "        WHEN t.order_id IS NOT NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id AND t.order_type in(657, 5497) THEN LEAD(t.value_numeric) OVER (ORDER BY t.row_id ASC)\n" +
+                    "        ELSE NULL END AS order_value\n" +
+                    "    FROM (\n" +
+                    "        SELECT \n" +
+                    "            ROW_NUMBER() OVER (ORDER BY o.person_id, o.obs_id ASC) AS row_id, \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            o.encounter_id, \n" +
+                    "            o.order_id,\n" +
+                    "            d.concept_id as order_type,\n" +
+                    "            DATE(o.obs_datetime) AS obs_date, \n" +
+                    "            o.value_numeric, \n" +
+                    "            o.location_id, \n" +
+                    "            o.voided\n" +
+                    "        FROM \n" +
+                    "            amrs.obs o\n" +
+                    "\t\tLEFT JOIN \n" +
+                    "\t\t\tamrs.orders d using(order_id)\n" +
+                    "        WHERE \n" +
+                    "            o.person_id in(SELECT * FROM temp_patients) AND \n" +
+                    "            o.concept_id IN (10189, 657, 5497) AND \n" +
+                    "            o.encounter_id IS NULL\n" +
+                    "        GROUP BY \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            DATE(o.obs_datetime)\n" +
+                    "        ORDER BY \n" +
+                    "        o.person_id, o.obs_id ASC\n" +
+                    "    ) t\n" +
+                    ") f \n" +
+                    "WHERE f.order_id IS NOT NULL\n" +
+                    ")\n" +
+                    "\n" +
+                    "SELECT a.patient_id, a.order_id, a.orderNumber, a.order_type, a.display, a.date_ordered, a.sample_drawn, a.sample_collection_date, \n" +
+                    "case when b.order_value IS NOT NULL THEN b.order_value \n" +
+                    "when c.order_value IS NOT NULL THEN c.order_value\n" +
+                    "when d.order_value IS NOT NULL THEN d.order_value\n" +
+                    "else a.order_result END  as final_order_result FROM cte_orders a \n" +
+                    "left join cte_vls b ON(a.order_id = b.order_id AND a.order_type = b.concept_id)\n" +
+                    "left join cte_dna_pcr c ON(a.order_id = c.order_id AND a.order_type = c.concept_id)\n" +
+                    "left join cte_cd4 d ON(a.order_id = d.order_id AND a.order_type = d.concept_id)\n" +
+                    "group by a.patient_id, a.orderNumber";
+
+
+        } else {
+            System.out.println("List" + amrsOrdersResultsList);
+//            nextEncounterID = amrs.get(0).getEncounterID();
+            sql = "WITH cte_patient_id as (\n" +
+                    "\tSELECT * FROM temp_patients\n" +
+                    "),\n" +
+                    "\n" +
+                    "cte_orders as (\n" +
+                    "\tSELECT \n" +
+                    "    t1.patient_id,\n" +
+                    "    t1.order_id,\n" +
+                    "    t1.order_number AS orderNumber,\n" +
+                    "    t1.concept_id AS order_type,\n" +
+                    "    case when t1.concept_id = 856 then 'VIRAL LOAD' ELSE t2.name end AS display,\n" +
+                    "    t3.value_numeric as order_result,\n" +
+                    "    -- o.order_value,\n" +
+                    "    t1.date_activated AS date_ordered,\n" +
+                    "    t4.name AS sample_drawn,\n" +
+                    "    DATE(t5.obs_datetime) AS sample_collection_date\n" +
+                    "FROM\n" +
+                    "    amrs.encounter e\n" +
+                    "        INNER JOIN\n" +
+                    "    amrs.patient p USING (patient_id)\n" +
+                    "        INNER JOIN\n" +
+                    "    amrs.person per ON (per.person_id = p.patient_id)\n" +
+                    "\t\tINNER JOIN \n" +
+                    "\tamrs.orders t1 ON(e.encounter_id = t1.encounter_id)\n" +
+                    "        LEFT OUTER JOIN\n" +
+                    "\tamrs.obs t5 ON (t1.order_id = t5.order_id\n" +
+                    "        AND (t5.voided IS NULL || t5.voided = 0)\n" +
+                    "        AND t5.concept_id = 10189)\n" +
+                    "\t\tLEFT OUTER JOIN\n" +
+                    "    amrs.obs t3 ON (t1.concept_id = t3.concept_id\n" +
+                    "        AND (t3.voided IS NULL || t3.voided = 0) AND t1.encounter_id = t3.encounter_id)    \n" +
+                    "        LEFT OUTER JOIN\n" +
+                    "    amrs.concept_name t4 ON (t5.value_coded = t4.concept_id)\n" +
+                    "        LEFT OUTER JOIN\n" +
+                    "    amrs.concept_name t2 ON (t1.concept_id = t2.concept_id)\n" +
+                    "WHERE\n" +
+                    "\t\tp.voided = 0 AND e.voided = 0\n" +
+                    "        AND e.location_id IN (2 , 339, 98, 379) \n" +
+                    "        AND (t1.voided IS NULL || t1.voided = 0)\n" +
+                    "        AND t1.patient_id IN(SELECT patient_id FROM cte_patient_id)\n" +
+                    "GROUP BY t1.patient_id, t1.order_number\n" +
+                    "ORDER BY t1.patient_id, t1.date_activated desc\n" +
+                    "),\n" +
+                    "cte_vls AS(\n" +
+                    "SELECT \n" +
+                    "    f.person_id, \n" +
+                    "    f.concept_id, \n" +
+                    "    f.order_id, \n" +
+                    "    f.obs_date, \n" +
+                    "    f.order_value \n" +
+                    "FROM (\n" +
+                    "    SELECT \n" +
+                    "        t.row_id, \n" +
+                    "        t.person_id, \n" +
+                    "        t.order_type as concept_id, \n" +
+                    "        t.encounter_id, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id = 856 THEN t.order_id\n" +
+                    "        WHEN LEAD(t.order_id) OVER (ORDER BY t.row_id ASC) IS NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id THEN t.order_id\n" +
+                    "        ELSE NULL END AS order_id, \n" +
+                    "        t.obs_date, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id = 856 THEN t.value_numeric\n" +
+                    "        WHEN t.order_id IS NOT NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id AND t.order_type = 856 THEN LEAD(t.value_numeric) OVER (ORDER BY t.row_id ASC)\n" +
+                    "        ELSE NULL END AS order_value\n" +
+                    "    FROM (\n" +
+                    "        SELECT \n" +
+                    "            ROW_NUMBER() OVER (ORDER BY o.person_id, o.obs_id ASC) AS row_id, \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            o.encounter_id, \n" +
+                    "            o.order_id,\n" +
+                    "            d.concept_id as order_type,\n" +
+                    "            DATE(o.obs_datetime) AS obs_date, \n" +
+                    "            o.value_numeric, \n" +
+                    "            o.location_id, \n" +
+                    "            o.voided\n" +
+                    "        FROM \n" +
+                    "            amrs.obs o\n" +
+                    "\t\tLEFT JOIN \n" +
+                    "\t\t\tamrs.orders d using(order_id)\n" +
+                    "        WHERE \n" +
+                    "            o.person_id in(SELECT * FROM temp_patients) AND \n" +
+                    "            o.concept_id IN (10189, 856) AND \n" +
+                    "            o.encounter_id IS NULL\n" +
+                    "        GROUP BY \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            DATE(o.obs_datetime)\n" +
+                    "        ORDER BY \n" +
+                    "        o.person_id, o.obs_id ASC\n" +
+                    "    ) t\n" +
+                    ") f \n" +
+                    "WHERE f.order_id IS NOT NULL\n" +
+                    "),\n" +
+                    "cte_dna_pcr AS(\n" +
+                    "SELECT \n" +
+                    "    f.person_id, \n" +
+                    "    f.concept_id, \n" +
+                    "    f.order_id, \n" +
+                    "    f.obs_date, \n" +
+                    "    f.order_value \n" +
+                    "FROM (\n" +
+                    "    SELECT \n" +
+                    "        t.row_id, \n" +
+                    "        t.person_id, \n" +
+                    "        t.order_type as concept_id, \n" +
+                    "        t.encounter_id, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id = 1030 THEN t.order_id\n" +
+                    "        WHEN LEAD(t.order_id) OVER (ORDER BY t.row_id ASC) IS NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id THEN t.order_id\n" +
+                    "        ELSE NULL END AS order_id, \n" +
+                    "        t.obs_date, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id = 1030 THEN t.value_coded\n" +
+                    "        WHEN t.order_id IS NOT NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id AND t.order_type = 1030 THEN LEAD(t.value_coded) OVER (ORDER BY t.row_id ASC)\n" +
+                    "        ELSE NULL END AS order_value\n" +
+                    "    FROM (\n" +
+                    "        SELECT \n" +
+                    "            ROW_NUMBER() OVER (ORDER BY o.person_id, o.obs_id ASC) AS row_id, \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            o.encounter_id, \n" +
+                    "            o.order_id,\n" +
+                    "            d.concept_id as order_type,\n" +
+                    "            DATE(o.obs_datetime) AS obs_date, \n" +
+                    "            o.value_coded, \n" +
+                    "            o.location_id, \n" +
+                    "            o.voided\n" +
+                    "        FROM \n" +
+                    "            amrs.obs o\n" +
+                    "\t\tLEFT JOIN \n" +
+                    "\t\t\tamrs.orders d using(order_id)\n" +
+                    "        WHERE \n" +
+                    "            o.person_id in(SELECT * FROM temp_patients) AND \n" +
+                    "            o.concept_id IN (10189, 1030) AND \n" +
+                    "            o.encounter_id IS NULL\n" +
+                    "        GROUP BY \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            DATE(o.obs_datetime)\n" +
+                    "        ORDER BY \n" +
+                    "        o.person_id, o.obs_id ASC\n" +
+                    "    ) t\n" +
+                    ") f \n" +
+                    "WHERE f.order_id IS NOT NULL\n" +
+                    "),\n" +
+                    "cte_cd4 AS(\n" +
+                    "SELECT \n" +
+                    "    f.person_id, \n" +
+                    "    f.concept_id, \n" +
+                    "    f.order_id, \n" +
+                    "    f.obs_date, \n" +
+                    "    f.order_value \n" +
+                    "FROM (\n" +
+                    "    SELECT \n" +
+                    "        t.row_id, \n" +
+                    "        t.person_id, \n" +
+                    "        t.order_type as concept_id, \n" +
+                    "        t.encounter_id, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id in(657, 5497) THEN t.order_id\n" +
+                    "        WHEN LEAD(t.order_id) OVER (ORDER BY t.row_id ASC) IS NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id THEN t.order_id\n" +
+                    "        ELSE NULL END AS order_id, \n" +
+                    "        t.obs_date, \n" +
+                    "        CASE WHEN t.order_id IS NOT NULL AND t.concept_id in(657, 5497) THEN t.value_numeric\n" +
+                    "        WHEN t.order_id IS NOT NULL AND LEAD(t.person_id) OVER (ORDER BY t.row_id ASC) = t.person_id AND t.order_type in(657, 5497) THEN LEAD(t.value_numeric) OVER (ORDER BY t.row_id ASC)\n" +
+                    "        ELSE NULL END AS order_value\n" +
+                    "    FROM (\n" +
+                    "        SELECT \n" +
+                    "            ROW_NUMBER() OVER (ORDER BY o.person_id, o.obs_id ASC) AS row_id, \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            o.encounter_id, \n" +
+                    "            o.order_id,\n" +
+                    "            d.concept_id as order_type,\n" +
+                    "            DATE(o.obs_datetime) AS obs_date, \n" +
+                    "            o.value_numeric, \n" +
+                    "            o.location_id, \n" +
+                    "            o.voided\n" +
+                    "        FROM \n" +
+                    "            amrs.obs o\n" +
+                    "\t\tLEFT JOIN \n" +
+                    "\t\t\tamrs.orders d using(order_id)\n" +
+                    "        WHERE \n" +
+                    "            o.person_id in(SELECT * FROM temp_patients) AND \n" +
+                    "            o.concept_id IN (10189, 657, 5497) AND \n" +
+                    "            o.encounter_id IS NULL\n" +
+                    "        GROUP BY \n" +
+                    "            o.person_id, \n" +
+                    "            o.concept_id, \n" +
+                    "            DATE(o.obs_datetime)\n" +
+                    "        ORDER BY \n" +
+                    "        o.person_id, o.obs_id ASC\n" +
+                    "    ) t\n" +
+                    ") f \n" +
+                    "WHERE f.order_id IS NOT NULL\n" +
+                    ")\n" +
+                    "\n" +
+                    "SELECT a.patient_id, a.order_id, a.orderNumber, a.order_type, a.display, a.date_ordered, a.sample_drawn, a.sample_collection_date, \n" +
+                    "case when b.order_value IS NOT NULL THEN b.order_value \n" +
+                    "when c.order_value IS NOT NULL THEN c.order_value\n" +
+                    "when d.order_value IS NOT NULL THEN d.order_value\n" +
+                    "else a.order_result END  as final_order_result FROM cte_orders a \n" +
+                    "left join cte_vls b ON(a.order_id = b.order_id AND a.order_type = b.concept_id)\n" +
+                    "left join cte_dna_pcr c ON(a.order_id = c.order_id AND a.order_type = c.concept_id)\n" +
+                    "left join cte_cd4 d ON(a.order_id = d.order_id AND a.order_type = d.concept_id)\n" +
+                    "group by a.patient_id, a.orderNumber";
+        }
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String patientId =  rs.getString("patient_id");
+            String orderId =  rs.getString("order_id");
+            String orderNumber =  rs.getString("orderNumber");
+            String orderType =  rs.getString("order_type");
+            String display =  rs.getString("display");
+            String dateOrdered =  rs.getString("date_ordered");
+            String sampleDrawn =  rs.getString("sample_drawn");
+            String sampleCollectionDate =  rs.getString("sample_collection_date");
+            String finalOrderResults =  rs.getString("final_order_result");
+
+            List<AMRSOrdersResults> amrsOrdersResults = amrsOrdersResultsService.findByPatientId(patientId);
+            String kenyaemrPatientUuid = "";
+            if (amrsOrdersResults.size() > 0) {
+//                kenyaemrPatientUuid = amrsOrdersResults.get(0).getKenyaemrpatientUUID();
+            }
+
+
+            if (amrsOrdersResultsList.isEmpty()) {
+
+                AMRSOrdersResults or = new AMRSOrdersResults();
+                or.setPatientId(patientId);
+                or.setOrderId(orderId);
+                or.setOrderNumber(orderNumber);
+                or.setOrderType(orderType);
+                or.setDisplay(display);
+                or.setDateOrdered(dateOrdered);
+                or.setSampleDrawn(sampleDrawn);
+                or.setSampleCollectionDate(sampleCollectionDate);
+                or.setFinalOrderResults(finalOrderResults);
+
+
+                System.out.println("Tumefika Hapa!!!" + parentUUID);
+                amrsOrdersResultsService.save(or);
+
+//                CareOpenMRSPayload.ordersResults(amrsOrdersResultsService, parentUUID, locations, auth, url);
+
+            }
+
+            System.out.println("Patient_id" + patientId);
+        }
+
+    }
+
+    public static void EncounterFormsMappings(String server, String username, String password, String locations, String parentUUID, AMRSEncounterFormsMappingService amrsEncounterFormsMappingService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+        String sql = "select distinct(e.form_id), \n" +
+                "e.encounter_id , \n" +
+                "e.patient_id,\n" +
+                "case \n" +
+                "when e.form_id in(14,16,17,44,49,59,61,85,84,89,87,94,88,93,98,105,118,119,121,133,135,124,80,232,236,241,247,254,252,251,250)  then '22c68f86-bbf0-49ba-b2d1-23fa7ccf0259' -- adult return\n" +
+                "when e.form_id in(15,34,43,50,58,35,96,111,120,134,136,230,235) then 'e4b506c1-7379-42b6-a374-284469cba8da' -- adult initial\n" +
+                "when e.form_id in(30,22,19,18,20,21) then '2cdeded1-3f69-3bda-beff-1ed2ead94eaf' -- lab\n" +
+                "when e.form_id in(64,65,69,70,109,110,231) then '83fb6ab2-faec-4d87-a714-93e77a28a201' -- art fast track\n" +
+                "when e.form_id in(66,91,112) then 'a1a62d1e-2def-11e9-b210-d663bd873d93' -- defaulter tracing\n" +
+                "when e.form_id = 68 then 'c483f10f-d9ee-4b0d-9b8c-c24c1ec24701'\n" +
+                "when e.form_id = 71 then '5cf01528-09da-11ea-8d71-362b9e155667'\n" +
+                "when e.form_id = 52 then 'b8357314-0f6a-4fc9-a5b7-339f47095d62'\n" +
+                "when e.form_id in(97,248) then 'e8f98494-af35-4bb8-9fc7-c409c8fed843' -- anc\n" +
+                "when e.form_id = 31 then '1f76643e-2495-11e9-ab14-d663bd873d93' -- discontinuation\n" +
+                "when e.form_id in(101,239) then '59ed8e62-7f1f-40ae-a2e3-eabe350277ce' -- tb\n" +
+                "when e.form_id in(174,240,249) then '72aa78e0-ee4b-47c3-9073-26f3b9ecc4a7' -- pnc\n" +
+                "when e.form_id = 225 then 'a52c57d4-110f-4879-82ae-907b0d90add6'\n" +
+                "when e.form_id = 244 then '755b59e6-acbb-4853-abaf-be302039f902' -- cwc\n" +
+                "when e.form_id = 164 then '31a371c6-3cfe-431f-94db-4acadad8d209' -- oncology\n" +
+                "end kenyaemr_form_uuid\n" +
+                "from \n" +
+                "amrs.encounter e\n" +
+                "inner join\n" +
+                "amrs.form f on f.form_id = e.form_id\n" +
+                " limit 100\n" +
+                " -- where voided=0;";
+
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+            String amrsFormId = rs.getString("form_id");
+            String encounterId = rs.getString("encounter_id");
+            String amrsPid = rs.getString("patient_id");
+            String kenyaEmrFormUuid = rs.getString("kenyaemr_form_uuid");
+
+            AMRSEncountersFormMappings form = new AMRSEncountersFormMappings();
+            form.setAmrsFormId(amrsFormId);
+            form.setAmrsEncounterId(encounterId);
+            form.setKenyaemrFormUuid(kenyaEmrFormUuid);
+            form.setPatientId(amrsPid);
+            form.setAmrsMigrationStatus(false);
+            form.setResponseCode(null);
+            amrsEncounterFormsMappingService.save(form);
+
+        }
+    }
+
+
+
+}
 
 

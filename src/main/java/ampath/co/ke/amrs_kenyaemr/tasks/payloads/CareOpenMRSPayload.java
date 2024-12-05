@@ -253,7 +253,68 @@ public class CareOpenMRSPayload {
         }
     }
 
-    public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, String parentUUID, String locations, String auth, String url) {
+    public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, String parentUUID, String locations, String auth, String url) throws JSONException, IOException {
+        List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findByResponseCodeIsNull();
+        if(amrsRegimenSwitchList.size() > 0) {
+            Set<String> regimenSwitchIdSet = new HashSet<>();
+            List<String> distinctRegimenSwitchIds= new ArrayList<>();
+
+            for( AMRSRegimenSwitch regimenSwitches: amrsRegimenSwitchList) {
+                if(regimenSwitches.getResponseCode() == null) {
+                    String encounterId = regimenSwitches.getEncounterId();
+                    if (regimenSwitchIdSet.add(encounterId)) {
+                        distinctRegimenSwitchIds.add(encounterId);
+                    }
+                }
+            }
+
+            for(String encounterId: distinctRegimenSwitchIds) {
+                System.out.println("Encounter ID for Vitals " + encounterId);
+                List<AMRSRegimenSwitch> regimenSwitchList = amrsRegimenSwitchService.findByEncounterId(encounterId);
+
+                for( int x=0; x < regimenSwitchList.size(); x++ ) {
+
+                    JSONObject jsonObservation = new JSONObject();
+
+                    jsonObservation.put("person", regimenSwitchList.get(x).getPatientId());
+                    jsonObservation.put("concept", regimenSwitchList.get(x).getKenyaemrConceptUuid());
+                    jsonObservation.put("value", regimenSwitchList.get(x).getKenyaemrValue());
+                    jsonObservation.put("encounterDatetime", regimenSwitchList.get(x).getEncounterDatetime());
+
+                    JSONObject jsonRegimenSwitch = new JSONObject();
+                    jsonRegimenSwitch.put("form", "");
+                    jsonRegimenSwitch.put("obs", jsonObservation);
+                    System.out.println("Payload for is here " + jsonObservation.toString());
+                    System.out.println("URL is here " + url + "regimenSwitch/" + regimenSwitchList.get(0).getKenyaemrEncounterUuid());
+
+                    OkHttpClient client = new OkHttpClient();
+                    MediaType mediaType = MediaType.parse("application/json");
+                    okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonRegimenSwitch.toString());
+
+                    Request request = new Request.Builder()
+                            .url(url + "regimenswitch")
+                            .method("POST", body)
+                            .addHeader("Authorization", "Basic " + auth)
+                            .addHeader("Content-Type", "application/json")
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    String responseBody = response.body().string();
+                    System.out.println("Response ndo hii " + responseBody + "More message" + response.message());
+
+
+                    int resCode = response.code();
+                    if(resCode == 200) {
+                        for(int y = 0; y < regimenSwitchList.size(); y++ ) {
+                            AMRSRegimenSwitch rs = regimenSwitchList.get(y);
+                            rs.setResponseCode("201");
+                            System.out.println("Imefika Hapa na data " + resCode);
+                            amrsRegimenSwitchService.save(rs);
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
     public static void patientStatus(AMRSPatientStatusService amrsPatientStatusService, String parentUUID, String locations, String auth, String url) throws JSONException, IOException {
@@ -330,9 +391,8 @@ public class CareOpenMRSPayload {
         }
     }
 
-    public static void ordersResults(AMRSOrdersResultsService amrsOrdersResultsService, String parentUUID, String locations, String auth, String url) {
-
-
+    public static void ordersResults(AMRSOrdersResultsService amrsOrdersResultsService, String parentUUID, String locations, String auth, String url)throws
+            JSONException, IOException{
     }
 
            /* for(int x =0;x<amrsPatientStatusList.size();x++) {

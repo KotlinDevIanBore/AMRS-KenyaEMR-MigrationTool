@@ -13,7 +13,7 @@ public class AMRSObs {
     private String patientId;
     @Column(name="uuid")
     private String UUID;
-    private String encounterID;
+    private String encounterId;
     private String encounterDatetime;
     private String encounterType;
     private String encounterName;
@@ -36,6 +36,12 @@ public class AMRSObs {
     private String amrsencounteruuid;
     @Column(name = "response_code")
     private  String responseCode;
+    @Column(name = "amrs_question")
+    private  String amrsQuestion;
+    @Column(name = "form_id")
+    private  String formId;
+    @Column(name = "value_coded_name")
+    private  String valuecodedName;
 
     public Integer getId() {
         return id;
@@ -61,12 +67,12 @@ public class AMRSObs {
         this.UUID = UUID;
     }
 
-    public String getEncounterID() {
-        return encounterID;
+    public String getEncounterId() {
+        return encounterId;
     }
 
-    public void setEncounterID(String encounterID) {
-        this.encounterID = encounterID;
+    public void setEncounterId(String encounterId) {
+        this.encounterId = encounterId;
     }
 
     public String getEncounterDatetime() {
@@ -187,6 +193,30 @@ public class AMRSObs {
 
     public void setAmrsencounteruuid(String amrsencounteruuid) {
         this.amrsencounteruuid = amrsencounteruuid;
+    }
+
+    public String getAmrsQuestion() {
+        return amrsQuestion;
+    }
+
+    public void setAmrsQuestion(String amrsQuestion) {
+        this.amrsQuestion = amrsQuestion;
+    }
+
+    public String getFormId() {
+        return formId;
+    }
+
+    public void setFormId(String formId) {
+        this.formId = formId;
+    }
+
+    public String getValuecodedName() {
+        return valuecodedName;
+    }
+
+    public void setValuecodedName(String valuecodedName) {
+        this.valuecodedName = valuecodedName;
     }
 }
 
