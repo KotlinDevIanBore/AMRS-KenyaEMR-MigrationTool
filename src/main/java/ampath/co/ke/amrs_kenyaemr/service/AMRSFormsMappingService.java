@@ -20,7 +20,7 @@ public class AMRSFormsMappingService {
     public AMRSFormsMapper save(AMRSFormsMapper dataset){
         return amrsFormsMappingRepository.save(dataset);
     }
-    public AMRSFormsMapper findByAmrsFormId(String FormId) {
+    public List<AMRSFormsMapper> findByAmrsFormId(String FormId) {
         return amrsFormsMappingRepository.findByAmrsFormId(FormId);
     }
     public List<AMRSFormsMapper> getAll() {

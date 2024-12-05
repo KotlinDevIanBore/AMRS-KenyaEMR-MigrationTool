@@ -1662,7 +1662,7 @@ public class MigrateCareData {
                     "                        AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
                     "\t\t\t\tLEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
                     " where o.person_id=1170115\n" +
-                    " and o.voided =0";
+                    " and o.voided =0 limit 100";
 
             System.out.println("locations " + locations + " parentUUID " + parentUUID);
             Connection con = DriverManager.getConnection(server, username, password);
@@ -1674,8 +1674,8 @@ public class MigrateCareData {
             x = rs.getRow();
             rs.beforeFirst();
             while (rs.next()) {
-
-               /* String conceptId = rs.getString("concept_id");
+/*
+                String conceptId = rs.getString("concept_id");
                 String patientId = rs.getString("patient_id");
                 String encounterId = rs.getString("encounter_id");
                 String encounterType = rs.getString("encounter_type");
@@ -1734,10 +1734,11 @@ public class MigrateCareData {
                     System.out.println("Existing Patient_id " + patientId );
 
                 }
-                */
+ */
             }
 
-            ObsPayload.newObs(amrsObsService, amrsPatientServices, amrsEncounterService, url, auth);
+
+            ObsPayload.newObs(amrsObsService, amrsTranslater, amrsPatientServices, amrsEncounterService, url, auth);
         }
 
     }
