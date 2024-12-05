@@ -1661,8 +1661,8 @@ public class MigrateCareData {
                     "                        AND cn_answer.locale = 'en' \n" +
                     "                        AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
                     "\t\t\t\tLEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
-                    " where o.person_id=1170115\n" +
-                    " and o.voided =0 limit 100";
+                    " where o.person_id in (1174464, 1174884, 1175708, 1176379, 1176467)\n" +
+                    " and o.voided =0  ";
 
             System.out.println("locations " + locations + " parentUUID " + parentUUID);
             Connection con = DriverManager.getConnection(server, username, password);
@@ -1674,7 +1674,7 @@ public class MigrateCareData {
             x = rs.getRow();
             rs.beforeFirst();
             while (rs.next()) {
-/*
+
                 String conceptId = rs.getString("concept_id");
                 String patientId = rs.getString("patient_id");
                 String encounterId = rs.getString("encounter_id");
@@ -1734,7 +1734,6 @@ public class MigrateCareData {
                     System.out.println("Existing Patient_id " + patientId );
 
                 }
- */
             }
 
 

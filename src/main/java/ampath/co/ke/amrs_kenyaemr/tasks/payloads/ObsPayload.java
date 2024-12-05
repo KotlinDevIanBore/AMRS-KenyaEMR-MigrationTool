@@ -123,17 +123,17 @@ public class ObsPayload {
                     List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
                     if (amrsEncounters.size() > 0) {
                         JSONObject jsonEncounter = new JSONObject();
-                         jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                        // jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                         // String
                         jsonEncounter.put("obs", jsonObservations);
-                        //jsonEncounter.put("form", formuuid);
+                        jsonEncounter.put("form", formuuid);
                         // jsonEncounter.put("patient,",patientUuid);
                        //  jsonEncounter.put("encounterType","a0034eee-1940-4e35-847f-97537a35d05e");
 
                         System.out.println("Payload for is here " + jsonEncounter.toString());
                         System.out.println("URL is here " + url + "encounter/" + amrsEncounters.get(0).getKenyaemrEncounterUuid());
                         //System.out.println("Processing observation: " + generateObsPayload(observation));
-                        if (formuuid == "") {
+                        if (!Objects.equals(formuuid, "")) {
                             OkHttpClient client = new OkHttpClient();
                             MediaType mediaType = MediaType.parse("application/json");
                             RequestBody body = RequestBody.create(mediaType, jsonEncounter.toString());
