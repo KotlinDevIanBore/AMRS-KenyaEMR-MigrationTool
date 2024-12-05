@@ -77,19 +77,22 @@ public class MappingsControllers {
         // String filePath = "data.csv"; // Path to your CSV file
         ClassPathResource resource = new ClassPathResource("new_concepts.csv");
         Reader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-        try{
-            // Parse and process the CSV
+
+        try {
             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord());
-            // Maintain a set to track processed entries
             Set<String> processedEntries = new HashSet<>();
+
             for (CSVRecord record : csvParser) {
-                String amrs_concept_id = record.get("amrs_concept_id");
-                String kenyaemr_concept_uuid = record.get("kenyaemr_concept_uuid");
+                String amrs_concept_id = record.get("amrs_concept_id").trim();
+                String kenyaemr_concept_uuid = record.get("kenyaemr_concept_uuid").trim();
 
-                // logic to extract kenyaemr concept from kenyaemr_concept_uuid
-                String kenyaemrConceptId = record.get("kenyaemr_concept_uuid").replaceAll("[^0-9]", "");
+                // Check if both columns are non-blank
+                if (amrs_concept_id.isEmpty() || kenyaemr_concept_uuid.isEmpty()) {
+                    continue;
+                }
 
-                // Create a unique key to identify duplicates
+                String kenyaemrConceptId = kenyaemr_concept_uuid.replaceAll("[^0-9]", "");
+
                 String uniqueKey = amrs_concept_id + ":" + kenyaemr_concept_uuid;
 
                 // Check if the entry has already been processed
@@ -97,21 +100,21 @@ public class MappingsControllers {
                     continue; // Skip duplicate
                 }
 
-                // Process the record (e.g., print it)
+                // Process the record (e.g., save to database)
                 AMRSMappings anc = new AMRSMappings();
                 anc.setAmrsConceptId(amrs_concept_id);
                 anc.setKenyaemrConceptUuid(kenyaemr_concept_uuid);
                 anc.setKenyaemrConceptId(kenyaemrConceptId);
 
-                  amrsMappingService.save(anc);
+                amrsMappingService.save(anc);
 
                 // Add to processed entries
                 processedEntries.add(uniqueKey);
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
 }
