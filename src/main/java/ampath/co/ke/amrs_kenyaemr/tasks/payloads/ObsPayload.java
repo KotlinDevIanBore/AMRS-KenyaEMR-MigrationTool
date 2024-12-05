@@ -85,6 +85,7 @@ public class ObsPayload {
                     JSONArray jsonObservations = new JSONArray();
                     String formuuid = "";
                     String patientUuid="";
+                    String sexualconcept ="";
                     for (int x = 0; x < amrsObsEncounter.size(); x++) {
                         JSONObject jsonObservation = new JSONObject();
                         String dataType = amrsObsEncounter.get(x).getDataType();
@@ -93,6 +94,9 @@ public class ObsPayload {
                         jsonObservation.put("obsDatetime", amrsObsEncounter.get(x).getObsDatetime());///String.valueOf(conceptsetId));
                        System.out.println("Datatype ID "+ dataType );
                         patientUuid = amrsObsEncounter.get(x).getKenyaemrpersonuuid();
+
+                       // sexualconcept=
+
                         if(Objects.equals(dataType, "2")){
                             jsonObservation.put("value", amrsObsEncounter.get(x).getKenyaemrvalue());
                         }else if (Objects.equals(dataType,"1")){
@@ -114,11 +118,8 @@ public class ObsPayload {
 
                             jsonObservations.put(jsonObservation);
                         }
-
                         formuuid = amrsTranslater.formtranslater(amrsObsEncounter.get(x).getFormId(), amrsObsEncounter.get(x).getEncounterType());
 
-
-                        //  }
                     }
                     List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
                     if (amrsEncounters.size() > 0) {
