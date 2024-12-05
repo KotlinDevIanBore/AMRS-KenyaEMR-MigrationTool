@@ -11,12 +11,11 @@ public interface AMRSOrdersRepository extends JpaRepository<AMRSOrders, Long> {
 
     /**
      *
-     * @param uuid AMRS Order Uuid number
-     * @return
      */
-    List<AMRSOrders>  findByUuid(String uuid);
+    List<AMRSOrders>  findByOrderId(int orderId);
     List<AMRSOrders> findAll();
 
     List<AMRSOrders> findByResponseCodeIsNull();
+
 
 }

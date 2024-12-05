@@ -21,8 +21,8 @@ public class AMRSOrderService {
         return amrsOrdersRepository.findAll();
     }
 
-    public List<AMRSOrders> findByUuid(String uuid) {
-        return amrsOrdersRepository.findByUuid(uuid);
+    public List<AMRSOrders> findByOrderId(int orderId) {
+        return amrsOrdersRepository.findByOrderId(orderId);
     }
     public AMRSOrders save(AMRSOrders dataset) {
         return amrsOrdersRepository.save(dataset);
@@ -31,4 +31,5 @@ public class AMRSOrderService {
     public List<AMRSOrders> findByResponseCodeIsNull(){
        return amrsOrdersRepository.findByResponseCodeIsNull();
     }
+
 }
