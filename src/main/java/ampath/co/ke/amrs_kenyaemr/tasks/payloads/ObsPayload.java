@@ -16,10 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ObsPayload {
    /* public  static void obs(AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices , String url, String auth, List<AMRSObs> observations) throws JSONException, IOException {
@@ -111,9 +108,10 @@ public class ObsPayload {
                         else{
                             jsonObservation.put("value", amrsObs.get(x).getKenyaemrvalue());
                         }
-                        //if(amrsObs.get(x).getKenyaemrconceptuuid()!=null){
+                        if((!Objects.equals(amrsObs.get(x).getKenyaemrconceptuuid(), ""))) {
 
                             jsonObservations.put(jsonObservation);
+                        }
 
                       //  }
                     }
@@ -121,6 +119,7 @@ public class ObsPayload {
                     if (amrsEncounters.size() > 0) {
                         JSONObject jsonEncounter = new JSONObject();
                         // jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                       // String
                         jsonEncounter.put("obs", jsonObservations);
                         System.out.println("Payload for is here " + jsonEncounter.toString());
                         System.out.println("URL is here " + url + "encounter/" + amrsEncounters.get(0).getKenyaemrEncounterUuid());
