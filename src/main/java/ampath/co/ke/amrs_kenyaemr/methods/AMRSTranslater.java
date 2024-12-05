@@ -1,7 +1,9 @@
 package ampath.co.ke.amrs_kenyaemr.methods;
 
+import ampath.co.ke.amrs_kenyaemr.models.AMRSFormsMapper;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSMappings;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
+import ampath.co.ke.amrs_kenyaemr.service.AMRSFormsMappingService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSMappingService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import java.util.List;
 public class AMRSTranslater {
     @Autowired
     AMRSMappingService amrsMappingService;
+
+    @Autowired
+    AMRSFormsMappingService amrsFormsMappingService;
 
     @Autowired
     AMRSPatientServices amrsPatientServices;
@@ -39,6 +44,19 @@ public class AMRSTranslater {
             kenyaEmrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
         }
         return kenyaEmrPatientUuid;
+    }
+
+    public String formtranslater(String formid) {
+        String kenyaEmrFormUuid = "";
+        List<AMRSFormsMapper> amrsFormsMappers = amrsFormsMappingService.findByAmrsFormId(formid);
+
+        if(amrsFormsMappers.size() > 0) {
+            if (amrsFormsMappers.size() > 1)
+            {System.out.println("Translated more than once form : " + formid);}
+
+            kenyaEmrFormUuid = amrsFormsMappers.get(0).getKenyaemrFormUuid();
+        }
+        return kenyaEmrFormUuid;
     }
 
 
