@@ -1661,8 +1661,8 @@ public class MigrateCareData {
                     "                        AND cn_answer.locale = 'en' \n" +
                     "                        AND cn_answer.concept_name_type = 'FULLY_SPECIFIED'\n" +
                     "\t\t\t\tLEFT JOIN amrs.drug ON o.value_drug = drug.drug_id\n" +
-                    " where o.person_id in (1174464, 1174884, 1175708, 1176379, 1176467)\n" +
-                    " and o.voided =0  ";
+                    " where o.person_id in (1212603)\n" +
+                    " and o.voided =0  and e.encounter_type=1 ";
 
             System.out.println("locations " + locations + " parentUUID " + parentUUID);
             Connection con = DriverManager.getConnection(server, username, password);
@@ -3617,9 +3617,7 @@ public class MigrateCareData {
                 "from \n" +
                 "amrs.encounter e\n" +
                 "inner join\n" +
-                "amrs.form f on f.form_id = e.form_id\n" +
-                " limit 100\n" +
-                " -- where voided=0;";
+                "amrs.form f on f.form_id = e.form_id ";
 
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
