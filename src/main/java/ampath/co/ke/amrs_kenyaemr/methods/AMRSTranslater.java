@@ -46,10 +46,10 @@ public class AMRSTranslater {
         return kenyaEmrPatientUuid;
     }
 
-    public String formtranslater(String formid) {
+    public String formtranslater(String formid, String encounterTypeId) {
         String kenyaEmrFormUuid = "";
-        List<AMRSFormsMapper> amrsFormsMappers = amrsFormsMappingService.findByAmrsFormId(formid);
-
+//        List<AMRSFormsMapper> amrsFormsMappers = amrsFormsMappingService.findByAmrsFormId(formid);
+        List<AMRSFormsMapper> amrsFormsMappers = amrsFormsMappingService.findByAmrsFormIdAndEncounterTypeId(formid, encounterTypeId);
         if(amrsFormsMappers.size() > 0) {
             if (amrsFormsMappers.size() > 1)
             {System.out.println("Translated more than once form : " + formid);}
