@@ -24,10 +24,10 @@ public class AMRSHIVEnrollment
     private String dataTypeId;
     private String encounterName;
     private String Category;
-
     private String kenyaemrEncounterUuid;
     private String kenyaemrConceptUuid;
     private String kenyaemrValue;
+    private String kenyaemrVisitUuid;
 
     public String getProvider() {
         return provider;
@@ -38,7 +38,7 @@ public class AMRSHIVEnrollment
     }
 
     private String provider;
-    private int responseCode;
+    private String responseCode;
 
     public Integer getId() {
         return Id;
@@ -182,11 +182,19 @@ public class AMRSHIVEnrollment
         this.kenyaemrValue = kenyaemrValue;
     }
 
-    public int getResponseCode() {
+    public String getResponseCode() {
         return responseCode;
     }
 
-    public void setResponseCode(int responseCode) {
+    public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public String getKenyaemrVisitUuid() {
+        return kenyaemrVisitUuid;
+    }
+
+    public void setKenyaemrVisitUuid(String kenyaemrVisitUuid) {
+        this.kenyaemrVisitUuid = kenyaemrVisitUuid;
     }
 }

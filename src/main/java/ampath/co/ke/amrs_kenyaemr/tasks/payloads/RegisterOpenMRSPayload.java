@@ -111,7 +111,7 @@ public class RegisterOpenMRSPayload {
         JSONObject jsonIdentifierOpenMRSID = new JSONObject();
         jsonIdentifierOpenMRSID.put("identifier", OpenMRSID);
         jsonIdentifierOpenMRSID.put("identifierType", "dfacd928-0370-4315-99d7-6ec1c9f7ae76");
-        jsonIdentifierOpenMRSID.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+        jsonIdentifierOpenMRSID.put("location", "3e6261cc-ad5e-4834-b85d-af8b42a133e4");
         jsonIdentifierOpenMRSID.put("preferred", "true");
         Identifierarray.put(jsonIdentifierOpenMRSID);
         AMRSIdentifiers ai = new AMRSIdentifiers();
@@ -119,7 +119,7 @@ public class RegisterOpenMRSPayload {
         ai.setPatientid(amrsPatients.getPersonId());
         ai.setPreferred("true");
         ai.setIdentifier(OpenMRSID);
-        ai.setLocation("c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+        ai.setLocation("3e6261cc-ad5e-4834-b85d-af8b42a133e4");
         amrsIdentifiersService.save(ai);
 
         for (int x = 0; x < identifiers.size(); x++) {
@@ -136,7 +136,7 @@ public class RegisterOpenMRSPayload {
                     JSONObject jsonIdentifier = new JSONObject();
                     jsonIdentifier.put("identifier", identifiers.get(x).getIdentifier());
                     jsonIdentifier.put("identifierType", identifyType);
-                    jsonIdentifier.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+                    jsonIdentifier.put("location", "3e6261cc-ad5e-4834-b85d-af8b42a133e4");
                     jsonIdentifier.put("preferred", "false");// identifiers.get(x).getPreferred());
                     Identifierarray.put(jsonIdentifier);
                 }

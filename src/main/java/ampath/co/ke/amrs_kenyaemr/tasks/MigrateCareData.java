@@ -979,10 +979,12 @@ public class MigrateCareData {
                 amrsVisitService.save(avv);
             }
 
-            VisitsPayload.visits(amrsVisitService, amrsPatientServices, auth, url);
 
 
         }
+
+        VisitsPayload.visits(amrsVisitService, amrsPatientServices, auth, url);
+
     }
 
 
@@ -1510,7 +1512,7 @@ public class MigrateCareData {
         OrdersPayload.orders(amrsOrderService, amrsPatientServices, url, auth);
     }
 
-    public static void triage(String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void triage(String server, String username, String password, String locations, String parentUUID, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService,AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
 
         List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
@@ -1617,7 +1619,7 @@ public class MigrateCareData {
                 }
             }
 
-              CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, url, auth);
+              CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, amrsVisitService ,url, auth);
         }
 
     }
@@ -2016,97 +2018,97 @@ public class MigrateCareData {
 
     }
 
-    public static void hivenrollment(String server, String username, String password, String locations, String parentUUID, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void hivenrollment(String server, String username, String password, String locations, String parentUUID, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSPatientServices amrsPatientServices,AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+
         String sql = "";
         List<AMRSHIVEnrollment> amrshivEnrollmentLists = amrsHIVEnrollmentService.findFirstByOrderByIdDesc();
-
         String nextEncounterID = "";
         if (amrshivEnrollmentLists.size() == 0) {
 
-            sql = "SELECT \n" +
-                    "    o.person_id,\n" +
-                    "    e.encounter_id,\n" +
-                    "    e.encounter_datetime,\n" +
-                    "    e.encounter_type,\n" +
-                    "    l.uuid AS location_uuid,\n" +
-                    "    o.concept_id,\n" +
-                    "    cn.name AS concept_name,\n" +
-                    "    o.obs_datetime,\n" +
-                    "    COALESCE(o.value_coded,\n" +
-                    "            o.value_datetime,\n" +
-                    "            o.value_numeric,\n" +
-                    "            o.value_text) AS value,\n" +
-                    "    cd.name AS value_type,\n" +
-                    "    c.datatype_id,\n" +
-                    "    et.name AS encounterName,\n" +
-                    "    e.creator AS provider_id,\n" +
-                    "    'HIV Enrollment' AS Category\n" +
-                    "FROM\n" +
-                    "    amrs.obs o\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.encounter e ON (o.encounter_id = e.encounter_id)\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.encounter_type et ON et.encounter_type_id = e.encounter_type\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.concept c ON c.concept_id = o.concept_id\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.concept_datatype cd ON cd.concept_datatype_id = c.datatype_id\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.location l ON e.location_id = l.location_id\n" +
-                    "WHERE\n" +
-                    "    e.encounter_type IN (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266)\n" +
-                    "        AND o.concept_id IN (8287, 1224,  1724, 10792, 6750, 6749, 1915, 10747, 10748, 7013, 1499, 9203, 6748, 5356, 1633, 2155, 966, 1088, 2056, 5090, 1343, 5629, 1174, 10653, 10873, 10872, 10741)\n" +
-                    "        AND e.location_id IN (2)\n" +
-                    "        AND e.voided = 0\n" +
-                    "        AND cd.name <> 'N/A'\n" +
-                    "ORDER BY o.encounter_id ASC\n" +
-                    "LIMIT 10;\n";
+            sql = "SELECT  \n" +
+                    "                         \n" +
+                    "                         o.person_id, \n" +
+                    "                         e.encounter_id, \n" +
+                    "                         e.encounter_datetime, \n" +
+                    "                         e.encounter_type, \n" +
+                    "                         l.uuid AS location_uuid, \n" +
+                    "                         o.concept_id, \n" +
+                    "                         cn.name AS concept_name, \n" +
+                    "                         o.obs_datetime, \n" +
+                    "                         COALESCE(o.value_coded, \n" +
+                    "                                 o.value_datetime, \n" +
+                    "                                 o.value_numeric, \n" +
+                    "                                 o.value_text) AS value, \n" +
+                    "                         cd.name AS value_type, \n" +
+                    "                         c.datatype_id, \n" +
+                    "                         et.name AS encounterName, \n" +
+                    "                         e.creator AS provider_id, \n" +
+                    "                         'HIV Enrollment' AS Category \n" +
+                    "                     FROM \n" +
+                    "                         amrs.obs o \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.encounter e ON (o.encounter_id = e.encounter_id) \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.encounter_type et ON et.encounter_type_id = e.encounter_type \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.concept c ON c.concept_id = o.concept_id \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.concept_name cn ON o.concept_id = cn.concept_id  and cn.locale_preferred = 1\n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.concept_datatype cd ON cd.concept_datatype_id = c.datatype_id \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.location l ON e.location_id = l.location_id \n" +
+                    "                     WHERE \n" +
+                    "                         e.encounter_type IN (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266) \n" +
+                    "                             AND o.concept_id IN (8287, 1224,  1724, 10792, 6750, 6749, 1915, 10747, 10748, 7013, 1499, 9203, 6748, 5356, 1633, 2155, 966, 1088, 2056, 5090, 1343, 5629, 1174, 10653, 10873, 10872, 10741) \n" +
+                    "                             AND e.location_id IN (2) and e.patient_id in (1161436,1202124,1199830) \n" +
+                    "                             AND e.voided = 0 \n" +
+                    "                     ORDER BY o.encounter_id ASC\n" +
+                    "                     ";
         } else {
             System.out.println("List" + amrshivEnrollmentLists);
             nextEncounterID = amrshivEnrollmentLists.get(0).getEncounterID();
-            sql = "SELECT \n" +
-                    "    o.person_id,\n" +
-                    "    e.encounter_id,\n" +
-                    "    e.encounter_datetime,\n" +
-                    "    e.encounter_type,\n" +
-                    "    l.uuid AS location_uuid,\n" +
-                    "    o.concept_id,\n" +
-                    "    cn.name AS concept_name,\n" +
-                    "    o.obs_datetime,\n" +
-                    "    COALESCE(o.value_coded,\n" +
-                    "            o.value_datetime,\n" +
-                    "            o.value_numeric,\n" +
-                    "            o.value_text) AS value,\n" +
-                    "    cd.name AS value_type,\n" +
-                    "    c.datatype_id,\n" +
-                    "    et.name AS encounterName,\n" +
-                    "    e.creator AS provider_id,\n" +
-                    "    'HIV Enrollment' AS Category\n" +
-                    "FROM\n" +
-                    "    amrs.obs o\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.encounter e ON (o.encounter_id = e.encounter_id)\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.encounter_type et ON et.encounter_type_id = e.encounter_type\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.concept c ON c.concept_id = o.concept_id\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.concept_datatype cd ON cd.concept_datatype_id = c.datatype_id\n" +
-                    "        INNER JOIN\n" +
-                    "    amrs.location l ON e.location_id = l.location_id\n" +
-                    "WHERE\n" +
-                    "    e.encounter_type IN (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266)\n" +
-                    "        AND o.concept_id IN (8287, 1224,  1724, 10792, 6750, 6749, 1915, 10747, 10748, 7013, 1499, 9203, 6748, 5356, 1633, 2155, 966, 1088, 2056, 5090, 1343, 5629, 1174, 10653, 10873, 10872, 10741)\n" +
-                    "        AND e.location_id IN (2)\n" +
-                    "        AND e.voided = 0\n" +
-                    "AND e.encounter_id > " + nextEncounterID + "\n" +
-                    "        AND cd.name <> 'N/A'\n" +
-                    "ORDER BY o.encounter_id ASC\n" +
-                    "LIMIT 10;";
+            sql = "SELECT  \n" +
+                    "                         \n" +
+                    "                         o.person_id, \n" +
+                    "                         e.encounter_id, \n" +
+                    "                         e.encounter_datetime, \n" +
+                    "                         e.encounter_type, \n" +
+                    "                         l.uuid AS location_uuid, \n" +
+                    "                         o.concept_id, \n" +
+                    "                         cn.name AS concept_name, \n" +
+                    "                         o.obs_datetime, \n" +
+                    "                         COALESCE(o.value_coded, \n" +
+                    "                                 o.value_datetime, \n" +
+                    "                                 o.value_numeric, \n" +
+                    "                                 o.value_text) AS value, \n" +
+                    "                         cd.name AS value_type, \n" +
+                    "                         c.datatype_id, \n" +
+                    "                         et.name AS encounterName, \n" +
+                    "                         e.creator AS provider_id, \n" +
+                    "                         'HIV Enrollment' AS Category \n" +
+                    "                     FROM \n" +
+                    "                         amrs.obs o \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.encounter e ON (o.encounter_id = e.encounter_id) \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.encounter_type et ON et.encounter_type_id = e.encounter_type \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.concept c ON c.concept_id = o.concept_id \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.concept_name cn ON o.concept_id = cn.concept_id  and cn.locale_preferred = 1\n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.concept_datatype cd ON cd.concept_datatype_id = c.datatype_id \n" +
+                    "                             INNER JOIN \n" +
+                    "                         amrs.location l ON e.location_id = l.location_id \n" +
+                    "                     WHERE \n" +
+                    "                         e.encounter_type IN (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266) \n" +
+                    "                             AND o.concept_id IN (8287, 1224,  1724, 10792, 6750, 6749, 1915, 10747, 10748, 7013, 1499, 9203, 6748, 5356, 1633, 2155, 966, 1088, 2056, 5090, 1343, 5629, 1174, 10653, 10873, 10872, 10741) \n" +
+                    "                             AND e.location_id IN (2) and e.patient_id in (1161436,1202124,1199830) \n" +
+                    "                             AND e.voided = 0 \n" +
+                    "                     ORDER BY o.encounter_id ASC\n" +
+                    "                     ";
         }
         System.out.println("sqlHivEnrollment" + sql);
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
@@ -2134,7 +2136,6 @@ public class MigrateCareData {
             String encounterName = rs.getString("encounterName");
             String category = rs.getString("Category");
 
-
             List<AMRSHIVEnrollment> amrshivEnrollmentList = amrsHIVEnrollmentService.findByPatientIdAndEncounterIDAndConceptId(patientId, encounterID, conceptId);
             if (amrshivEnrollmentList.isEmpty()) {
                 AMRSHIVEnrollment ahe = new AMRSHIVEnrollment();
@@ -2152,21 +2153,28 @@ public class MigrateCareData {
                 ahe.setProvider(provider);
                 ahe.setEncounterName(encounterName);
                 ahe.setCategory(category);
-                ahe.setKenyaemrConceptUuid(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(conceptId)));
-                if (datatypeId.equals("1") || datatypeId.equals("2")) {
+                ahe.setKenyaemrConceptUuid(amrsTranslater.translater(conceptId));
+                if (datatypeId.equals("6") ) { // || datatypeId.equals("2")
                     ahe.setKenyaemrValue(value);
-                } else {
-                    ahe.setKenyaemrValue(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(value)));
+                }else if (datatypeId.equals("10") ) { // || datatypeId.equals("2")
+                    Boolean bvalue =false;
+                    if(value.equals("")){
+                        bvalue =true;
+                    }
+                    ahe.setKenyaemrValue(String.valueOf(bvalue));
+                }
+
+                else {
+                    ahe.setKenyaemrValue(amrsTranslater.translater(value));
                 }
                 System.out.println("Tumefika Hapa!!!" + parentUUID);
                 amrsHIVEnrollmentService.save(ahe);
-                //CareOpenMRSPayload.hivenrollment(amrsHIVEnrollmentService, parentUUID, locations, auth, url);
-
-
             }
 
             System.out.println("Patient_id" + patientId);
         }
+        CareOpenMRSPayload.hivEnrollment(amrsHIVEnrollmentService, amrsPatientServices, parentUUID, locations, url,auth);
+
     }
 
     /*public static void obs(String server, String username, String password, String locations,
@@ -2329,9 +2337,9 @@ public class MigrateCareData {
     }
     */
 
-    public static void programSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void DrugSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-//        AMRSConceptReader amrsConceptReader = new AMRSConceptReader();
+        String samplePatientList = AMRSSamples.getPersonIdList();
 
         String sql = "";
         List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findFirstByOrderByIdDesc();
@@ -2346,8 +2354,8 @@ public class MigrateCareData {
                     "\t\tINNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and cn.locale='en' and cn.concept_name_type='FULLY_SPECIFIED' \n" +
                     "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
                     "\twhere o.concept_id=1088 and o.voided=0 \n" +
-                    "    and o.location_id in (339)\n" +
-                    "    and o.person_id in(704258,1171851,1180830,1167167)\n" +
+                    //"    and o.location_id in (339)\n" +
+                    "    and o.person_id in (7315) \n" + //("+  samplePatientList +")
                     "\tGROUP BY patient_id, o.value_coded \n" +
                     ")\n" +
                     " as regimen_data\n" +
@@ -2373,7 +2381,7 @@ public class MigrateCareData {
                     "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
                     "\twhere o.concept_id=1088 and o.voided=0 \n" +
                     "    and o.location_id in (339)\n" +
-                    "    and o.person_id in(704258,1171851,1180830,1167167)\n" +
+                    "    and o.person_id in (7315)\n" + //"+  samplePatientList +"
                     "\tGROUP BY patient_id, o.value_coded \n" +
                     ")\n" +
                     " as regimen_data\n" +
@@ -2406,10 +2414,9 @@ public class MigrateCareData {
             String encounterDatetime = rs.getString("Encounter_Date");
             String regimen = rs.getString("Regimen");
             String reasonForChange = rs.getString("Reason_for_Change");
-            //String kenyaemrEncounterUuid = rs.getString("");
-            //String kenyaemrConceptUuid = rs.getString("");
-            //String kenyaemrValue = rs.getString("");
-
+            String kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+            String kenyaemrConceptUuid = amrsTranslater.translater(conceptId);
+            String kenyaemrValue = amrsTranslater.translater(valueCoded);
 
             if (amrsRegimenSwitchList.isEmpty()) {
                 AMRSRegimenSwitch ar = new AMRSRegimenSwitch();
@@ -2420,18 +2427,16 @@ public class MigrateCareData {
                 ar.setEncounterDatetime(encounterDatetime);
                 ar.setRegimen(regimen);
                 ar.setReasonForChange(reasonForChange);
-//                ar.setKenyaemrEncounterUuid();
-//                ar.setKenyaemrConceptUuid(amrsConceptReader.translater(conceptId));
-//                ar.setKenyaemrValue(amrsConceptReader.translater(valueCoded));
-
-                ar.setKenyaemrConceptUuid(String.valueOf(amrsConceptMappingService.findByAmrsConceptID(conceptId)));
-
+                ar.setKenyaemrValue(kenyaemrValue);
+                ar.setKenyaemrConceptUuid(kenyaemrConceptUuid);
+                ar.setKenyaemrPatientUuid(kenyaemrPatientUuid);
                 System.out.println("Tumefika Hapa!!!" + parentUUID);
                 amrsRegimenSwitchService.save(ar);
-//                CareOpenMRSPayload.amrsProgramSwitch(amrsRegimenSwitchService, parentUUID, locations, auth, url);
-
-
             }
+
+
+            CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsPatientServices, parentUUID, locations,auth,url);
+
 
             System.out.println("Patient_id" + patientId);
         }
@@ -2953,12 +2958,14 @@ public class MigrateCareData {
                 System.out.println("Tumefika Hapa!!!" + parentUUID);
                 amrsPatientStatusService.save(cs);
                 if ((!(kenyaemrPatientUuid == null))) {
-                    CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
+                //    CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
                 }
             }
 
             System.out.println("Patient_id" + personId);
         }
+
+        CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
 
     }
 

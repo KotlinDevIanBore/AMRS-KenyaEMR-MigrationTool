@@ -18,6 +18,8 @@ public class AMRSRegimenSwitch {
     private String encounterDatetime;
     private String regimen;
     private String reasonForChange;
+
+    private String kenyaemrPatientUuid;
     private String kenyaemrEncounterUuid;
     private String kenyaemrConceptUuid;
     private String kenyaemrValue;
@@ -117,5 +119,13 @@ public class AMRSRegimenSwitch {
 
     public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public String getKenyaemrPatientUuid() {
+        return kenyaemrPatientUuid;
+    }
+
+    public void setKenyaemrPatientUuid(String kenyaemrPatientUuid) {
+        this.kenyaemrPatientUuid = kenyaemrPatientUuid;
     }
 }
