@@ -3055,14 +3055,37 @@ public class MigrateCareData {
 //                "INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0";
 
 
+//        String sql = "SELECT o.person_id as patient_id,e.form_id,o.concept_id,o.encounter_id, \n" +
+//                "ifnull(o.value_datetime,\"\") as value_datetime,ifnull(o.value_coded,\"\") as value_coded,ifnull(o.value_numeric,\"\") as value_numeric,\n" +
+//                "ifnull(o.value_text,\"\")as value_text,o.obs_datetime,o.uuid  \n" +
+//                "FROM amrs.obs o \n" +
+//                "INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+//                "AND o.person_id IN(59807) \n" +
+//                "AND c.concept_id in (1246,1412,10653,5088,5087,5085,5086,5242,5092,5089,\n" +
+//                "10805,5090,1343,9782,6578,12258,5356,6048,5219,1154,10893,10727,\n" +
+//                "6176,9742,10591,6174,1271,12,1272,10761,2028,10676,7502,10677,\n" +
+//                "7637,1113,1111,8292,11308,8293,10679,10785,10786,10787,\n" +
+//                "10788,1266,10681,6793,2031,6968,10706,10239,6137,11679,1065,\n" +
+//                "1066,1664,1193,7897,1198,1915,10707,1836,2061,5272,9736,10814,\n" +
+//                "5596,12253,10708,7947,5624,5632,8355,374,6687,1119,10987,1120,\n" +
+//                "10821,7343,11705,10845,1123,9467,1124,1125,1129,1126,1128,6042,\n" +
+//                "7222,1109,10831,10832,10833,10834,8288,6287,6259,10726,2312,\n" +
+//                "10400,9611,9609,9070,5096,1835,9605,10988,1724,10102,10103,\n" +
+//                "10104,10105,10106,10107,10108,10109,5616,10381,12384,1629,\n" +
+//                "6748,10984,11930,7656)\n" +
+//                "INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
+//                "and e.encounter_type in(2,4,106,176)\n" +
+//                "ORDER BY patient_id ASC,encounter_id DESC";
+
+
         String sql = "SELECT o.person_id as patient_id,e.form_id,o.concept_id,o.encounter_id, \n" +
                 "ifnull(o.value_datetime,\"\") as value_datetime,ifnull(o.value_coded,\"\") as value_coded,ifnull(o.value_numeric,\"\") as value_numeric,\n" +
                 "ifnull(o.value_text,\"\")as value_text,o.obs_datetime,o.uuid  \n" +
                 "FROM amrs.obs o \n" +
                 "INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
-                "AND o.person_id IN(768057,1209134,1220530) \n" +
+                "AND o.person_id IN(59807) \n" +
                 "AND c.concept_id in (1246,1412,10653,5088,5087,5085,5086,5242,5092,5089,\n" +
-                "10805,5090,1343,9782,6578,12258,5356,6048,5219,1154,10893,10727,\n" +
+                "10805,5090,1343,9782,6578,12258,5356,6048,5219,10893,10727,\n" +
                 "6176,9742,10591,6174,1271,12,1272,10761,2028,10676,7502,10677,\n" +
                 "7637,1113,1111,8292,11308,8293,10679,10785,10786,10787,\n" +
                 "10788,1266,10681,6793,2031,6968,10706,10239,6137,11679,1065,\n" +
@@ -3076,6 +3099,8 @@ public class MigrateCareData {
                 "INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
                 "and e.encounter_type in(2,4,106,176)\n" +
                 "ORDER BY patient_id ASC,encounter_id DESC";
+
+
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);

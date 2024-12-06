@@ -31,7 +31,14 @@ public class AMRSGreenCardService {
         return amrsGreenCardRepository.findByResponseCodeIsNull();
     }
 
-    public AMRSGreenCard save (AMRSGreenCard amrsTcas){
-        return amrsGreenCardRepository.save(amrsTcas);
+    public List<AMRSGreenCard> findByEncounterId(String encounterId){
+        return amrsGreenCardRepository.findByEncounterId(encounterId);
+    }
+
+    public List<AMRSGreenCard> findDistinctEncounters(){
+        return amrsGreenCardRepository.findDistinctEncounters();
+    }
+    public AMRSGreenCard save (AMRSGreenCard amrsGreenCard){
+        return amrsGreenCardRepository.save(amrsGreenCard);
     }
 }
