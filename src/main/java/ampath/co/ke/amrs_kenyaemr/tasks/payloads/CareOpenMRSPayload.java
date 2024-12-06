@@ -13,10 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CareOpenMRSPayload {
@@ -280,23 +277,27 @@ public class CareOpenMRSPayload {
 
             for(String encounterId: distinctRegimenSwitchIds) {
                 System.out.println("Encounter ID for Vitals " + encounterId);
+
                 List<AMRSRegimenSwitch> regimenSwitchList = amrsRegimenSwitchService.findByEncounterId(encounterId);
 
                 for( int x=0; x < regimenSwitchList.size(); x++ ) {
 
                     List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(regimenSwitchList.get(x).getPatientId());
-
+                    JSONArray jsonObservations = new JSONArray();
                     JSONObject jsonObservation = new JSONObject();
                     jsonObservation.put("person", amrsPatients.get(0).getKenyaemrpatientUUID());
                     jsonObservation.put("concept", regimenSwitchList.get(x).getKenyaemrConceptUuid());
                     jsonObservation.put("value", regimenSwitchList.get(x).getKenyaemrValue());
+                    jsonObservations.put(jsonObservation);
+
 
                     JSONObject jsonRegimenSwitchEncouter = new JSONObject();
                     jsonRegimenSwitchEncouter.put("form", "da687480-e197-11e8-9f32-f2801f1b9fd1");
-                    jsonRegimenSwitchEncouter.put("encounterType", "da687480-e197-11e8-9f32-f2801f1b9fd1");
+                    jsonRegimenSwitchEncouter.put("encounterType", "7dffc392-13e7-11e9-ab14-d663bd873d93");
+                    jsonRegimenSwitchEncouter.put("location", "7dffc392-13e7-11e9-ab14-d663bd873d93");
                     jsonRegimenSwitchEncouter.put("patient", amrsPatients.get(0).getKenyaemrpatientUUID());
                     jsonRegimenSwitchEncouter.put("encounterDatetime", regimenSwitchList.get(x).getEncounterDatetime());
-                    jsonRegimenSwitchEncouter.put("obs", jsonObservation);
+                    jsonRegimenSwitchEncouter.put("obs", jsonObservations);
 
                     System.out.println("Payload for is here " + jsonRegimenSwitchEncouter.toString());
                    // System.out.println("URL is here " + url + "encpunter/" + regimenSwitchList.get(0).getKenyaemrEncounterUuid());
@@ -466,7 +467,9 @@ public class CareOpenMRSPayload {
                     jsonObservation.put("concept", enrollment.getKenyaemrConceptUuid());
                     jsonObservation.put("value", enrollment.getKenyaemrValue());
                     jsonObservation.put("obsDatetime", enrollment.getObsDateTime());
-                    jsonObservations.put(jsonObservation);
+                    if(!Objects.equals(enrollment.getKenyaemrConceptUuid(), "") && !Objects.equals(enrollment.getKenyaemrValue(), "")) {
+                        jsonObservations.put(jsonObservation);
+                    }
                 }
 
                 // Prepare JSON encounter

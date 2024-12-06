@@ -2016,6 +2016,7 @@ public class MigrateCareData {
 
     public static void hivenrollment(String server, String username, String password, String locations, String parentUUID, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSPatientServices amrsPatientServices,AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
+        String samplePatientList = AMRSSamples.getPersonIdList();
 
         String sql = "";
         List<AMRSHIVEnrollment> amrshivEnrollmentLists = amrsHIVEnrollmentService.findFirstByOrderByIdDesc();
@@ -2058,7 +2059,7 @@ public class MigrateCareData {
                     "                     WHERE \n" +
                     "                         e.encounter_type IN (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266) \n" +
                     "                             AND o.concept_id IN (8287, 1224,  1724, 10792, 6750, 6749, 1915, 10747, 10748, 7013, 1499, 9203, 6748, 5356, 1633, 2155, 966, 1088, 2056, 5090, 1343, 5629, 1174, 10653, 10873, 10872, 10741) \n" +
-                    "                             AND e.location_id IN (2) and e.patient_id in (1161436,1202124,1199830) \n" +
+                    "                              and e.patient_id in ("+ samplePatientList +") \n" +
                     "                             AND e.voided = 0 \n" +
                     "                     ORDER BY o.encounter_id ASC\n" +
                     "                     ";
@@ -2101,7 +2102,7 @@ public class MigrateCareData {
                     "                     WHERE \n" +
                     "                         e.encounter_type IN (1 , 3, 24, 32, 105, 137, 135, 136, 265, 266) \n" +
                     "                             AND o.concept_id IN (8287, 1224,  1724, 10792, 6750, 6749, 1915, 10747, 10748, 7013, 1499, 9203, 6748, 5356, 1633, 2155, 966, 1088, 2056, 5090, 1343, 5629, 1174, 10653, 10873, 10872, 10741) \n" +
-                    "                             AND e.location_id IN (2) and e.patient_id in (1161436,1202124,1199830) \n" +
+                    "                             AND  e.patient_id in ("+ samplePatientList +") \n" +
                     "                             AND e.voided = 0 \n" +
                     "                     ORDER BY o.encounter_id ASC\n" +
                     "                     ";
@@ -2351,7 +2352,7 @@ public class MigrateCareData {
                     "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
                     "\twhere o.concept_id=1088 and o.voided=0 \n" +
                     //"    and o.location_id in (339)\n" +
-                    "    and o.person_id in (7315) \n" + //("+  samplePatientList +")
+                    "    and o.person_id in ("+  samplePatientList +") \n" + //("+  samplePatientList +")
                     "\tGROUP BY patient_id, o.value_coded \n" +
                     ")\n" +
                     " as regimen_data\n" +
@@ -2376,8 +2377,8 @@ public class MigrateCareData {
                     "\t\tINNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and cn.locale='en' and cn.concept_name_type='FULLY_SPECIFIED' \n" +
                     "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
                     "\twhere o.concept_id=1088 and o.voided=0 \n" +
-                    "    and o.location_id in (339)\n" +
-                    "    and o.person_id in (7315)\n" + //"+  samplePatientList +"
+                   // "    and o.location_id in (339)\n" +
+                    "    and o.person_id in ("+  samplePatientList +")\n" + //"+  samplePatientList +"
                     "\tGROUP BY patient_id, o.value_coded \n" +
                     ")\n" +
                     " as regimen_data\n" +
@@ -2411,7 +2412,7 @@ public class MigrateCareData {
             String regimen = rs.getString("Regimen");
             String reasonForChange = rs.getString("Reason_for_Change");
             String kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
-            String kenyaemrConceptUuid = amrsTranslater.translater(conceptId);
+            String kenyaemrConceptUuid = amrsTranslater.translater("1193");
             String kenyaemrValue = amrsTranslater.translater(valueCoded);
 
             if (amrsRegimenSwitchList.isEmpty()) {
