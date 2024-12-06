@@ -170,4 +170,4 @@ public class AMRSGreenCard {
 
     public void setKenyaEmrTcaUuid(String kenyaEmrTcaUuid) {
         this.kenyaEmrTcaUuid = kenyaEmrTcaUuid;
-    }
+    }}
