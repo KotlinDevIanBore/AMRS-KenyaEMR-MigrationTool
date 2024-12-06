@@ -11,11 +11,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
 
-import java.util.*;
-import java.util.stream.Collectors;
 
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -3035,7 +3031,7 @@ public class MigrateCareData {
         }
     }
 
-    public static void tcas(String server, String username, String password, String locations, String parentUUID, AMRSTCAService amrstcaService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSConceptMappingService amrsConceptMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void processGreenCard(String server, String username, String password, String locations, String parentUUID, AMRSGreenCardService amrsGreenCardService, AMRSPatientServices amrsPatientServices, AMRSEncounterMappingService amrsEncounterMappingService, AMRSMappingService amrsMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         String samplePatientList = AMRSSamples.getPersonIdList();
 
@@ -3051,13 +3047,61 @@ public class MigrateCareData {
 
         System.out.println("Patient Id " + pid);
 
-        String sql = "SELECT o.person_id as patient_id,e.form_id,o.concept_id,o.encounter_id, " +
-                "o.value_datetime as tca, o.obs_datetime,o.uuid  " +
+//        String sql = "SELECT o.person_id as patient_id,e.form_id,o.concept_id,o.encounter_id, " +
+//                "o.value_datetime as tca, o.obs_datetime,o.uuid  " +
+//                "FROM amrs.obs o \n" +
+//                "INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+//                "AND o.person_id IN("+samplePatientList+")\n" +
+//                "AND c.uuid in ('a8a666ba-1350-11df-a1f1-0026b9348838','318a5e8b-218c-4f66-9106-cd581dec1f95')\n" +
+//                "INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0";
+
+
+//        String sql = "SELECT o.person_id as patient_id,e.form_id,o.concept_id,o.encounter_id, \n" +
+//                "ifnull(o.value_datetime,\"\") as value_datetime,ifnull(o.value_coded,\"\") as value_coded,ifnull(o.value_numeric,\"\") as value_numeric,\n" +
+//                "ifnull(o.value_text,\"\")as value_text,o.obs_datetime,o.uuid  \n" +
+//                "FROM amrs.obs o \n" +
+//                "INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+//                "AND o.person_id IN(59807) \n" +
+//                "AND c.concept_id in (1246,1412,10653,5088,5087,5085,5086,5242,5092,5089,\n" +
+//                "10805,5090,1343,9782,6578,12258,5356,6048,5219,1154,10893,10727,\n" +
+//                "6176,9742,10591,6174,1271,12,1272,10761,2028,10676,7502,10677,\n" +
+//                "7637,1113,1111,8292,11308,8293,10679,10785,10786,10787,\n" +
+//                "10788,1266,10681,6793,2031,6968,10706,10239,6137,11679,1065,\n" +
+//                "1066,1664,1193,7897,1198,1915,10707,1836,2061,5272,9736,10814,\n" +
+//                "5596,12253,10708,7947,5624,5632,8355,374,6687,1119,10987,1120,\n" +
+//                "10821,7343,11705,10845,1123,9467,1124,1125,1129,1126,1128,6042,\n" +
+//                "7222,1109,10831,10832,10833,10834,8288,6287,6259,10726,2312,\n" +
+//                "10400,9611,9609,9070,5096,1835,9605,10988,1724,10102,10103,\n" +
+//                "10104,10105,10106,10107,10108,10109,5616,10381,12384,1629,\n" +
+//                "6748,10984,11930,7656)\n" +
+//                "INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
+//                "and e.encounter_type in(2,4,106,176)\n" +
+//                "ORDER BY patient_id ASC,encounter_id DESC";
+
+
+        String sql = "SELECT o.person_id as patient_id,e.form_id,o.concept_id,o.encounter_id, \n" +
+                "ifnull(o.value_datetime,\"\") as value_datetime,ifnull(o.value_coded,\"\") as value_coded,ifnull(o.value_numeric,\"\") as value_numeric,\n" +
+                "ifnull(o.value_text,\"\")as value_text,o.obs_datetime,o.uuid  \n" +
                 "FROM amrs.obs o \n" +
                 "INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
-                "AND o.person_id IN("+samplePatientList+")\n" +
-                "AND c.uuid in ('a8a666ba-1350-11df-a1f1-0026b9348838','318a5e8b-218c-4f66-9106-cd581dec1f95')\n" +
-                "INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0";
+                "AND o.person_id IN(59807) \n" +
+                "AND c.concept_id in (1246,1412,10653,5088,5087,5085,5086,5242,5092,5089,\n" +
+                "10805,5090,1343,9782,6578,12258,5356,6048,5219,10893,10727,\n" +
+                "6176,9742,10591,6174,1271,12,1272,10761,2028,10676,7502,10677,\n" +
+                "7637,1113,1111,8292,11308,8293,10679,10785,10786,10787,\n" +
+                "10788,1266,10681,6793,2031,6968,10706,10239,6137,11679,1065,\n" +
+                "1066,1664,1193,7897,1198,1915,10707,1836,2061,5272,9736,10814,\n" +
+                "5596,12253,10708,7947,5624,5632,8355,374,6687,1119,10987,1120,\n" +
+                "10821,7343,11705,10845,1123,9467,1124,1125,1129,1126,1128,6042,\n" +
+                "7222,1109,10831,10832,10833,10834,8288,6287,6259,10726,2312,\n" +
+                "10400,9611,9609,9070,5096,1835,9605,10988,1724,10102,10103,\n" +
+                "10104,10105,10106,10107,10108,10109,5616,10381,12384,1629,\n" +
+                "6748,10984,11930,7656)\n" +
+                "INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
+                "and e.encounter_type in(2,4,106,176)\n" +
+                "ORDER BY patient_id ASC,encounter_id DESC";
+
+
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
@@ -3074,33 +3118,43 @@ public class MigrateCareData {
             String formId = rs.getString("form_id");
             String conceptId = rs.getString("concept_id");
             String encounterId = rs.getString("encounter_id");
-            String tca = rs.getString("tca");
+            String valueDatetime = rs.getString("value_datetime");
+            String valueCoded = rs.getString("value_coded");
+            String valueNumeric = rs.getString("value_numeric");
+            String valueText = rs.getString("value_Text");
             String obsDateTime = rs.getString("obs_datetime");
-            String amrsTCAUuid = rs.getString("uuid");
+            String amrsUuid = rs.getString("uuid");
 
 
-//            List<AMRSTcas> amrsTcas = AMRSTCAService.findByUuid(amrsTCAUuid);
-//            if (amrsTcas.isEmpty()) {
                 String kenyaemr_uuid = "";
-                AMRSOrders ao = new AMRSOrders();
-                AMRSTcas amrsTcas1 = new AMRSTcas();
+                AMRSGreenCard amrsGreenCard = new AMRSGreenCard();
 
                 String kenyaemr_encounter_id;
 
 
+                if(!valueCoded.equals("")){
+                     List<AMRSMappings> valueCodedUuid = amrsMappingService.findByAmrsConceptID(valueCoded);
+                    if (!valueCodedUuid.isEmpty()) {
+                        valueCoded = valueCodedUuid.get(0).getKenyaemrConceptUuid();
+                    }
+                }
 
-                amrsTcas1.setPatientId(patientId);
-                amrsTcas1.setFormId(formId);
-                amrsTcas1.setConceptId(conceptId);
-                amrsTcas1.setEncounterId(encounterId);
-                amrsTcas1.setTca(tca);
-                amrsTcas1.setObsDateTime(obsDateTime);
+            amrsGreenCard.setPatientId(patientId);
+            amrsGreenCard.setFormId(formId);
+            amrsGreenCard.setConceptId(conceptId);
+            amrsGreenCard.setEncounterId(encounterId);
+            amrsGreenCard.setValueCoded(valueCoded);
+            amrsGreenCard.setValueDatetime(valueDatetime);
+            amrsGreenCard.setValueNumeric(valueNumeric);
+            amrsGreenCard.setValueText(valueText);
+            amrsGreenCard.setUuid(amrsUuid);
+            amrsGreenCard.setObsDateTime(obsDateTime);
 
                 List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
                 String kenyaemr_patient_uuid = "";
                 if (!amrsPatients.isEmpty()) {
                     kenyaemr_patient_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
-                    amrsTcas1.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+                    amrsGreenCard.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
                 } else {
                     kenyaemr_patient_uuid = "Not Found"; // add logic for missing patientkenyaemr_patient_uuid
                 }
@@ -3110,24 +3164,25 @@ public class MigrateCareData {
                 List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
                 if (!amrsEncounters.isEmpty()) {
                     kenyaEmrEncounterUuid = amrsEncounters.get(0).getKenyaemrEncounterUuid();
-                    amrsTcas1.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+                    amrsGreenCard.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
                 }
 
                 String kenyaEmrConceptUuid="";
-                kenyaEmrConceptUuid="162549AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-                amrsTcas1.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
-//                List<AMRSConceptMapper> amrsConceptMapper = amrsConceptMappingService.findByAmrsConceptID(conceptId);
-//                    if (!amrsConceptMapper.isEmpty()) {
-////                        kenyaEmrConceptUuid = amrsConceptMapper.get(0).getKenyaemrConceptUUID();
-//                    }
+//                kenyaEmrConceptUuid="162549AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+            amrsGreenCard.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+                List<AMRSMappings> amrsMapper = amrsMappingService.findByAmrsConceptID(conceptId);
+                    if (!amrsMapper.isEmpty()) {
+                        kenyaEmrConceptUuid = amrsMapper.get(0).getKenyaemrConceptUuid();
+                        amrsGreenCard.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+                    }
 
-                amrstcaService.save(amrsTcas1);
+                amrsGreenCardService.save(amrsGreenCard);
 
             //}
             // Call method to create and insert the payload
-            TCAsPayload.tcas(amrstcaService, amrsPatientServices, url, auth);
 
         }
+GreenCardPayload.processData(amrsGreenCardService, amrsPatientServices, url, auth);
     }
 
     public static void ordersResults(String server, String username, String password, String locations, String parentUUID, AMRSOrdersResultsService amrsOrdersResultsService, AMRSConceptMappingService amrsConceptMappingService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {

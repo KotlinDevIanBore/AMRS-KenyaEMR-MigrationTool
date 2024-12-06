@@ -24,7 +24,7 @@ public class OrdersPayload {
 
                     List<AMRSPatients> patientsList = amrsPatientServices.getByPatientID(amrsOrders1.getPatientId());
                     System.out.println(" Patient Iko  "+ patientsList.size());
-                    if (patientsList.size()>0) {
+                    if (!patientsList.isEmpty()) {
                         String pid = patientsList.get(0).getKenyaemrpatientUUID();
                         Integer kenyaemrOrderId = amrsOrders.get(x).getKenyaemrOrderId();
                         String orderNumber = amrsOrders.get(x).getOrderNumber();
@@ -113,7 +113,6 @@ public class OrdersPayload {
             }
         }
     }
-
 
     public static boolean ordersResults(JSONObject orderResultObj, String url, String auth) throws JSONException, IOException {
         OkHttpClient client = new OkHttpClient();
