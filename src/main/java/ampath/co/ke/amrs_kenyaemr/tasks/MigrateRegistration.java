@@ -242,57 +242,57 @@ public class MigrateRegistration {
                     "                   p.cause_of_death,\n" +
                     "                   p.death_date,\n" +
                     "case \n" +
-                    "\twhen p.dead = 1 and c.concept_id = 16 then 142412\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 43 then 114100\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 58 then 112141\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 60 then 115835\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 84 then 84\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 86 then 86\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 102 then 102\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 123 then 116128\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 148 then 112234\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 507 then 507\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 903 then 117399\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 1067 then 1067\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 1107 then 1107\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 1571 then 125561\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 1593 then 159\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 2375 then 137296\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 5041 then 5041\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 5547 then 119975\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 5622 then 5622\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 6483 then 139444\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 7257 then 134612\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 7971 then 145717 \n" +
-                    "\twhen p.dead = 1 and c.concept_id = 10366 then 133814\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 12038 then 155762 \n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 16 then 142412\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 43 then 114100\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 58 then 112141\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 60 then 115835\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 84 then 84\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 86 then 86\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 102 then 102\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 123 then 116128\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 148 then 112234\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 507 then 507\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 903 then 117399\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 1067 then 1067\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 1107 then 1107\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 1571 then 125561\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 1593 then 159\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 2375 then 137296\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 5041 then 5041\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 5547 then 119975\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 5622 then 5622\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 6483 then 139444\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 7257 then 134612\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 7971 then 145717 \n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 10366 then 133814\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 12038 then 155762 \n" +
                     "    else 5622\n" +
                     "\tend as kmr_concept_id," +
                     "case\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 16 then '142412AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 43 then '114100AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and  c.concept_id = 58 then '112141AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and  c.concept_id = 60 then '115835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and  c.concept_id = 84 then '84AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and  c.concept_id = 86 then '86AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and  c.concept_id = 102 then '102AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and  c.concept_id = 123 then '116128AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 148 then '112234AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 507 then '507AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 903 then '117399AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 1067 then '1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 1571 then '125561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 1593 then '159AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 2375 then '137296AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 5041 then '5041AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 5547 then '119975AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 6483 then '139444AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 7257 then '134612AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 7971 then '145717AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
-                    "\twhen p.dead = 1 and c.concept_id = 10366 then '133814AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
-                    "\twhen p.dead = 1 and c.concept_id = 12038 then '155762AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 16 then '142412AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 43 then '114100AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  p.cause_of_death = 58 then '112141AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  p.cause_of_death = 60 then '115835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  p.cause_of_death = 84 then '84AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  p.cause_of_death = 86 then '86AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  p.cause_of_death = 102 then '102AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and  p.cause_of_death = 123 then '116128AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 148 then '112234AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 507 then '507AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 903 then '117399AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 1067 then '1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 1107 then '1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 1571 then '125561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 1593 then '159AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 2375 then '137296AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 5041 then '5041AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 5547 then '119975AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 5622 then '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 6483 then '139444AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 7257 then '134612AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 7971 then '145717AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 10366 then '133814AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \n" +
+                    "\twhen p.dead = 1 and p.cause_of_death = 12038 then '155762AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
                     "    else '5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'\n" +
                     "\tend as kmr_concept_uuid, \n" +
                     "                   p.birthdate_estimated, \n" +
@@ -666,8 +666,9 @@ public class MigrateRegistration {
 
             }
 
-           RegisterOpenMRSPayload.relationship(amrsPatientRelationshipService, url, auth);
+
 
         }
+        RegisterOpenMRSPayload.relationship(amrsPatientRelationshipService, url, auth);
     }
 }
