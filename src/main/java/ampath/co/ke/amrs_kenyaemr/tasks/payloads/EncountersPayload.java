@@ -50,7 +50,7 @@ public class EncountersPayload {
 
                         jsonEncounter.put("patient", patientsList.get(0).getKenyaemrpatientUUID());
                         jsonEncounter.put("encounterType", ae.getKenyaemrEncounterUuid());
-                        jsonEncounter.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+                        jsonEncounter.put("location", "3e6261cc-ad5e-4834-b85d-af8b42a133e4");
                         jsonEncounter.put("encounterType",ae.getKenyaemrEncounterTypeUuid());
                         jsonEncounter.put("encounterDatetime", ae.getEncounterDateTime());
                     }

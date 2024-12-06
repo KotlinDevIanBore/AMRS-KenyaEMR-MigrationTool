@@ -28,6 +28,14 @@ public class AMRSHIVEnrollmentService {
         return amrsHIVEnrollmentRepository.findFirstByOrderByIdDesc();
     }
 
+    public List<AMRSHIVEnrollment> findByResponseCodeIsNull() {
+        return amrsHIVEnrollmentRepository.findByResponseCodeIsNull();
+    }
+
+    public List<AMRSHIVEnrollment> findByPatientId(String pid) {
+        return amrsHIVEnrollmentRepository.findByPatientId(pid);
+    }
+
     public AMRSHIVEnrollment save(AMRSHIVEnrollment dataset) {
         return amrsHIVEnrollmentRepository.save(dataset);
     }
