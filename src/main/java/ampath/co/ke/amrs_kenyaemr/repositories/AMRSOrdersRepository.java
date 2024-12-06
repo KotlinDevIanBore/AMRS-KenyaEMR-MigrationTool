@@ -17,5 +17,4 @@ public interface AMRSOrdersRepository extends JpaRepository<AMRSOrders, Long> {
 
     List<AMRSOrders> findByResponseCodeIsNull();
 
-
 }

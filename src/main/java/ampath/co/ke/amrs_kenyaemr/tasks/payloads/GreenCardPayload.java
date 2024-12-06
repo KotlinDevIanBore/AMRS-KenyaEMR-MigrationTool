@@ -1,9 +1,9 @@
 package ampath.co.ke.amrs_kenyaemr.tasks.payloads;
 
+import ampath.co.ke.amrs_kenyaemr.models.AMRSGreenCard;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
-import ampath.co.ke.amrs_kenyaemr.models.AMRSTcas;
+import ampath.co.ke.amrs_kenyaemr.service.AMRSGreenCardService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
-import ampath.co.ke.amrs_kenyaemr.service.AMRSTCAService;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,26 +11,28 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
-public class TCAsPayload {
+public class GreenCardPayload {
 
-    public static void tcas(AMRSTCAService amrstcaService, AMRSPatientServices amrsPatientServices, String url, String auth) throws JSONException, IOException {
-        List<AMRSTcas> amrsTcas = amrstcaService.findByResponseCodeIsNull();
-        if (!amrsTcas.isEmpty()) {
+    public static void processData(AMRSGreenCardService amrsGreenCardService, AMRSPatientServices amrsPatientServices, String url, String auth) throws JSONException, IOException {
+        List<AMRSGreenCard> amrsGreenCards = amrsGreenCardService.findByResponseCodeIsNull();
+        if (!amrsGreenCards.isEmpty()) {
 
-            for (int x = 0; x < amrsTcas.size(); x++) {
-                AMRSTcas amrsTCA = amrsTcas.get(x);
+            for (int x = 0; x < amrsGreenCards.size(); x++) {
+                AMRSGreenCard amrsGreenCard = amrsGreenCards.get(x);
 
-                List<AMRSPatients> patientsList = amrsPatientServices.getByPatientID(amrsTCA.getPatientId().toString());
+                List<AMRSPatients> patientsList = amrsPatientServices.getByPatientID(amrsGreenCard.getPatientId().toString());
                 if (!patientsList.isEmpty()) {
 
                     String person = patientsList.get(0).getKenyaemrpatientUUID();
-                    String concept = amrsTCA.getKenyaEmrConceptUuid();
-                    String value = amrsTCA.getTca();
-                    String obsDateTime = amrsTCA.getObsDateTime();
-                    String encounter = amrsTCA.getKenyaEmrEncounterUuid();
+                    String concept = amrsGreenCard.getKenyaEmrConceptUuid();
+                    String obsDateTime = amrsGreenCard.getObsDateTime();
+                    String encounter = amrsGreenCard.getKenyaEmrEncounterUuid();
 
+                  String  value = amrsGreenCard.getValueCoded()+amrsGreenCard.getValueDatetime()+amrsGreenCard.getValueNumeric()+amrsGreenCard.getValueText();
 
+                    System.out.println(x+"===========================>>>>>>>>value is : "+value);
                     JSONObject obj = new JSONObject();
+
                     obj.put("person", person);
                     obj.put("concept", concept);
                     obj.put("encounter", encounter);
@@ -53,10 +55,10 @@ public class TCAsPayload {
                     JSONObject jsonObject = new JSONObject(responseBody);
                     if (response.code() == 201) {
                         String tcaUuid = jsonObject.getString("uuid");
-                        amrsTCA.setKenyaEmrTcaUuid(tcaUuid);
-                        amrsTCA.setResponseCode(String.valueOf(response.code()));
-                        amrstcaService.save(amrsTCA);
-
+                        amrsGreenCard.setKenyaEmrTcaUuid(tcaUuid);
+                        amrsGreenCard.setResponseCode(String.valueOf(response.code()));
+                        amrsGreenCardService.save(amrsGreenCard);
+                        System.out.println("saved successfully");
                     }
                 else {
                         System.out.println("failed to save data");

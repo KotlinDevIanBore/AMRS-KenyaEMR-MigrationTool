@@ -2,9 +2,9 @@ package ampath.co.ke.amrs_kenyaemr.models;
 
 import jakarta.persistence.*;
 
-@Table(name = "amrs_tcas")
+@Table(name = "amrs_green_card")
 @Entity
-public class AMRSTcas {
+public class AMRSGreenCard {
 
     @jakarta.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,11 +15,19 @@ public class AMRSTcas {
 
     private String formId;
 
-    private String ConceptId;
+    private String conceptId;
 
-    private String EncounterId;
+    private String encounterId;
 
-    private String tca;
+    private String valueDatetime;
+
+    private String valueCoded;
+
+
+    private String valueNumeric;
+
+
+    private String valueText;
 
     private  String responseCode;
 
@@ -61,27 +69,51 @@ public class AMRSTcas {
     }
 
     public String getConceptId() {
-        return ConceptId;
+        return conceptId;
     }
 
     public void setConceptId(String conceptId) {
-        ConceptId = conceptId;
+        this.conceptId = conceptId;
     }
 
     public String getEncounterId() {
-        return EncounterId;
+        return encounterId;
     }
 
     public void setEncounterId(String encounterId) {
-        EncounterId = encounterId;
+        this.encounterId = encounterId;
     }
 
-    public String getTca() {
-        return tca;
+    public String getValueDatetime() {
+        return valueDatetime;
     }
 
-    public void setTca(String tca) {
-        this.tca = tca;
+    public void setValueDatetime(String valueDatetime) {
+        this.valueDatetime = valueDatetime;
+    }
+
+    public String getValueCoded() {
+        return valueCoded;
+    }
+
+    public void setValueCoded(String valueCoded) {
+        this.valueCoded = valueCoded;
+    }
+
+    public String getValueNumeric() {
+        return valueNumeric;
+    }
+
+    public void setValueNumeric(String valueNumeric) {
+        this.valueNumeric = valueNumeric;
+    }
+
+    public String getValueText() {
+        return valueText;
+    }
+
+    public void setValueText(String valueText) {
+        this.valueText = valueText;
     }
 
     public String getResponseCode() {
