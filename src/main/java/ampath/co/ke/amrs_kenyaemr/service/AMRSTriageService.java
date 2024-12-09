@@ -26,6 +26,9 @@ public class AMRSTriageService {
   public List<AMRSTriage> findByPatientIdAndEncounterIdAndConceptId(String pid,String eid,String conceptid) {
     return amrsTriageRepository.findByPatientIdAndEncounterIdAndConceptId(pid,eid,conceptid);
   }
+  public List<AMRSTriage> findByVisitId(String eid) {
+    return amrsTriageRepository.findByVisitId(eid);
+  }
 
   public List<AMRSTriage> findByEncounterId(String eid) {
     return amrsTriageRepository.findByEncounterId(eid);
