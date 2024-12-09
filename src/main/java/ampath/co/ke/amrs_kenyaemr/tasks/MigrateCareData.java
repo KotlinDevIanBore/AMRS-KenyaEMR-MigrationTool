@@ -1565,7 +1565,7 @@ public class MigrateCareData {
                     "INNER JOIN amrs.location l on l.location_id= e.location_id\n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
                     "AND l.uuid IN(" + locations + ") \n" +
-                    " AND o.person_id in ( " + pid + " )\n" +
+                    " AND o.person_id in (" + pid + ") \n" + // ( " + pid + " )
                     "GROUP BY o.person_id, o.encounter_id,o.concept_id";
 
             System.out.println("locations " + locations + " parentUUID " + parentUUID);
@@ -1614,6 +1614,7 @@ public class MigrateCareData {
 
                 }
             }
+
 
               CareOpenMRSPayload.triage(amrsTriageService, amrsPatientServices, amrsEncounterService, amrsVisitService ,url, auth);
         }

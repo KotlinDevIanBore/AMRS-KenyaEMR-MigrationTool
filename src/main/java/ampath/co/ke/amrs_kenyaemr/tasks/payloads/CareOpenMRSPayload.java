@@ -93,37 +93,44 @@ public class CareOpenMRSPayload {
                 List<AMRSTriage> amrsTriageEncounters = amrsTriageService.findByVisitId(visitId);
                 //AMRSTriage at = amrsTriageEncounters.get(0);
                 JSONArray jsonObservations = new JSONArray();
-            String patientuuid ="";
+                String patientuuid = "";
+                List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(amrsTriageEncounters.get(0).getPatientId());
+                patientuuid = amrsPatients.get(0).getKenyaemrpatientUUID();
                 for (int x = 0; x < amrsTriageEncounters.size(); x++) {
 
                     JSONObject jsonObservation = new JSONObject();
                     String value = amrsTriageEncounters.get(x).getValue();
-                   // jsonObservation.put("person", amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
-                   // jsonObservation.put("concept", amrsTriageEncounters.get(x).getKenyaemConceptId());///String.valueOf(conceptsetId));
+                    // jsonObservation.put("person", amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
+                    // jsonObservation.put("concept", amrsTriageEncounters.get(x).getKenyaemConceptId());///String.valueOf(conceptsetId));
                   /*  if (isDecimal(value)) {
                         jsonObservation.put("value", Double.parseDouble(amrsTriageEncounters.get(x).getValue()));
 
                     } else {
                         jsonObservation.put("value", Double.parseDouble(amrsTriageEncounters.get(x).getValue()));
                     }*/
-                      jsonObservation.put("person",amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
-                      jsonObservation.put("concept",amrsTriageEncounters.get(x).getKenyaemConceptId());///String.valueOf(conceptsetId));
-                      jsonObservation.put("obsDatetime",amrsTriageEncounters.get(x).getObsDateTime());///String.valueOf(conceptsetId));
-                      jsonObservation.put("value", amrsTriageEncounters.get(x).getValue());
+                    jsonObservation.put("person", amrsTriageEncounters.get(x).getKenyaemrPatientUuid());///String.valueOf(conceptsetId));
+                    jsonObservation.put("concept", amrsTriageEncounters.get(x).getKenyaemConceptId());///String.valueOf(conceptsetId));
+                    jsonObservation.put("obsDatetime", amrsTriageEncounters.get(x).getObsDateTime());///String.valueOf(conceptsetId));
+                    jsonObservation.put("value", amrsTriageEncounters.get(x).getValue());
                     jsonObservations.put(jsonObservation);
-                    patientuuid = amrsTriageEncounters.get(x).getKenyaemrPatientUuid();
+                  //  patientuuid = amrsTriageEncounters.get(x).getKenyaemrPatientUuid();
                 }
 
                 System.out.println("Payload for is here " + jsonObservations.toString());
 
-               // List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
-               // if (amrsEncounters.size() > 0) {
-                    List<AMRSVisits> amrsVisits = amrsVisitService.findByVisitID(amrsTriageEncounters.get(0).getVisitId());
+                // List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+                // if (amrsEncounters.size() > 0) {
+
+                if (amrsTriageEncounters.get(0).getVisitId()==null) {
+
+                } else {
+                List<AMRSVisits> amrsVisits = amrsVisitService.findByVisitID(amrsTriageEncounters.get(0).getVisitId());
+
                     JSONObject jsonEncounter = new JSONObject();
                     jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
-                    jsonEncounter.put("patient", patientuuid );
+                    jsonEncounter.put("patient", patientuuid);
                     jsonEncounter.put("encounterDatetime", amrsTriageEncounters.get(0).getEncounterDateTime());
-                    jsonEncounter.put("encounterType", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                    jsonEncounter.put("encounterType", "d1059fb9-a079-4feb-a749-eedd709ae542");
                     jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                     jsonEncounter.put("visit", amrsVisits.get(0).getKenyaemrVisitUuid());
                     jsonEncounter.put("obs", jsonObservations);
@@ -135,7 +142,7 @@ public class CareOpenMRSPayload {
                     okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
                     //RequestBody body = RequestBody.create(mediaType, jsonEncounter.toString());
                     Request request = new Request.Builder()
-                           // .url(url + "encounter/" + amrsEncounters.get(0).getKenyaemrEncounterUuid())
+                            // .url(url + "encounter/" + amrsEncounters.get(0).getKenyaemrEncounterUuid())
                             .url(url + "encounter")
                             .method("POST", body)
                             .addHeader("Authorization", "Basic " + auth)
@@ -148,9 +155,9 @@ public class CareOpenMRSPayload {
 
                     String resBody = response.request().toString();
                     int rescode = response.code();
-                    System.out.println("Response Code Hapa " + rescode );
+                    System.out.println("Response Code Hapa " + rescode);
 
-                    if (rescode == 200) {
+                    if (rescode == 201) {
                         for (int x = 0; x < amrsTriageEncounters.size(); x++) {
                             AMRSTriage at = amrsTriageEncounters.get(x);
                             at.setResponseCode(String.valueOf(rescode));
@@ -162,6 +169,7 @@ public class CareOpenMRSPayload {
                     }
                 }
             }
+        }
 
 
 

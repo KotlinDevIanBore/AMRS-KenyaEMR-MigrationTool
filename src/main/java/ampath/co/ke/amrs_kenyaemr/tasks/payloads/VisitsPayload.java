@@ -34,7 +34,7 @@ public class VisitsPayload {
                             JSONObject jsonVisit = new JSONObject();
                             jsonVisit.put("patient", pid);//"60168b73-60f1-4044-9dc6-84fdcbc1962c");
                             jsonVisit.put("visitType", "3371a4d4-f66f-4454-a86d-92c7b3da990c");
-                            jsonVisit.put("location", "c55535b8-b9f2-4a97-8c6c-4ea9496256df");
+                            jsonVisit.put("location", "3e6261cc-ad5e-4834-b85d-af8b42a133e4");
                             jsonVisit.put("startDatetime", startDate); //+"T06:08:25.000+0000"
                             jsonVisit.put("stopDatetime", stopDate); //+"T06:09:25.000+0000"
 
