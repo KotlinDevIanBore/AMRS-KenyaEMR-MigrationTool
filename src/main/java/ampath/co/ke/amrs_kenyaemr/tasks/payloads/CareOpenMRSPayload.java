@@ -80,17 +80,17 @@ public class CareOpenMRSPayload {
             // Loop through the list
             for (AMRSTriage triage : amrsTriages) {
                 if (triage.getResponseCode() == null) {
-                    String encounterId = triage.getEncounterId();
+                    String visitId = triage.getVisitId();
                     // Add to the result list only if it hasn't been added already
-                    if (encounterIdSet.add(encounterId)) {
-                        distinctEncounterIds.add(encounterId);
+                    if (encounterIdSet.add(visitId)) {
+                        distinctEncounterIds.add(visitId);
                     }
                 }
             }
 
-            for (String encounterId : distinctEncounterIds) {
-                System.out.println("Encounter ID for Vitals " + encounterId);
-                List<AMRSTriage> amrsTriageEncounters = amrsTriageService.findByEncounterId(encounterId);
+            for (String visitId : distinctEncounterIds) {
+                System.out.println("VisitId ID for Vitals " + visitId);
+                List<AMRSTriage> amrsTriageEncounters = amrsTriageService.findByVisitId(visitId);
                 //AMRSTriage at = amrsTriageEncounters.get(0);
                 JSONArray jsonObservations = new JSONArray();
             String patientuuid ="";
@@ -116,19 +116,19 @@ public class CareOpenMRSPayload {
 
                 System.out.println("Payload for is here " + jsonObservations.toString());
 
-                List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
-                if (amrsEncounters.size() > 0) {
-                    List<AMRSVisits> amrsVisits = amrsVisitService.findByVisitID(amrsEncounters.get(0).getVisitId());
+               // List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+               // if (amrsEncounters.size() > 0) {
+                    List<AMRSVisits> amrsVisits = amrsVisitService.findByVisitID(amrsTriageEncounters.get(0).getVisitId());
                     JSONObject jsonEncounter = new JSONObject();
                     jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                     jsonEncounter.put("patient", patientuuid );
-                    jsonEncounter.put("encounterDatetime", amrsEncounters.get(0).getEncounterDateTime());
+                    jsonEncounter.put("encounterDatetime", amrsTriageEncounters.get(0).getEncounterDateTime());
                     jsonEncounter.put("encounterType", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                     jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                     jsonEncounter.put("visit", amrsVisits.get(0).getKenyaemrVisitUuid());
                     jsonEncounter.put("obs", jsonObservations);
                     System.out.println("Payload for is here " + jsonEncounter.toString());
-                    System.out.println("URL is here " + url + "encounter/" + amrsEncounters.get(0).getKenyaemrEncounterUuid());
+                    System.out.println("URL is here " + url + "encounter/" + amrsTriageEncounters.get(0).getKenyaemrEncounterUuid());
 
                     OkHttpClient client = new OkHttpClient();
                     MediaType mediaType = MediaType.parse("application/json");
@@ -155,7 +155,7 @@ public class CareOpenMRSPayload {
                             AMRSTriage at = amrsTriageEncounters.get(x);
                             at.setResponseCode(String.valueOf(rescode));
                             at.setResponseCode("201");
-                            at.setKenyaemrEncounterUuid(amrsEncounters.get(0).getKenyaemrEncounterUuid());
+                            at.setKenyaemrEncounterUuid(amrsTriageEncounters.get(0).getKenyaemrEncounterUuid());
                             System.out.println("Imefika Hapa na data " + rescode);
                             amrsTriageService.save(at);
                         }
@@ -248,7 +248,7 @@ public class CareOpenMRSPayload {
 
       */
         }
-    }
+
 
     public static boolean isDecimal(String value) {
         try {

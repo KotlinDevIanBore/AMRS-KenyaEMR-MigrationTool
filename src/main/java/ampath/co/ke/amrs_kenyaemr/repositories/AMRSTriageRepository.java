@@ -14,4 +14,5 @@ public interface AMRSTriageRepository extends JpaRepository<AMRSTriage, Long> {
   List<AMRSTriage> findFirstByOrderByIdDesc();
   List<AMRSTriage> findByResponseCodeIsNull();
   List<AMRSTriage> findByEncounterId(String encid);
+  List<AMRSTriage> findByVisitId(String encid);
 }

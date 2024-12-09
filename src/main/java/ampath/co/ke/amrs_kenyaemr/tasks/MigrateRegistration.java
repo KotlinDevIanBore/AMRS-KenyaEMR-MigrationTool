@@ -40,8 +40,9 @@ public class MigrateRegistration {
                     "                p.gender,\n" +
                     "                p.birthdate,\n" +
                     "                pa.address1,\n" +
-                    "                pa.county_district,\n" +
-                    "                pa.address4,\n" +
+                    "     case when pa.county_district  is not null or pa.county_district  then pa.county_district else \"Missing\" end county_district,\n" +
+                    "                                     case when pa.state_province  is not null then pa.state_province else \"Missing\" end state_province,\n" +
+                    "                                     case when pa.address4  is not null then pa.address4 else \"Missing\" end address4,\n" +
                     "                pa.address5,\n" +
                     "                pa.address6,\n" +
                     "                p.dead,\n" +
@@ -66,8 +67,10 @@ public class MigrateRegistration {
                     "                p.gender,\n" +
                     "                p.birthdate,\n" +
                     "                pa.address1,\n" +
-                    "                pa.county_district,\n" +
-                    "                pa.address4,\n" +
+                    "     case when pa.county_district  is not null or pa.county_district  then pa.county_district else \"Missing\" end county_district,\n" +
+                    "                                     case when pa.state_province  is not null then pa.state_province else \"Missing\" end state_province,\n" +
+                    "                                     case when pa.address4  is not null then pa.address4 else \"Missing\" end address4,\n" +
+
                     "                pa.address5,\n" +
                     "                pa.address6,\n" +
                     "                p.dead,\n" +
@@ -96,22 +99,22 @@ public class MigrateRegistration {
             List<AMRSUsers> afyastatErrors = amrsUserServices.getUserByLocation(rs.getString(1), parentUUID);
             if (afyastatErrors.size() == 0) {
                 AMRSUsers ae = new AMRSUsers();
-                ae.setUuid(rs.getString(1));
-                ae.setUser_id(rs.getString(2));
-                ae.setSystem_id(rs.getString(3));
-                ae.setUsername(rs.getString(4));
-                ae.setGiven_name(rs.getString(5));
-                ae.setFamily_name(rs.getString(6));
-                ae.setMiddle_name(rs.getString(7));
-                ae.setGender(rs.getString(8));
-                ae.setBirthdate(rs.getString(9));
-                ae.setAddress1(rs.getString(10));
-                ae.setCounty_district(rs.getString(11));
-                ae.setAddress4(rs.getString(12));
-                ae.setAddress5(rs.getString(13));
-                ae.setAddress6(rs.getString(14));
-                ae.setDead(rs.getString(15));
-                ae.setBirthdate_estimate(rs.getString(16));
+                ae.setUuid(rs.getString("uuid"));
+                ae.setUser_id(rs.getString("user_id"));
+                ae.setSystem_id(rs.getString("system_id"));
+                ae.setUsername(rs.getString("username"));
+                ae.setGiven_name(rs.getString("given_name"));
+                ae.setFamily_name(rs.getString("family_name"));
+                ae.setMiddle_name(rs.getString("middle_name"));
+                ae.setGender(rs.getString("gender"));
+                ae.setBirthdate(rs.getString("birthdate"));
+                ae.setAddress1(rs.getString("address1"));
+                ae.setCounty_district(rs.getString("county_district"));
+                ae.setAddress4(rs.getString("address4"));
+                ae.setAddress5(rs.getString("address5"));
+                ae.setAddress6(rs.getString("address6"));
+                ae.setDead(rs.getString("dead"));
+                ae.setBirthdate_estimate(rs.getString("birthdate_estimated"));
                 ae.setAmrsLocation(parentUUID);
                 amrsUserServices.save(ae);
 

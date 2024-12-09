@@ -59,5 +59,19 @@ public class AMRSTranslater {
         return kenyaEmrFormUuid;
     }
 
+    public String location(String armslocation) {
+        String kenyaemrlocation = "3e6261cc-ad5e-4834-b85d-af8b42a133e4";
+       /* List<AMRSMappings> amrsMappingsList = amrsMappingService.findByAmrsConceptID(amrsConceptId);
+
+        if(amrsMappingsList.size() > 0) {
+            if (amrsMappingsList.size() > 1)
+            {System.out.println("Translated more than once : " + amrsConceptId);}
+
+            kenyaEmrConceptUuid = amrsMappingsList.get(0).getKenyaemrConceptUuid();
+        }
+        */
+        return kenyaemrlocation;
+    }
+
 
 }

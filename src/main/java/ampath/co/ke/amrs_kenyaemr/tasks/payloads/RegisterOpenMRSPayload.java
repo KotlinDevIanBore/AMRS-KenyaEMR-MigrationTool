@@ -25,6 +25,8 @@ public class RegisterOpenMRSPayload {
         jsonAddresses.put("address2", amrsUsers.getAddress4());
         jsonAddresses.put("address3", amrsUsers.getAddress4());
         jsonAddresses.put("address4", amrsUsers.getAddress4());
+        jsonAddresses.put("countyDistrict", amrsUsers.getCounty_district());
+        jsonAddresses.put("stateProvince", amrsUsers.getCounty_district());
         jsonAddressesArray.put(jsonAddresses);
         //person
         JSONObject jsonPerson = new JSONObject();
@@ -170,7 +172,7 @@ public class RegisterOpenMRSPayload {
        // jsonAddresses.put("address3", amrsPatients.getAddress4());
         jsonAddresses.put("address6", amrsPatients.getAddress6()); //Location
         jsonAddresses.put("address5", amrsPatients.getAddress5()); //Sub Location
-        jsonAddresses.put("address4", amrsPatients.getAddress4()); //ward
+        jsonAddresses.put("address4", amrsPatients.getCounty()); //ward //amrsPatients.getAddress4()
         jsonAddresses.put("cityVillage", amrsPatients.getCityVillage()); //Village
         jsonAddresses.put("stateProvince", amrsPatients.getSubcounty()); //subcounty
         jsonAddresses.put("countyDistrict",amrsPatients.getCounty()); //county
@@ -240,6 +242,7 @@ public class RegisterOpenMRSPayload {
             amrsPatients.setResponseCode(String.valueOf(response.code()));
             amrsPatients.setKenyaemrpatientUUID(personUuid);
             amrsPatientServices.save(amrsPatients);
+
         }
             System.out.println("identifers ndo hii " + patientObject.toString());
     }
