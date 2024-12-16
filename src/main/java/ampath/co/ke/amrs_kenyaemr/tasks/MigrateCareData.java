@@ -1760,8 +1760,8 @@ public class MigrateCareData {
 
     public static void hivenrollment(String server, String username, String password, String locations, String parentUUID, AMRSHIVEnrollmentService amrsHIVEnrollmentService,AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-      //  String samplePatientList = AMRSSamples.getPersonIdList();
-        String samplePatientList = "7315,1171851,1174041,1188232,1072350";
+       String samplePatientList = AMRSSamples.getPersonIdList();
+      //  String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
 
         String sql = "";
         List<AMRSHIVEnrollment> amrshivEnrollmentLists = amrsHIVEnrollmentService.findFirstByOrderByIdDesc();
