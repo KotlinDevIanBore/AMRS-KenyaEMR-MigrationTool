@@ -35,6 +35,10 @@ public class AMRSHIVEnrollmentService {
     public List<AMRSHIVEnrollment> findByPatientId(String pid) {
         return amrsHIVEnrollmentRepository.findByPatientId(pid);
     }
+    public List<AMRSHIVEnrollment> findByVisitId(String pid) {
+        return amrsHIVEnrollmentRepository.findByVisitId(pid);
+    }
+
 
     public AMRSHIVEnrollment save(AMRSHIVEnrollment dataset) {
         return amrsHIVEnrollmentRepository.save(dataset);

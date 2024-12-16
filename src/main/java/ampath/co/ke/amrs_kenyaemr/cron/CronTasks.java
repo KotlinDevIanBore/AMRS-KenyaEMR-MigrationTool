@@ -151,7 +151,7 @@ public class CronTasks {
 
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessTriage() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
@@ -163,16 +163,16 @@ public class CronTasks {
     public void ProcessOrders() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService, amrsPatientServices, amrsEncounterMappingService, amrsConceptMappingService,amrsEncounterService, amrsMappingService, OpenMRSURL,auth);
+        MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService, amrsPatientServices, amrsVisitService,amrsTranslater, OpenMRSURL,auth);
 
     }
 
 
-    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void HIVEnrollments() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsPatientServices, amrsTranslater, OpenMRSURL,auth);
+        MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsTranslater, OpenMRSURL,auth);
     }
 
 
@@ -203,7 +203,7 @@ public class CronTasks {
     public void processGreenCard() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.processGreenCard(server,username,password,locationId,parentUuid, amrstcaService, amrsPatientServices, amrsEncounterMappingService, amrsMappingService,amrsEncounterService, OpenMRSURL,auth);
+        MigrateCareData.processGreenCard(server,username,password,locationId,parentUuid, amrstcaService, amrsPatientServices, amrsTranslater, OpenMRSURL,auth);
     }
 
     //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)

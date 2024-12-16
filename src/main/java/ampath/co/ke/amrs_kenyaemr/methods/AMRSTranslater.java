@@ -3,9 +3,11 @@ package ampath.co.ke.amrs_kenyaemr.methods;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSFormsMapper;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSMappings;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSVisits;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSFormsMappingService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSMappingService;
 import ampath.co.ke.amrs_kenyaemr.service.AMRSPatientServices;
+import ampath.co.ke.amrs_kenyaemr.service.AMRSVisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +20,8 @@ public class AMRSTranslater {
 
     @Autowired
     AMRSFormsMappingService amrsFormsMappingService;
-
+    @Autowired
+    AMRSVisitService visitService;
     @Autowired
     AMRSPatientServices amrsPatientServices;
 
@@ -71,6 +74,15 @@ public class AMRSTranslater {
         }
         */
         return kenyaemrlocation;
+    }
+    public String kenyaemrVisitUuid(String visitID) {
+        String kenyaEmrVisitUuid = "";
+        List<AMRSVisits> amrsVisits = visitService.findByVisitID(visitID);
+
+        if(amrsVisits.size() > 0) {
+            kenyaEmrVisitUuid = amrsVisits.get(0).getKenyaemrVisitUuid();
+        }
+        return kenyaEmrVisitUuid;
     }
 
 

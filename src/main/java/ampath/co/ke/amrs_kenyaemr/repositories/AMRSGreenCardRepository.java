@@ -9,12 +9,12 @@ import java.util.List;
 
 @Repository("AMRSGreenCardRepository")
 public interface AMRSGreenCardRepository extends JpaRepository<AMRSGreenCard, Long> {
-    List<AMRSGreenCard> findByUuid(String uuid);
 
     List<AMRSGreenCard> findByResponseCodeIsNull();
 
    List<AMRSGreenCard> findByEncounterId(String encounterId);
+    List<AMRSGreenCard> findByVisitId(String visitId);
 
-   @Query("SELECT amrs from AMRSGreenCard amrs  GROUP BY amrs.encounterId")
-   List<AMRSGreenCard> findDistinctEncounters();
+   //@Query("SELECT amrs from AMRSGreenCard amrs  GROUP BY amrs.encounterId")
+   // List<AMRSGreenCard> findDistinctEncounters();
 }

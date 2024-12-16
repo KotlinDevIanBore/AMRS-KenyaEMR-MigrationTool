@@ -15,7 +15,6 @@ public class AMRSOrders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer Id;
-
     private Integer orderId;
 
     private Integer orderTypeId;
@@ -25,6 +24,7 @@ public class AMRSOrders {
     private String orderer;
 
     private Integer encounterId;
+    private String visitId;
 
     private String instructions;
 
@@ -340,6 +340,14 @@ public class AMRSOrders {
 
     public void setDateOrdered(String dateOrdered) {
         this.dateOrdered = dateOrdered;
+    }
+
+    public String getVisitId() {
+        return visitId;
+    }
+
+    public void setVisitId(String visitId) {
+        this.visitId = visitId;
     }
 }
 

@@ -28,6 +28,7 @@ public class AMRSHIVEnrollment
     private String kenyaemrConceptUuid;
     private String kenyaemrValue;
     private String kenyaemrVisitUuid;
+    private String visitId;
 
     public String getProvider() {
         return provider;
@@ -196,5 +197,13 @@ public class AMRSHIVEnrollment
 
     public void setKenyaemrVisitUuid(String kenyaemrVisitUuid) {
         this.kenyaemrVisitUuid = kenyaemrVisitUuid;
+    }
+
+    public String getVisitId() {
+        return visitId;
+    }
+
+    public void setVisitId(String visitId) {
+        this.visitId = visitId;
     }
 }
