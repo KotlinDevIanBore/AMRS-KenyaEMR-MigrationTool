@@ -3710,6 +3710,92 @@ GreenCardPayload.processData(amrsGreenCardService, amrsPatientServices, url, aut
 
         }
     }
+    /////////////////
+    public static void artRefill(String server, String username, String password, String locations, String parentUUID, AMRSArtRefillService amrsArtRefillService, AMRSPatientServices amrsPatientServices, AMRSMappingService amrsMappingService, AMRSEncounterService amrsEncounterService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+
+        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+        String pidss = "";
+        for (int y = 0; y < amrsPatientsList.size(); y++) {
+            pidss += amrsPatientsList.get(y).getPersonId() + ",";
+        }
+        String pid = pidss.substring(0, pidss.length() - 1);
+
+        System.out.println("Patient Id " + pid);
+
+
+        System.out.println("Patient Id " + pid);
+
+
+        String sql = "SELECT o.person_id as patient_id,e.form_id,o.concept_id,o.encounter_id\n" +
+                "                FROM amrs.obs o\n" +
+                "                INNER JOIN amrs.concept c ON o.concept_id=c.concept_id\n" +
+                "                AND o.person_id IN(59807)\n" +
+                "                -- AND c.concept_id in (65,70,82,110,231,527,673,819,820,810,683,703,979,980,981,982,983,1010)\n" +
+                "                INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
+                "                and e.encounter_type in(186,242)\n" +
+                "                ORDER BY patient_id ASC,encounter_id DESC";
+
+
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+
+            String patientId = rs.getString("patient_id");
+            String formId = rs.getString("form_id");
+            String conceptId = rs.getString("concept_id");
+            String encounterId = rs.getString("encounter_id");
+
+
+            AMRSArtRefill amrsArtRefill = new AMRSArtRefill();
+
+
+
+            amrsArtRefill.setPatientId(patientId);
+            amrsArtRefill.setFormId(formId);
+            amrsArtRefill.setConceptId(conceptId);
+            amrsArtRefill.setEncounterId(encounterId);
+
+            List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+            String kenyaemr_patient_uuid = "";
+            if (!amrsPatients.isEmpty()) {
+                kenyaemr_patient_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+                amrsArtRefill.setKenyaEmrPatientUuid(kenyaemr_patient_uuid);
+            } else {
+                kenyaemr_patient_uuid = "Not Found"; // add logic for missing patientkenyaemr_patient_uuid
+            }
+
+
+            String kenyaEmrEncounterUuid = "";
+            List<AMRSEncounters> amrsEncounters = amrsEncounterService.findByEncounterId(encounterId);
+            if (!amrsEncounters.isEmpty()) {
+                kenyaEmrEncounterUuid = amrsEncounters.get(0).getKenyaemrEncounterUuid();
+                amrsArtRefill.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+            }
+
+            String kenyaEmrConceptUuid="";
+            amrsArtRefill.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+            List<AMRSMappings> amrsMapper = amrsMappingService.findByAmrsConceptID(conceptId);
+            if (!amrsMapper.isEmpty()) {
+                kenyaEmrConceptUuid = amrsMapper.get(0).getKenyaemrConceptUuid();
+                amrsArtRefill.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+            }
+
+            amrsArtRefillService.save(amrsArtRefill);
+
+            // Call method to create and insert the payload
+
+        }
+        CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsPatientServices, url, auth);
+    }
 
 
 

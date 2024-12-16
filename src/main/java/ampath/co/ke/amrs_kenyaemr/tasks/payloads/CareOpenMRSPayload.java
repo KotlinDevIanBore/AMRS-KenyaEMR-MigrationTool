@@ -523,6 +523,80 @@ public class CareOpenMRSPayload {
             JSONException, IOException{
     }
 
+    public static void artRefill(AMRSArtRefillService amrsArtRefillService, AMRSPatientServices amrsPatientServices, String auth, String url) throws JSONException, IOException {
+        List<AMRSArtRefill> artRefills = amrsArtRefillService.findByResponseCodeIsNull();
+
+        if (!artRefills.isEmpty()) {
+            // Use a Set to store unique patient IDs
+            Set<String> patientIdSet = new HashSet<>();
+            List<String> distinctPatientIds = new ArrayList<>();
+
+            // Collect unique patient IDs
+            for (AMRSArtRefill artRefill : artRefills) {
+                if (artRefill.getResponseCode() == null && patientIdSet.add(artRefill.getPatientId())) {
+                    distinctPatientIds.add(artRefill.getPatientId());
+                }
+            }
+
+            System.out.println("list of distinct clients " + distinctPatientIds.toString());
+
+            for (String patientId : distinctPatientIds) {
+                System.out.println("Processing Patient ID: " + patientId);
+
+                // Fetch patient status and enrollment details
+                List<AMRSPatients> patientStatusList = amrsPatientServices.getByPatientID(patientId);
+                if (patientStatusList.isEmpty()) {
+                    System.err.println("No patient status found for Patient ID: " + patientId);
+                    continue; // Skip if no patient status is found
+                }
+                String kenyaemrPatientUuid = patientStatusList.get(0).getKenyaemrpatientUUID();
+                List<AMRSArtRefill> amrsArtRefillList = amrsArtRefillService.findByPatientId(patientId);
+
+                // Prepare JSON observations
+                JSONArray jsonObservations = new JSONArray();
+                JSONObject jsonObservationD = new JSONObject();
+                jsonObservationD.put("person", kenyaemrPatientUuid);
+                jsonObservationD.put("formId", "83fb6ab2-faec-4d87-a714-93e77a28a201");
+                jsonObservationD.put("conceptUuid", amrsArtRefillList.get(0).getKenyaEmrConceptUuid());
+                jsonObservationD.put("encounterUuid", amrsArtRefillList.get(0).getKenyaEmrEncounterUuid());
+                jsonObservations.put(jsonObservationD);
+
+                // Send API request
+                OkHttpClient client = new OkHttpClient();
+                MediaType mediaType = MediaType.parse("application/json");
+                okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonObservationD.toString());
+
+                Request request = new Request.Builder()
+                        .url(url + "artfasttrack")
+                        .method("POST", body)
+                        .addHeader("Authorization", "Basic " + auth)
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+
+                System.out.println("Payload is Here "+ jsonObservationD );
+
+                try (Response response = client.newCall(request).execute()) {
+                    String responseBody = response.body().string();
+                    int responseCode = response.code();
+
+                    System.out.println("Response: " + responseBody + " | Status Code: " + responseCode);
+
+                    // Update response code for successful submissions
+                    if (responseCode == 201) {
+                        for (AMRSArtRefill artRefill : artRefills) {
+                            artRefill.setResponseCode("201");
+                            amrsArtRefillService.save(artRefill);
+                        }
+                    } else {
+                        System.err.println("Failed to process Patient ID: " + patientId + " | Status Code: " + responseCode);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
+                }
+            }
+
+    }
+}
            /* for(int x =0;x<amrsPatientStatusList.size();x++) {
 
 
@@ -561,3 +635,4 @@ public class CareOpenMRSPayload {
                 }
             }  */
 }
+
