@@ -452,27 +452,20 @@ public class CareOpenMRSPayload {
                 String obsDateTime = "";
                 // Prepare JSON observations
 
-                //Entry Point
                 JSONArray jsonObservations = new JSONArray();
-                /*JSONObject jsonObservationD = new JSONObject();
-                jsonObservationD.put("person", kenyaemrPatientUuid);
-                jsonObservationD.put("concept", "160555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                jsonObservationD.put("value", amrshivEnrollmentList.get(0).getEncounterDateTime());
-                jsonObservationD.put("obsDatetime", amrshivEnrollmentList.get(0).getObsDateTime());
-                jsonObservations.put(jsonObservationD); */
-
-                //Entry Point
-                JSONObject jsonObservationEntry = new JSONObject();
-                jsonObservationEntry.put("person", kenyaemrPatientUuid);
-                jsonObservationEntry.put("concept", "423c034e-14ac-4243-ae75-80d1daddce55");
-                jsonObservationEntry.put("value", "164144AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                jsonObservationEntry.put("obsDatetime", amrshivEnrollmentList.get(0).getObsDateTime());
-                jsonObservations.put(jsonObservationEntry);
+                //Patient Type
+                JSONObject jsonObservationPType = new JSONObject();
+                jsonObservationPType.put("person", kenyaemrPatientUuid);
+                jsonObservationPType.put("concept", "423c034e-14ac-4243-ae75-80d1daddce55");
+                jsonObservationPType.put("value", "164144AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                jsonObservationPType.put("obsDatetime", amrshivEnrollmentList.get(0).getObsDateTime());
+                jsonObservations.put(jsonObservationPType);
 
                  obsDateTime = amrshivEnrollmentList.get(0).getObsDateTime();
 
-
+                int checkEntry=0;
                 for (AMRSHIVEnrollment enrollment : amrshivEnrollmentList) {
+
                     if(!Objects.equals(enrollment.getConceptId(), "2155")) {
                         JSONObject jsonObservation = new JSONObject();
                         jsonObservation.put("person", kenyaemrPatientUuid);
@@ -483,7 +476,19 @@ public class CareOpenMRSPayload {
                         if (!Objects.equals(enrollment.getKenyaemrConceptUuid(), "") && !Objects.equals(enrollment.getKenyaemrValue(), "")) {
                             jsonObservations.put(jsonObservation);
                         }
+                        if(enrollment.getConceptId()=="6749"){
+                            checkEntry=1;
+                        }
                     }
+                }
+                if(checkEntry==0){
+                    //Entry Point
+                    JSONObject jsonObservationEntry = new JSONObject();
+                    jsonObservationEntry.put("person", kenyaemrPatientUuid);
+                    jsonObservationEntry.put("concept", "160540AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                    jsonObservationEntry.put("value", "162050AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                    jsonObservationEntry.put("obsDatetime", amrshivEnrollmentList.get(0).getObsDateTime());
+                    jsonObservations.put(jsonObservationEntry);
                 }
 
                 // Prepare JSON encounter
