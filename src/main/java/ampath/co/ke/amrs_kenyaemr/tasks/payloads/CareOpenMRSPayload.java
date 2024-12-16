@@ -607,7 +607,7 @@ public class CareOpenMRSPayload {
                 }
             }
 
-            System.out.println("list of distinct clients " + distinctPatientIds.toString());
+            System.out.println("list of distinct clients " + distinctPatientIds);
 
             for (String patientId : distinctPatientIds) {
                 System.out.println("Processing Patient ID: " + patientId);
@@ -625,18 +625,23 @@ public class CareOpenMRSPayload {
                 JSONArray jsonObservations = new JSONArray();
                 JSONObject jsonObservationD = new JSONObject();
                 jsonObservationD.put("person", kenyaemrPatientUuid);
-                jsonObservationD.put("formId", "83fb6ab2-faec-4d87-a714-93e77a28a201");
                 jsonObservationD.put("conceptUuid", amrsArtRefillList.get(0).getKenyaEmrConceptUuid());
                 jsonObservationD.put("encounterUuid", amrsArtRefillList.get(0).getKenyaEmrEncounterUuid());
                 jsonObservations.put(jsonObservationD);
 
+                JSONObject jsonEncounter = new JSONObject();
+                jsonEncounter.put("form", "83fb6ab2-faec-4d87-a714-93e77a28a201");
+                jsonEncounter.put("patient", kenyaemrPatientUuid);
+                jsonEncounter.put("obs", jsonObservations);
+
+
                 // Send API request
                 OkHttpClient client = new OkHttpClient();
                 MediaType mediaType = MediaType.parse("application/json");
-                okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonObservationD.toString());
+                okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
 
                 Request request = new Request.Builder()
-                        .url(url + "artfasttrack")
+                        .url(url + "artrefill")
                         .method("POST", body)
                         .addHeader("Authorization", "Basic " + auth)
                         .addHeader("Content-Type", "application/json")

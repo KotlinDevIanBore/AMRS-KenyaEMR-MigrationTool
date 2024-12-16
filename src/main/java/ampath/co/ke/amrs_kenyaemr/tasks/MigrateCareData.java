@@ -3534,7 +3534,7 @@ public class MigrateCareData {
             // Call method to create and insert the payload
 
         }
-        CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsPatientServices, url, auth);
+        //CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsPatientServices, url, auth);
     }
 
 
