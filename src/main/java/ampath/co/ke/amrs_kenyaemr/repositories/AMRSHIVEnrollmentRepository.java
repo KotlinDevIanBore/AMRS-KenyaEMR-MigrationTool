@@ -16,4 +16,5 @@ public interface AMRSHIVEnrollmentRepository extends JpaRepository<AMRSHIVEnroll
     List<AMRSHIVEnrollment> findFirstByOrderByIdDesc();
     List<AMRSHIVEnrollment> findByResponseCodeIsNull();
     List<AMRSHIVEnrollment> findByPatientId(String pid);
+    List<AMRSHIVEnrollment> findByVisitId(String pid);
 }
