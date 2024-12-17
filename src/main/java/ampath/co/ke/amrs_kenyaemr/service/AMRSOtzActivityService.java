@@ -11,7 +11,7 @@ import java.util.List;
 @Service("amrsotzactivityservice")
 public class AMRSOtzActivityService {
 
-    private AMRSOtzActivityRepository amrsOtzActivityRepository;
+    private final AMRSOtzActivityRepository amrsOtzActivityRepository;
     @Autowired
     public AMRSOtzActivityService(AMRSOtzActivityRepository amrsOtzActivityRepository){
         this.amrsOtzActivityRepository = amrsOtzActivityRepository;
@@ -34,7 +34,7 @@ public class AMRSOtzActivityService {
         return amrsOtzActivityRepository.findByVisitId(visitId);
     }
 
-    public AMRSOtzActivity save (AMRSOtzActivity amrsGreenCard){
-        return amrsOtzActivityRepository.save(amrsGreenCard);
+    public AMRSOtzActivity save (AMRSOtzActivity amrsOtzActivity){
+        return amrsOtzActivityRepository.save(amrsOtzActivity);
     }
 }

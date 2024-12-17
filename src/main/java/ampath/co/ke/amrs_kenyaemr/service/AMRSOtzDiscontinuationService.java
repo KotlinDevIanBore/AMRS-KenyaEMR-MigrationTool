@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service("amrsotzadiscontinuationservice")
 public class AMRSOtzDiscontinuationService {
-    private AMRSOtzDiscontinuationRepository amrsOtzDiscontinuationRepository;
+    private final AMRSOtzDiscontinuationRepository amrsOtzDiscontinuationRepository;
     @Autowired
     public AMRSOtzDiscontinuationService(AMRSOtzDiscontinuationRepository amrsOtzDiscontinuationRepository){
         this.amrsOtzDiscontinuationRepository = amrsOtzDiscontinuationRepository;
@@ -33,7 +33,7 @@ public class AMRSOtzDiscontinuationService {
         return amrsOtzDiscontinuationRepository.findByVisitId(visitId);
     }
 
-    public AMRSOtzDiscontinuation save (AMRSOtzDiscontinuation amrsGreenCard){
-        return amrsOtzDiscontinuationRepository.save(amrsGreenCard);
+    public AMRSOtzDiscontinuation save (AMRSOtzDiscontinuation amrsOtzDiscontinuation){
+        return amrsOtzDiscontinuationRepository.save(amrsOtzDiscontinuation);
     }
 }
