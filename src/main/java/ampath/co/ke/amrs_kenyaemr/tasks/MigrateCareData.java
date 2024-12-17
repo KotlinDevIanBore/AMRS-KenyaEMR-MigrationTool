@@ -3537,6 +3537,86 @@ public class MigrateCareData {
         //CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsPatientServices, url, auth);
     }
 
+    public static void processOtzActivity(String server, String username, String password, String locations, String parentUUID, AMRSOtzActivityService amrsOtzActivityService , AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+        String samplePatientList = AMRSSamples.getPersonIdList();
+
+
+
+        String sql = "SELECT o.person_id as patient_id,e.form_id,e.visit_id,o.concept_id,o.encounter_id,o.obs_datetime,e.encounter_datetime,  \n" +
+                "                  cn.name question,c.datatype_id,  \n" +
+                "                 case when o.value_datetime is not null then o.value_datetime \n" +
+                "                 when o.value_coded is not null then o.value_coded  \n" +
+                "                 when o.value_numeric is not null then o.value_numeric  \n" +
+                "                 when o.value_text is not null then o.value_text end   \n" +
+                "                 as value    \n" +
+                "                                   FROM amrs.obs o    \n" +
+                "                                   INNER JOIN amrs.concept c ON o.concept_id=c.concept_id    \n" +
+                "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+                "                                  and cn.locale_preferred=1  \n" +
+                "                               -- LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id and cn_answer.locale_preferred=1\\n  +\n" +
+                "                       AND o.person_id IN(3858, 3907)    \n" +
+                "                                   AND c.concept_id in (11032,11037, 11033, 12300, 11034, 12272, 11035, 9302, 10984, 9467) \n" +
+                "                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0    \n" +
+                "                                   and e.encounter_type in(284) \n" +
+                "                                    and e.encounter_id in (14285867, 14287456)  \n" +
+                "                                   ORDER BY patient_id ASC,\n" +
+                "                                   encounter_id DESC";
+
+        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        Connection con = DriverManager.getConnection(server, username, password);
+        int x = 0;
+        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.last();
+        x = rs.getRow();
+        rs.beforeFirst();
+        while (rs.next()) {
+
+            String patientId = rs.getString("patient_id");
+            String formId = rs.getString("form_id");
+            String conceptId = rs.getString("concept_id");
+            String encounterId = rs.getString("encounter_id");
+            String encounterDatetime = rs.getString("encounter_datetime");
+            String value = rs.getString("value");
+            String question = rs.getString("question");
+            String dataType = rs.getString("datatype_id");
+            String visitId = rs.getString("visit_id");
+            String obsDateTime = rs.getString("obs_datetime");
+
+            String kenyaemr_uuid = "";
+            AMRSOtzActivity amrsOtzActivity = new AMRSOtzActivity();
+            String kenyaemr_encounter_id;
+            String kenyaemr_value="";
+            if(dataType.equals("2")){
+                kenyaemr_value = amrsTranslater.translater(value);
+            }
+            else{
+                kenyaemr_value = value;
+            }
+            amrsOtzActivity.setPatientId(patientId);
+            amrsOtzActivity.setFormId(formId);
+            amrsOtzActivity.setConceptId(conceptId);
+            amrsOtzActivity.setEncounterId(encounterId);
+            amrsOtzActivity.setValue(value);
+            amrsOtzActivity.setConceptDataTypeId(dataType);
+            amrsOtzActivity.setVisitId(visitId);
+            amrsOtzActivity.setQuestion(question);
+            amrsOtzActivity.setObsDateTime(obsDateTime);
+            amrsOtzActivity.setKenyaemrEncounterTypeUuid("162386c8-0464-11ea-9a9f-362b9e155667");
+            amrsOtzActivity.setKenyaemrFormUuid("3ae95d48-0464-11ea-8d71-362b9e155667");
+            amrsOtzActivity.setKenyaEmrValue(kenyaemr_value);
+            amrsOtzActivity.setKenyaEmrEncounterDateTime(encounterDatetime);
+            String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+            String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+            amrsOtzActivity.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+            amrsOtzActivity.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+            amrsOtzActivityService.save(amrsOtzActivity);
+        }
+        OTZActivityPayload.processOTZActivity(amrsOtzActivityService, amrsPatientServices, amrsTranslater, url, auth);
+    }
+
 
 
 }
