@@ -3,9 +3,9 @@ package ampath.co.ke.amrs_kenyaemr.models;
 import jakarta.persistence.*;
 
 
-@Table(name = "art_refill")
+@Table(name = "defaulter_tracing")
 @Entity
-public class AMRSArtRefill {
+public class AMRSDefaulterTracing {
 
     @jakarta.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +17,7 @@ public class AMRSArtRefill {
     private String question;
     private String conceptId;
     private String value;
-    private String kenyaEmrValue;
+    private String kenyaEmrValueUuid;
     private String kenyaEmrConceptUuid;
     private String kenyaEmrEncounterUuid;
     private String kenyaEmrPatientUuid;
@@ -32,7 +32,6 @@ public class AMRSArtRefill {
         Id = id;
     }
 
-
     public String getPatientId() {
         return patientId;
     }
@@ -45,10 +44,9 @@ public class AMRSArtRefill {
         return encounterId;
     }
 
-    public void setEncounterId(String encounterID) {
-        this.encounterId = encounterID;
+    public void setEncounterId(String encounterId) {
+        this.encounterId = encounterId;
     }
-
 
     public String getFormId() {
         return formId;
@@ -82,12 +80,12 @@ public class AMRSArtRefill {
         this.value = value;
     }
 
-    public String getKenyaEmrValue() {
-        return kenyaEmrValue;
+    public String getKenyaEmrValueUuid() {
+        return kenyaEmrValueUuid;
     }
 
-    public void setKenyaEmrValue(String kenyaEmrValue) {
-        this.kenyaEmrValue = kenyaEmrValue;
+    public void setKenyaEmrValueUuid(String kenyaEmrValueUuid) {
+        this.kenyaEmrValueUuid = kenyaEmrValueUuid;
     }
 
     public String getKenyaEmrEncounterUuid() {
