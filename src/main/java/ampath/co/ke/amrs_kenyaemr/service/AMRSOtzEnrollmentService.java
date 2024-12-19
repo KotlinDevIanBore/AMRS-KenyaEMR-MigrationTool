@@ -36,4 +36,8 @@ public class AMRSOtzEnrollmentService {
     public AMRSOtzEnrollment save (AMRSOtzEnrollment amrsOtzEnrollment){
         return amrsOtzEnrollmentRepository.save(amrsOtzEnrollment);
     }
+
+    public List<AMRSOtzEnrollment> findByEncounterConceptAndPatient(String encounterId, String conceptId, String patientId) {
+        return amrsOtzEnrollmentRepository.findByEncounterIdAndConceptIdAndPatientId(encounterId, conceptId, patientId);
+    }
 }

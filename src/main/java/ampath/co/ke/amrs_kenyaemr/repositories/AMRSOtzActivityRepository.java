@@ -9,5 +9,8 @@ public interface AMRSOtzActivityRepository extends JpaRepository<AMRSOtzActivity
     List<AMRSOtzActivity> findByResponseCodeIsNull();
 
     List<AMRSOtzActivity> findByEncounterId(String encounterId);
+
     List<AMRSOtzActivity> findByVisitId(String visitId);
+
+    List<AMRSOtzActivity> findByEncounterIdAndConceptIdAndPatientId(String encounterId, String conceptId, String patientId);
 }

@@ -9,6 +9,9 @@ public interface AMRSOtzDiscontinuationRepository extends JpaRepository<AMRSOtzD
     List<AMRSOtzDiscontinuation> findByResponseCodeIsNull();
 
     List<AMRSOtzDiscontinuation> findByEncounterId(String encounterId);
+
     List<AMRSOtzDiscontinuation> findByVisitId(String visitId);
+
+    List<AMRSOtzDiscontinuation> findByEncounterIdAndConceptIdAndPatientId(String encounterId, String conceptId, String patientId);
 
 }

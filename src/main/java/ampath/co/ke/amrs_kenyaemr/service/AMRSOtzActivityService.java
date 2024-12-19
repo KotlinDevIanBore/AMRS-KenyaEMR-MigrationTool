@@ -12,29 +12,34 @@ import java.util.List;
 public class AMRSOtzActivityService {
 
     private final AMRSOtzActivityRepository amrsOtzActivityRepository;
+
     @Autowired
-    public AMRSOtzActivityService(AMRSOtzActivityRepository amrsOtzActivityRepository){
+    public AMRSOtzActivityService(AMRSOtzActivityRepository amrsOtzActivityRepository) {
         this.amrsOtzActivityRepository = amrsOtzActivityRepository;
     }
 
-    public List<AMRSOtzActivity> findall(){
+    public List<AMRSOtzActivity> findall() {
         return amrsOtzActivityRepository.findAll();
     }
 
 
-    public List<AMRSOtzActivity> findByResponseCodeIsNull(){
+    public List<AMRSOtzActivity> findByResponseCodeIsNull() {
         return amrsOtzActivityRepository.findByResponseCodeIsNull();
     }
 
-    public List<AMRSOtzActivity> findByEncounterId(String encounterId){
+    public List<AMRSOtzActivity> findByEncounterId(String encounterId) {
         return amrsOtzActivityRepository.findByEncounterId(encounterId);
     }
 
-    public List<AMRSOtzActivity> findByVisitId(String visitId){
+    public List<AMRSOtzActivity> findByVisitId(String visitId) {
         return amrsOtzActivityRepository.findByVisitId(visitId);
     }
 
-    public AMRSOtzActivity save (AMRSOtzActivity amrsOtzActivity){
+    public AMRSOtzActivity save(AMRSOtzActivity amrsOtzActivity) {
         return amrsOtzActivityRepository.save(amrsOtzActivity);
+    }
+
+    public List<AMRSOtzActivity> findByEncounterConceptAndPatient(String encounterId, String conceptId, String patientId) {
+        return amrsOtzActivityRepository.findByEncounterIdAndConceptIdAndPatientId(encounterId, conceptId, patientId);
     }
 }
