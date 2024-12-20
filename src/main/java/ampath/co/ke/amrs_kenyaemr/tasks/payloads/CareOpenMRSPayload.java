@@ -712,48 +712,52 @@ public static void defaulterTracing(AMRSDefaulterTracingService amrsDefaulterTra
 
     if (!amrsDefaulterTracings.isEmpty()) {
         // Use a Set to store unique patient IDs
-        Set<String> patientIdSet = new HashSet<>();
-        List<String> distinctPatientIds = new ArrayList<>();
+        Set<String> visitIdSet = new HashSet<>();
+        List<String> distinctVisitIds = new ArrayList<>();
 
         // Collect unique patient IDs
         for (AMRSDefaulterTracing defaulterTracing : amrsDefaulterTracings) {
-            if (defaulterTracing.getResponseCode() == null && patientIdSet.add(defaulterTracing.getPatientId())) {
-                distinctPatientIds.add(defaulterTracing.getPatientId());
+            if (defaulterTracing.getResponseCode() == null && visitIdSet.add(defaulterTracing.getVisitId())) {
+                distinctVisitIds.add(defaulterTracing.getVisitId());
             }
         }
-        System.out.println("list of distinct clients " + distinctPatientIds.toString());
+        System.out.println("list of distinct clients " + distinctVisitIds);
 
-        for (String patientId : distinctPatientIds) {
-            System.out.println("Processing Patient ID: " + patientId);
+        for (String visitId : distinctVisitIds) {
+            System.out.println("Processing Visit ID: " + visitId);
 
-            String kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
-
-            List<AMRSDefaulterTracing> amrsDefaulterTracingList = amrsDefaulterTracingService.findByPatientId(patientId);
+            List<AMRSDefaulterTracing> amrsDefaulterTracingList = amrsDefaulterTracingService.findByVisitId(visitId);
+            JSONArray jsonObservations = new JSONArray();
+            String kenyaemrPatientUuid = "";
+            String kenyaemrVisitUuid = "";
+            String obsDatetime = "";
 
             // Prepare JSON observations
-            JSONArray jsonObservations = new JSONArray();
-            JSONObject jsonObservationD = new JSONObject();
-            jsonObservationD.put("person", kenyaemrPatientUuid);
-            if(!Objects.equals(amrsDefaulterTracingList.get(0).getKenyaEmrConceptUuid(), "") || !amrsDefaulterTracingList.get(0).getKenyaEmrConceptUuid().isEmpty()) {
-            jsonObservationD.put("concept", amrsDefaulterTracingList.get(0).getKenyaEmrConceptUuid());
-            }
-            if(!Objects.equals(amrsDefaulterTracingList.get(0).getKenyaEmrValueUuid(), "") || !amrsDefaulterTracingList.get(0).getKenyaEmrValueUuid().isEmpty()) {
-            jsonObservationD.put("value", amrsDefaulterTracingList.get(0).getKenyaEmrValueUuid());
-            }
-
-            if(!Objects.equals(amrsDefaulterTracingList.get(0).getKenyaEmrConceptUuid(), "") && !Objects.equals(amrsDefaulterTracingList.get(0).getKenyaEmrValueUuid(), "") ) {
-
-            jsonObservations.put(jsonObservationD);
+            for(int x=0; x<amrsDefaulterTracingList.size(); x++) {
+                JSONObject jsonObservationD = new JSONObject();
+                kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(amrsDefaulterTracingList.get(x).getPatientId());
+                kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+                obsDatetime = amrsDefaulterTracingList.get(x).getObsDatetime();
+                jsonObservationD.put("person", kenyaemrPatientUuid);
+                jsonObservationD.put("concept", amrsDefaulterTracingList.get(x).getKenyaEmrConceptUuid());
+                jsonObservationD.put("value", amrsDefaulterTracingList.get(x).getKenyaEmrValueUuid());
+                jsonObservationD.put("obsDatetime", amrsDefaulterTracingList.get(x).getObsDatetime());
+                if(!Objects.equals(amrsDefaulterTracingList.get(x).getKenyaEmrConceptUuid(), "") && !Objects.equals(amrsDefaulterTracingList.get(x).getKenyaEmrValueUuid(), "") ) {
+                    jsonObservations.put(jsonObservationD);
+                }
             }
 
             JSONObject jsonEncounter = new JSONObject();
-            jsonEncounter.put("form", "a1a62d1e-2def-11e9-b210-d663bd873d93");
-            jsonEncounter.put("patient", kenyaemrPatientUuid);
-//            jsonEncounter.put("encounter", "1495edf8-2df2-11e9-b210-d663bd873d93");
-            jsonEncounter.put("obs", jsonObservations);
-            jsonEncounter.put("encounterType", "e87aa2ad-6886-422e-9dfd-064e3bfe3aad");
-            jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
 
+//            if(!Objects.equals(kenyaemrVisitUuid, "")) {
+                jsonEncounter.put("form", "a1a62d1e-2def-11e9-b210-d663bd873d93");
+                jsonEncounter.put("patient", kenyaemrPatientUuid);
+                jsonEncounter.put("visit", kenyaemrVisitUuid);
+                jsonEncounter.put("encounterDatetime", obsDatetime);
+                jsonEncounter.put("obs", jsonObservations);
+                jsonEncounter.put("encounterType", "1495edf8-2df2-11e9-b210-d663bd873d93");
+                jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+//            }
 
             // Send API request
             OkHttpClient client = new OkHttpClient();
@@ -768,7 +772,7 @@ public static void defaulterTracing(AMRSDefaulterTracingService amrsDefaulterTra
                     .addHeader("Content-Type", "application/json")
                     .build();
 
-            System.out.println("Payload is Here " + jsonObservationD);
+            System.out.println("Payload is Here " + jsonEncounter);
 
             try (Response response = client.newCall(request).execute()) {
                 String responseBody = response.body().string();
@@ -778,64 +782,63 @@ public static void defaulterTracing(AMRSDefaulterTracingService amrsDefaulterTra
 
                 // Update response code for successful submissions
                 if (responseCode == 201) {
-                    for (AMRSDefaulterTracing amrsDefaulterTracing : amrsDefaulterTracings) {
+                    for (AMRSDefaulterTracing amrsDefaulterTracing : amrsDefaulterTracingList) {
                         amrsDefaulterTracing.setResponseCode("201");
                         amrsDefaulterTracingService.save(amrsDefaulterTracing);
                     }
                 } else {
-                    System.err.println("Failed to process Patient ID: " + patientId + " | Status Code: " + responseCode);
+                    System.err.println("Failed to process visit ID: " + visitId + " | Status Code: " + responseCode);
                 }
             } catch (Exception e) {
-                System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
+                System.err.println("Error processing visit ID: " + visitId + " | " + e.getMessage());
             }
         }
 
     }
 }
 
-public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPatientServices, String url, String auth) throws JSONException, IOException, SQLException {
+public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException, SQLException {
     List<AMRSOvc> amrsOvcs = amrsOvcService.findByResponseCodeIsNull();
 
     if (!amrsOvcs.isEmpty()) {
         // Use a Set to store unique patient IDs
-        Set<String> patientIdSet = new HashSet<>();
-        List<String> distinctPatientIds = new ArrayList<>();
+        Set<String> visitIdSet = new HashSet<>();
+        List<String> distinctVisitIds = new ArrayList<>();
 
         // Collect unique patient IDs
         for (AMRSOvc amrsOvc : amrsOvcs) {
-            if (amrsOvc.getResponseCode() == null && patientIdSet.add(amrsOvc.getPatientId())) {
-                distinctPatientIds.add(amrsOvc.getPatientId());
+            if (amrsOvc.getResponseCode() == null && visitIdSet.add(amrsOvc.getPatientId())) {
+                distinctVisitIds.add(amrsOvc.getPatientId());
             }
         }
 
-        System.out.println("list of distinct clients " + distinctPatientIds);
+        System.out.println("list of distinct clients " + distinctVisitIds);
 
-        for (String patientId : distinctPatientIds) {
-            System.out.println("Processing Patient ID: " + patientId);
+        for (String visitId : distinctVisitIds) {
+            System.out.println("Processing visit ID: " + visitId);
 
-            // Fetch patient status and enrollment details
-            List<AMRSPatients> patientStatusList = amrsPatientServices.getByPatientID(patientId);
-            if (patientStatusList.isEmpty()) {
-                System.err.println("No patient status found for Patient ID: " + patientId);
-                continue; // Skip if no patient status is found
-            }
-            String kenyaemrPatientUuid = patientStatusList.get(0).getKenyaemrpatientUUID();
-            List<AMRSOvc> amrsOvcList = amrsOvcService.findByPatientId(patientId);
+            List<AMRSOvc> amrsOvcList = amrsOvcService.findByVisitId(visitId);
+            JSONArray jsonObservations = new JSONArray();
+            String kenyaemrPatientUuid = "";
+            String kenyaemrVisitUuid = "";
+            String obsDatetime = "";
 
             // Prepare JSON observations
-            JSONArray jsonObservations = new JSONArray();
-            JSONObject jsonObservationD = new JSONObject();
-            jsonObservationD.put("person", kenyaemrPatientUuid);
-            if(!amrsOvcList.get(0).getKenyaEmrConceptUuid().isEmpty() || !Objects.equals(amrsOvcList.get(0).getKenyaEmrConceptUuid(), "") || amrsOvcList.get(0).getKenyaEmrConceptUuid() != null) {
+            for(int x=0; x<amrsOvcList.size(); x++) {
+                JSONObject jsonObservationD = new JSONObject();
+                kenyaemrPatientUuid = amrsTranslater.translater(amrsOvcList.get(x).getPatientId());
+                kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+                obsDatetime = amrsOvcList.get(x).getObsDateTime();
+                jsonObservationD.put("person", kenyaemrPatientUuid);
                 jsonObservationD.put("concept", amrsOvcList.get(0).getKenyaEmrConceptUuid());
-            }
-            if(!amrsOvcList.get(0).getKenyaEmrValue().isEmpty() || !Objects.equals(amrsOvcList.get(0).getKenyaEmrValue(), "") || amrsOvcList.get(0).getKenyaEmrValue() != null) {
                 jsonObservationD.put("value", amrsOvcList.get(0).getKenyaEmrValue());
+                jsonObservationD.put("obsDatetime", amrsOvcList.get(0).getObsDateTime());
+                if(!Objects.equals(amrsOvcList.get(0).getKenyaEmrValue(), "") && !Objects.equals(amrsOvcList.get(0).getKenyaEmrConceptUuid(), "") ) {
+                    jsonObservations.put(jsonObservationD);
+                }
             }
-            jsonObservationD.put("obsDatetime", amrsOvcList.get(0).getObsDateTime());
-            if(!Objects.equals(amrsOvcList.get(0).getKenyaEmrValue(), "") && !Objects.equals(amrsOvcList.get(0).getKenyaEmrConceptUuid(), "") ) {
-                jsonObservations.put(jsonObservationD);
-            }
+
+
 
             JSONObject jsonEncounter = new JSONObject();
 
@@ -843,8 +846,8 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
                 jsonEncounter.put("form", "5cf013e8-09da-11ea-8d71-362b9e155667");
                 jsonEncounter.put("patient", kenyaemrPatientUuid);
                 jsonEncounter.put("obs", jsonObservations);
-                jsonEncounter.put("visit", amrsOvcList.get(0).getKenyaemrVisitUuid());
-                jsonEncounter.put("encounterDatetime", amrsOvcList.get(0).getKenyaEmrEncounterDateTime());
+                jsonEncounter.put("visit", kenyaemrVisitUuid);
+                jsonEncounter.put("encounterDatetime", obsDatetime);
                 jsonEncounter.put("encounterType", "5cf00d9e-09da-11ea-8d71-362b9e155667");
                 jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
             }
@@ -874,15 +877,15 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
 
                 // Update response code for successful submissions
                 if (responseCode == 201) {
-                    for (AMRSOvc amrsOvc : amrsOvcs) {
+                    for (AMRSOvc amrsOvc : amrsOvcList) {
                         amrsOvc.setResponseCode("201");
                         amrsOvcService.save(amrsOvc);
                     }
                 } else {
-                    System.err.println("Failed to process Patient ID: " + patientId + " | Status Code: " + responseCode);
+                    System.err.println("Failed to process visit ID: " + visitId + " | Status Code: " + responseCode);
                 }
             } catch (Exception e) {
-                System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
+                System.err.println("Error processing visit ID: " + visitId + " | " + e.getMessage());
             }
         }
 

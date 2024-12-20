@@ -13,4 +13,5 @@ public interface AMRSDefaulterTracingRepository extends JpaRepository<AMRSDefaul
     List<AMRSDefaulterTracing> findFirstByOrderByIdDesc();
     List<AMRSDefaulterTracing> findByResponseCodeIsNull();
     List<AMRSDefaulterTracing> findByPatientId(String pid);
+    List<AMRSDefaulterTracing> findByVisitId(String vid);
 }
