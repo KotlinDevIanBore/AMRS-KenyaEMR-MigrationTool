@@ -2084,17 +2084,19 @@ public class MigrateCareData {
 
     public static void DrugSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        String samplePatientList = AMRSSamples.getPersonIdList();
+        //String samplePatientList = AMRSSamples.getPersonIdList();
+          String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
+
 
         String sql = "";
         List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findFirstByOrderByIdDesc();
         String nextEncounterID = "";
         if (amrsRegimenSwitchList.isEmpty()) {
 
-            sql = "SELECT patient_id,MIN(regimen_data.enc_id) AS Encounter_ID, \n" +
+            sql = "SELECT patient_id,MIN(regimen_data.enc_id) AS Encounter_ID,MIN(regimen_data.visit_id) AS Visit_Id, \n" +
                     "concept_id,value_coded,Encounter_Date,GROUP_CONCAT(concept_name SEPARATOR \",\") as Regimen,Reason_for_Change FROM \n" +
                     "(\n" +
-                    "\tSELECT o.person_id as patient_id,o.encounter_id as enc_id,o.concept_id,o.value_coded,o.voided,e.encounter_datetime AS Encounter_Date, cn.name as concept_name  \n" +
+                    "\tSELECT o.person_id as patient_id,o.encounter_id as enc_id,e.visit_id,o.concept_id,o.value_coded,o.voided,e.encounter_datetime AS Encounter_Date, cn.name as concept_name  \n" +
                     "\t\tfrom amrs.obs o\n" +
                     "\t\tINNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and cn.locale='en' and cn.concept_name_type='FULLY_SPECIFIED' \n" +
                     "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
@@ -2117,10 +2119,10 @@ public class MigrateCareData {
         } else {
             System.out.println("List" + amrsRegimenSwitchList);
 //            nextEncounterID = amrsRegimenSwitchList.get(0).getEncounterID();
-            sql = "SELECT patient_id,MIN(regimen_data.enc_id) AS Encounter_ID, \n" +
+            sql = "SELECT patient_id,MIN(regimen_data.enc_id) AS Encounter_ID,MIN(regimen_data.visit_id) AS Visit_Id, \n" +
                     "concept_id,value_coded,Encounter_Date,GROUP_CONCAT(concept_name SEPARATOR \",\") as Regimen,Reason_for_Change FROM \n" +
                     "(\n" +
-                    "\tSELECT o.person_id as patient_id,o.encounter_id as enc_id,o.concept_id,o.value_coded,o.voided,e.encounter_datetime AS Encounter_Date, cn.name as concept_name  \n" +
+                    "\tSELECT o.person_id as patient_id,o.encounter_id as enc_id,e.visit_id,o.concept_id,o.value_coded,o.voided,e.encounter_datetime AS Encounter_Date, cn.name as concept_name  \n" +
                     "\t\tfrom amrs.obs o\n" +
                     "\t\tINNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and cn.locale='en' and cn.concept_name_type='FULLY_SPECIFIED' \n" +
                     "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
@@ -2154,6 +2156,7 @@ public class MigrateCareData {
         while (rs.next()) {
             String patientId = rs.getString("patient_id");
             String encounterId = rs.getString("Encounter_ID");
+            String visitId = rs.getString("visit_id");
             String conceptId = rs.getString("concept_id");
             String valueCoded = rs.getString("value_coded");
             String encounterDatetime = rs.getString("Encounter_Date");
@@ -2175,12 +2178,15 @@ public class MigrateCareData {
                 ar.setKenyaemrValue(kenyaemrValue);
                 ar.setKenyaemrConceptUuid(kenyaemrConceptUuid);
                 ar.setKenyaemrPatientUuid(kenyaemrPatientUuid);
+                ar.setVisitId(visitId);
                 System.out.println("Tumefika Hapa!!!" + parentUUID);
                 amrsRegimenSwitchService.save(ar);
             }
 
 
-            CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsPatientServices, parentUUID, locations, auth, url);
+
+            CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsTranslater, parentUUID, locations,auth,url);
+
 
 
             System.out.println("Patient_id" + patientId);
@@ -2827,7 +2833,7 @@ public class MigrateCareData {
 //                "ORDER BY patient_id ASC,encounter_id DESC";
 
 
-        String sql = "SELECT o.person_id as patient_id,e.form_id,e.visit_id,o.concept_id,o.encounter_id,o.obs_datetime,e.encounter_datetime,\n" +
+       /* String sql = "SELECT o.person_id as patient_id,e.form_id,e.visit_id,o.concept_id,o.encounter_id,o.obs_datetime,e.encounter_datetime,\n" +
                 " cn.name question,c.datatype_id,\n" +
                 "case when o.value_datetime is not null then o.value_datetime\n" +
                 "when o.value_coded is not null then o.value_coded\n" +
@@ -2856,7 +2862,32 @@ public class MigrateCareData {
                 "                  and e.encounter_type in(2,4,106,176) and e.encounter_id in (14763811)\n" +
                 "                  ORDER BY patient_id ASC,encounter_id DESC";
 
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        System.out.println("locations " + locations + " parentUUID " + parentUUID); */
+        String sql ="SELECT o.person_id as patient_id,e.form_id,e.encounter_type,e.visit_id,o.concept_id,o.encounter_id,o.obs_datetime,e.encounter_datetime,\n" +
+                "                 cn.name question,c.datatype_id,\n" +
+                "                case when o.value_datetime is not null then o.value_datetime\n" +
+                "                when o.value_coded is not null then o.value_coded\n" +
+                "                when o.value_numeric is not null then o.value_numeric\n" +
+                "                when o.value_text is not null then o.value_text end \n" +
+                "                as value  \n" +
+                "                                  FROM amrs.obs o  \n" +
+                "                                  INNER JOIN amrs.concept c ON o.concept_id=c.concept_id  \n" +
+                "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
+                "                                 and cn.locale_preferred=1 \n" +
+                "                                  AND c.concept_id in (1246,1412,9782,10653,12285,5356,5219,10893,10727,\n" +
+                "                                  6176,9742,10591,6147,1271,2028,7502,10677,7637,8292,10679,10785,10786,\n" +
+                "                                  10787,10788,1266,10681,6793,6968,10706,10239,6137,11679,6137,1664,1193,\n" +
+                "                                  2031,6968,10706,7897,1198,1915,10707,1836,2061,5272,9736,10814,5596,\n" +
+                "                                  12253,10708,7947,5624,5632,8355,374,6687,1119,6042,7222,1109,10831,\n" +
+                "                                  10832,10833,10834,8288,6287,6259,10726,2312,10400,9611,9609,9070,5096,1835,\n" +
+                "                                  9605,10988,1113,1111,8292,8293,10679,10788,1266,10681,6793,2031,6968,10706,\n" +
+                "                                  10239,6137,11679,6137,1664,1193,2031,6968,7897,1198,1915,1836,10845,1123) -- 5088,5087,5085,5086,5089,5090,5092 \n" +
+                "                                  INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+                "                                  -- and e.encounter_type in(2,4,106,176) \n" +
+                "                                  -- and e.encounter_id in (14763811)\n" +
+                "                                  where e.patient_id in (1212684,1209134)\n" +
+                "                                  ORDER BY patient_id ASC,encounter_id DESC" ;
+
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
