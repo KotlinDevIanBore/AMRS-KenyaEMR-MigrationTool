@@ -614,55 +614,56 @@ public class CareOpenMRSPayload {
             JSONException, IOException{
     }
 
-    public static void artRefill(AMRSArtRefillService amrsArtRefillService, AMRSPatientServices amrsPatientServices,  AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+    public static void artRefill(AMRSArtRefillService amrsArtRefillService,  AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+
         List<AMRSArtRefill> artRefills = amrsArtRefillService.findByResponseCodeIsNull();
 
         if (!artRefills.isEmpty()) {
             // Use a Set to store unique patient IDs
-            Set<String> patientIdSet = new HashSet<>();
-            List<String> distinctPatientIds = new ArrayList<>();
+            Set<String> visitIdSet = new HashSet<>();
+            List<String> distinctVisitIds = new ArrayList<>();
 
             // Collect unique patient IDs
             for (AMRSArtRefill artRefill : artRefills) {
-                if (artRefill.getResponseCode() == null && patientIdSet.add(artRefill.getPatientId())) {
-                    distinctPatientIds.add(artRefill.getPatientId());
+                if (artRefill.getResponseCode() == null && visitIdSet.add(artRefill.getVisitId())) {
+                    distinctVisitIds.add(artRefill.getVisitId());
                 }
             }
 
-            System.out.println("list of distinct clients " + distinctPatientIds);
+            System.out.println("list of distinct clients " + distinctVisitIds);
 
-            for (String patientId : distinctPatientIds) {
-                System.out.println("Processing Patient ID: " + patientId);
+            for (String visitId : distinctVisitIds) {
+                System.out.println("Processing Visit ID: " + visitId);
 
-                // Fetch patient status and enrollment details
-                List<AMRSPatients> patientStatusList = amrsPatientServices.getByPatientID(patientId);
-                if (patientStatusList.isEmpty()) {
-                    System.err.println("No patient status found for Patient ID: " + patientId);
-                    continue; // Skip if no patient status is found
-                }
-                String kenyaemrPatientUuid = patientStatusList.get(0).getKenyaemrpatientUUID();
-                List<AMRSArtRefill> amrsArtRefillList = amrsArtRefillService.findByPatientId(patientId);
+                //Fetch all obs per visitID
 
-                // Prepare JSON observations
+                List<AMRSArtRefill> artRefillList = amrsArtRefillService.findByVisitId(visitId);
                 JSONArray jsonObservations = new JSONArray();
-                JSONObject jsonObservationD = new JSONObject();
-                jsonObservationD.put("person", kenyaemrPatientUuid);
-                if(!amrsArtRefillList.get(0).getKenyaEmrConceptUuid().isEmpty() || !Objects.equals(amrsArtRefillList.get(0).getKenyaEmrConceptUuid(), "") || amrsArtRefillList.get(0).getKenyaEmrConceptUuid() != null) {
-                    jsonObservationD.put("concept", amrsArtRefillList.get(0).getKenyaEmrConceptUuid());
-                }
-                if(!amrsArtRefillList.get(0).getKenyaEmrValue().isEmpty() || !Objects.equals(amrsArtRefillList.get(0).getKenyaEmrValue(), "") || amrsArtRefillList.get(0).getKenyaEmrValue() != null) {
-                jsonObservationD.put("value", amrsArtRefillList.get(0).getKenyaEmrValue());
-                }
-                if(!Objects.equals(amrsArtRefillList.get(0).getKenyaEmrValue(), "") && !Objects.equals(amrsArtRefillList.get(0).getKenyaEmrConceptUuid(), "") ) {
-                jsonObservations.put(jsonObservationD);
+                String kenyaemrPatientUuid="";
+                String kenyaemrvisitUuid="";
+                String obsDateTime ="";
+                for (int x =0 ;x<artRefillList.size();x++){
+
+                    System.out.println("Loop Visits "+ visitId + " index " +x);
+                    kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(artRefillList.get(x).getPatientId());
+                    kenyaemrvisitUuid =amrsTranslater.kenyaemrVisitUuid(visitId);
+                    obsDateTime = artRefillList.get(x).getObsDateTime();
+                    JSONObject jsonObservationD = new JSONObject();
+                    jsonObservationD.put("person", kenyaemrPatientUuid);
+                    jsonObservationD.put("concept", artRefillList.get(x).getKenyaEmrConceptUuid());
+                    jsonObservationD.put("value", artRefillList.get(x).getKenyaEmrValue());
+                    jsonObservationD.put("obsDatetime", artRefillList.get(x).getObsDateTime());
+                    if(!Objects.equals(artRefillList.get(x).getKenyaEmrConceptUuid(), "") && !Objects.equals(artRefillList.get(x).getKenyaEmrValue(), "") ) {
+                        jsonObservations.put(jsonObservationD);
+                    }
                 }
 
                 JSONObject jsonEncounter = new JSONObject();
                 jsonEncounter.put("form", "83fb6ab2-faec-4d87-a714-93e77a28a201");
                 jsonEncounter.put("patient", kenyaemrPatientUuid);
                 jsonEncounter.put("obs", jsonObservations);
-//                jsonEncounter.put("visit", visituuid);
-//                jsonEncounter.put("encounterDatetime", obsDateTime);
+                jsonEncounter.put("visit", kenyaemrvisitUuid);
+                jsonEncounter.put("encounterDatetime", obsDateTime);
                 jsonEncounter.put("encounterType", "e87aa2ad-6886-422e-9dfd-064e3bfe3aad");
                 jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
 
@@ -691,15 +692,15 @@ public class CareOpenMRSPayload {
 
                     // Update response code for successful submissions
                     if (responseCode == 201) {
-                        for (AMRSArtRefill artRefill : artRefills) {
+                        for (AMRSArtRefill artRefill : artRefillList) {
                             artRefill.setResponseCode("201");
                             amrsArtRefillService.save(artRefill);
                         }
                     } else {
-                        System.err.println("Failed to process Patient ID: " + patientId + " | Status Code: " + responseCode);
+                        System.err.println("Failed to process Visit ID: " + visitId + " | Status Code: " + responseCode);
                     }
                 } catch (Exception e) {
-                    System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
+                    System.err.println("Error processing Visit ID: " + visitId + " | " + e.getMessage());
                 }
             }
 

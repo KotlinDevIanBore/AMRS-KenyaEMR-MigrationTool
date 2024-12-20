@@ -34,6 +34,10 @@ public class AMRSArtRefillService {
         return amrsArtRefillRepository.findByPatientId(pid);
     }
 
+    public List<AMRSArtRefill> findByVisitId(String pid) {
+        return amrsArtRefillRepository.findByVisitId(pid);
+    }
+
     public AMRSArtRefill save(AMRSArtRefill dataset) {
         return amrsArtRefillRepository.save(dataset);
     }

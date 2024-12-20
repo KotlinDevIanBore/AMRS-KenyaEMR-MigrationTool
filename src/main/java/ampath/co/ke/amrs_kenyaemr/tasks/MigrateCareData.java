@@ -3477,10 +3477,10 @@ public class MigrateCareData {
     }
 
     /////////////////
-    public static void artRefill(String server, String username, String password, String locations, String parentUUID, AMRSArtRefillService amrsArtRefillService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void artRefill(String server, String username, String password, String locations, String parentUUID, AMRSArtRefillService amrsArtRefillService, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
 
-        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
+       /* List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss = "";
         for (int y = 0; y < amrsPatientsList.size(); y++) {
             pidss += amrsPatientsList.get(y).getPersonId() + ",";
@@ -3490,13 +3490,16 @@ public class MigrateCareData {
         System.out.println("Patient Id " + pid);
 
 
-        System.out.println("Patient Id " + pid);
+        System.out.println("Patient Id " + pid);*/
 
+        String samplePatientList = AMRSSamples.getPersonIdList();
 
         String sql = "SELECT o.person_id as patient_id,\n" +
                 "e.form_id,\n" +
+                " e.visit_id,\n"+
                 "o.concept_id,\n" +
                 "o.encounter_id,\n" +
+                "e.encounter_datetime,\n" +
                 "cn.name question,\n" +
                 "case when o.value_datetime is not null then o.value_datetime\n" +
                 "                when o.value_coded is not null then o.value_coded\n" +
@@ -3531,50 +3534,40 @@ public class MigrateCareData {
             String encounterId = rs.getString("encounter_id");
             String question = rs.getString("question");
             String value = rs.getString(("value"));
+            String visitId = rs.getString(("visit_id"));
+            String obsDateTime = rs.getString(("encounter_datetime"));
 
-            AMRSArtRefill amrsArtRefill = new AMRSArtRefill();
 
-
-            amrsArtRefill.setPatientId(patientId);
-            amrsArtRefill.setFormId(formId);
-            amrsArtRefill.setConceptId(conceptId);
-            amrsArtRefill.setEncounterId(encounterId);
-            amrsArtRefill.setQuestion(question);
-            amrsArtRefill.setValue(value);
-
-            List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
-            String kenyaemr_patient_uuid = "";
-            if (!amrsPatients.isEmpty()) {
-                kenyaemr_patient_uuid = amrsPatients.get(0).getKenyaemrpatientUUID();
+            List<AMRSArtRefill> artRefillList =amrsArtRefillService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterId,conceptId);
+            if(artRefillList.size()==0) {
+                AMRSArtRefill amrsArtRefill = new AMRSArtRefill();
+                amrsArtRefill.setPatientId(patientId);
+                amrsArtRefill.setFormId(formId);
+                amrsArtRefill.setConceptId(conceptId);
+                amrsArtRefill.setEncounterId(encounterId);
+                amrsArtRefill.setQuestion(question);
+                amrsArtRefill.setValue(value);
+                amrsArtRefill.setVisitId(visitId);
+                amrsArtRefill.setObsDateTime(obsDateTime);
+                String kenyaemr_patient_uuid =  amrsTranslater.KenyaemrPatientUuid(patientId);
                 amrsArtRefill.setKenyaEmrPatientUuid(kenyaemr_patient_uuid);
-            } else {
-                kenyaemr_patient_uuid = "Not Found"; // add logic for missing patientkenyaemr_patient_uuid
-            }
-
-
-            String kenyaEmrEncounterUuid = "e87aa2ad-6886-422e-9dfd-064e3bfe3aad";
+                String kenyaEmrEncounterUuid = "e87aa2ad-6886-422e-9dfd-064e3bfe3aad";
                 amrsArtRefill.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
-
-
-
-            String kenyaEmrFormUuid = "83fb6ab2-faec-4d87-a714-93e77a28a201";
-            amrsArtRefill.setKenyaEmrFormUuid(kenyaEmrFormUuid);
-
+                String kenyaEmrFormUuid = "83fb6ab2-faec-4d87-a714-93e77a28a201";
+                amrsArtRefill.setKenyaEmrFormUuid(kenyaEmrFormUuid);
                 String kenyaEmrConceptUuid = "";
                 kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
-            amrsArtRefill.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
-
-            String kenyaEmrValueUuid = "";
-            kenyaEmrValueUuid = amrsTranslater.translater(value);
-            amrsArtRefill.setKenyaEmrValue(kenyaEmrValueUuid);
-
-
-            amrsArtRefillService.save(amrsArtRefill);
+                amrsArtRefill.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+                String kenyaEmrValueUuid = "";
+                kenyaEmrValueUuid = amrsTranslater.translater(value);
+                amrsArtRefill.setKenyaEmrValue(kenyaEmrValueUuid);
+                amrsArtRefillService.save(amrsArtRefill);
+            }
 
             // Call method to create and insert the payload
 
         }
-        CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsPatientServices, amrsTranslater, url, auth);
+        CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsTranslater, url, auth);
     }
 
 
