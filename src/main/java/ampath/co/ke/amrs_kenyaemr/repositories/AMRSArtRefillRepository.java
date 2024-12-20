@@ -12,4 +12,5 @@ public interface AMRSArtRefillRepository extends JpaRepository<AMRSArtRefill, Lo
     List<AMRSArtRefill> findFirstByOrderByIdDesc();
     List<AMRSArtRefill> findByResponseCodeIsNull();
     List<AMRSArtRefill> findByPatientId(String pid);
+    List<AMRSArtRefill> findByVisitId(String vid);
 }

@@ -13,6 +13,8 @@ public class AMRSArtRefill {
     private Integer Id;
     private String patientId;
     private String encounterId;
+    private String visitId;
+
     private String formId;
     private String question;
     private String conceptId;
@@ -23,6 +25,7 @@ public class AMRSArtRefill {
     private String kenyaEmrPatientUuid;
     private String kenyaEmrFormUuid;
     private String responseCode;
+    private String obsDateTime;
 
     public Integer getId() {
         return Id;
@@ -128,5 +131,21 @@ public class AMRSArtRefill {
 
     public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public String getVisitId() {
+        return visitId;
+    }
+
+    public void setVisitId(String visitId) {
+        this.visitId = visitId;
+    }
+
+    public String getObsDateTime() {
+        return obsDateTime;
+    }
+
+    public void setObsDateTime(String obsDateTime) {
+        this.obsDateTime = obsDateTime;
     }
 }
