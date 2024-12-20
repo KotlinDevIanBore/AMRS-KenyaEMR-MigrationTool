@@ -75,7 +75,7 @@ public class MappingsControllers {
     @RequestMapping(value = "/concepts", method = RequestMethod.GET)
     public ModelAndView loadAllConcepts(HttpSession session) throws IOException, SQLException {
         // String filePath = "data.csv"; // Path to your CSV file
-        ClassPathResource resource = new ClassPathResource("new_concepts.csv");
+        ClassPathResource resource = new ClassPathResource("all_revised_concepts.csv");
         Reader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
 
         try {
