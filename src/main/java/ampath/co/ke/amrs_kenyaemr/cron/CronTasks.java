@@ -2,7 +2,8 @@ package ampath.co.ke.amrs_kenyaemr.cron;
 
 import ampath.co.ke.amrs_kenyaemr.methods.AMRSTranslater;
 import ampath.co.ke.amrs_kenyaemr.service.*;
-import ampath.co.ke.amrs_kenyaemr.tasks.MigrateCareData;
+import  ampath.co.ke.amrs_kenyaemr.tasks.MigrateCareData;
+//import ampath.co.ke.amrs_kenyaemr.tasks.MigrateCareData;
 import ampath.co.ke.amrs_kenyaemr.tasks.MigrateRegistration;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,9 @@ public class CronTasks {
 
     @Autowired
     private AMRSTbScreeningService amrsTbScreeningService;
+
+    @Autowired
+    private AMRSOvcService amrsOvcService;
 
 
 
@@ -286,11 +290,18 @@ public class CronTasks {
         MigrateCareData.processOtzEnrollments(server,username,password,locationId,parentUuid, amrsOtzEnrollmentService, amrsPatientServices, amrsTranslater, OpenMRSURL,auth);
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void TBScreening() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         MigrateCareData.processTBScreening(server,username,password,locationId,parentUuid, amrsTbScreeningService, amrsPatientServices, amrsTranslater, OpenMRSURL,auth);
+    }
+
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    public void ovc() throws JSONException, ParseException, SQLException, IOException {
+        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        MigrateCareData.ovc(server,username,password,locationId,parentUuid, amrsOvcService, amrsTranslater, amrsPatientServices, OpenMRSURL,auth);
     }
 
 }
