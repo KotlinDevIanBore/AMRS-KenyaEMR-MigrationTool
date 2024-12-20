@@ -271,7 +271,7 @@ public class CareOpenMRSPayload {
         }
     }
 
-    public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSPatientServices amrsPatientServices, String parentUUID, String locations, String auth, String url) throws JSONException, IOException {
+    public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, String parentUUID, String locations, String auth, String url) throws JSONException, IOException {
         List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findByResponseCodeIsNull();
 
         if(amrsRegimenSwitchList.size() > 0) {
@@ -280,7 +280,7 @@ public class CareOpenMRSPayload {
 
             for( AMRSRegimenSwitch regimenSwitches: amrsRegimenSwitchList) {
                 if(regimenSwitches.getResponseCode() == null) {
-                    String encounterId = regimenSwitches.getEncounterId();
+                    String encounterId = regimenSwitches.getPatientId();
                     if (regimenSwitchIdSet.add(encounterId)) {
                         distinctRegimenSwitchIds.add(encounterId);
                     }
@@ -288,56 +288,76 @@ public class CareOpenMRSPayload {
             }
 
             for(String encounterId: distinctRegimenSwitchIds) {
-                System.out.println("Encounter ID for Vitals " + encounterId);
+                System.out.println("Patient ID for Switches " + encounterId);
 
-                List<AMRSRegimenSwitch> regimenSwitchList = amrsRegimenSwitchService.findByEncounterId(encounterId);
+                List<AMRSRegimenSwitch> regimenSwitchList = amrsRegimenSwitchService.findByPatientId(encounterId);
 
                 for( int x=0; x < regimenSwitchList.size(); x++ ) {
 
-                    List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(regimenSwitchList.get(x).getPatientId());
-                    JSONArray jsonObservations = new JSONArray();
-                    JSONObject jsonObservation = new JSONObject();
-                    jsonObservation.put("person", amrsPatients.get(0).getKenyaemrpatientUUID());
-                    jsonObservation.put("concept", regimenSwitchList.get(x).getKenyaemrConceptUuid());
-                    jsonObservation.put("value", regimenSwitchList.get(x).getKenyaemrValue());
-                    jsonObservations.put(jsonObservation);
+               String patient = amrsTranslater.KenyaemrPatientUuid(encounterId);
+               String visitId = amrsTranslater.kenyaemrVisitUuid(regimenSwitchList.get(x).getVisitId());
+                    //List<AMRSPatients> amrsPatients = patient;
+                    if (visitId!="") {
+
+                        //PLAN 1255AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        //START 1256AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        //CHANGE 1259AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        //STOP DATE 1191AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        //Reason for stoping 1252AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+                        JSONArray jsonObservations = new JSONArray();
+                        JSONObject jsonObservationPType = new JSONObject();
+                        jsonObservationPType.put("person", patient);
+                        jsonObservationPType.put("concept", "1255AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                        jsonObservationPType.put("value", "1256AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                        jsonObservationPType.put("obsDatetime", regimenSwitchList.get(x).getEncounterDatetime());
+                        jsonObservations.put(jsonObservationPType);
 
 
-                    JSONObject jsonRegimenSwitchEncouter = new JSONObject();
-                    jsonRegimenSwitchEncouter.put("form", "da687480-e197-11e8-9f32-f2801f1b9fd1");
-                    jsonRegimenSwitchEncouter.put("encounterType", "7dffc392-13e7-11e9-ab14-d663bd873d93");
-                    jsonRegimenSwitchEncouter.put("location", "7dffc392-13e7-11e9-ab14-d663bd873d93");
-                    jsonRegimenSwitchEncouter.put("patient", amrsPatients.get(0).getKenyaemrpatientUUID());
-                    jsonRegimenSwitchEncouter.put("encounterDatetime", regimenSwitchList.get(x).getEncounterDatetime());
-                    jsonRegimenSwitchEncouter.put("obs", jsonObservations);
+                        JSONObject jsonObservation = new JSONObject();
+                        jsonObservation.put("person", patient);
+                        jsonObservation.put("concept", regimenSwitchList.get(x).getKenyaemrConceptUuid());
+                        jsonObservation.put("value", regimenSwitchList.get(x).getKenyaemrValue());
+                        jsonObservationPType.put("obsDatetime", regimenSwitchList.get(x).getEncounterDatetime());
+                        jsonObservations.put(jsonObservation);
 
-                    System.out.println("Payload for is here " + jsonRegimenSwitchEncouter.toString());
-                   // System.out.println("URL is here " + url + "encpunter/" + regimenSwitchList.get(0).getKenyaemrEncounterUuid());
 
-                    OkHttpClient client = new OkHttpClient();
-                    MediaType mediaType = MediaType.parse("application/json");
-                    okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonRegimenSwitchEncouter.toString());
+                        JSONObject jsonRegimenSwitchEncouter = new JSONObject();
+                        jsonRegimenSwitchEncouter.put("form", "da687480-e197-11e8-9f32-f2801f1b9fd1");
+                        jsonRegimenSwitchEncouter.put("encounterType", "7dffc392-13e7-11e9-ab14-d663bd873d93");
+                        jsonRegimenSwitchEncouter.put("location", "7dffc392-13e7-11e9-ab14-d663bd873d93");
+                        jsonRegimenSwitchEncouter.put("patient", patient);
+                        jsonRegimenSwitchEncouter.put("encounterDatetime", regimenSwitchList.get(x).getEncounterDatetime());
+                        jsonRegimenSwitchEncouter.put("obs", jsonObservations);
+                        jsonRegimenSwitchEncouter.put("visit", visitId);
 
-                    Request request = new Request.Builder()
-                            .url(url + "encounter")
-                            .method("POST", body)
-                            .addHeader("Authorization", "Basic " + auth)
-                            .addHeader("Content-Type", "application/json")
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    String responseBody = response.body().string();
-                    System.out.println("Response ndo hii " + responseBody + "More message" + response.message());
+                        System.out.println("Payload for is here " + jsonRegimenSwitchEncouter.toString());
+                        // System.out.println("URL is here " + url + "encpunter/" + regimenSwitchList.get(0).getKenyaemrEncounterUuid());
 
-                    int resCode = response.code();
-                    if(resCode == 200) {
-                        for(int y = 0; y < regimenSwitchList.size(); y++ ) {
-                            AMRSRegimenSwitch rs = regimenSwitchList.get(y);
-                            rs.setResponseCode("201");
-                            System.out.println("Imefika Hapa na data " + resCode);
-                            amrsRegimenSwitchService.save(rs);
+                        OkHttpClient client = new OkHttpClient();
+                        MediaType mediaType = MediaType.parse("application/json");
+                        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonRegimenSwitchEncouter.toString());
+
+                        Request request = new Request.Builder()
+                                .url(url + "encounter")
+                                .method("POST", body)
+                                .addHeader("Authorization", "Basic " + auth)
+                                .addHeader("Content-Type", "application/json")
+                                .build();
+                        Response response = client.newCall(request).execute();
+                        String responseBody = response.body().string();
+                        System.out.println("Response ndo hii " + responseBody + "More message" + response.message());
+
+                        int resCode = response.code();
+                        if (resCode == 200) {
+                            for (int y = 0; y < regimenSwitchList.size(); y++) {
+                                AMRSRegimenSwitch rs = regimenSwitchList.get(y);
+                                rs.setResponseCode("201");
+                                System.out.println("Imefika Hapa na data " + resCode);
+                                amrsRegimenSwitchService.save(rs);
+                            }
                         }
                     }
-
                 }
             }
         }
@@ -511,7 +531,7 @@ public class CareOpenMRSPayload {
                 */
                 //Check if the Client is enrolled to HIV If not Enroll 1st
 
-               String statesSql = " \"states\":[{\n" +
+             /*  String statesSql = " \"states\":[{\n" +
                        "                    \"state\":\"dfdc6d40-2f2f-463d-ba90-cc97350441a8\",\n" +
                        "                            \"startDate\":\""+obsDateTime+"\"\n" +
                       " \"endDate\":\"\"\n" +
@@ -543,6 +563,7 @@ public class CareOpenMRSPayload {
                 } catch (Exception e) {
                     System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
                 }
+                */
 
                     //
 

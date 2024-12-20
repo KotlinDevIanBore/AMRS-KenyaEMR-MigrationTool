@@ -15,6 +15,7 @@ public class AMRSRegimenSwitch {
     private String encounterId;
     private String conceptId;
     private String valueCoded;
+    private String visitId;
     private String encounterDatetime;
     private String regimen;
     private String reasonForChange;
@@ -127,5 +128,13 @@ public class AMRSRegimenSwitch {
 
     public void setKenyaemrPatientUuid(String kenyaemrPatientUuid) {
         this.kenyaemrPatientUuid = kenyaemrPatientUuid;
+    }
+
+    public String getVisitId() {
+        return visitId;
+    }
+
+    public void setVisitId(String visitId) {
+        this.visitId = visitId;
     }
 }

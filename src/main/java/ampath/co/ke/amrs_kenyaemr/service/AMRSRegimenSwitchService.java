@@ -26,6 +26,10 @@ public class AMRSRegimenSwitchService {
         return amrsRegimenSwitchRepository.findByEncounterId(eid);
     }
 
+    public List<AMRSRegimenSwitch> findByPatientId(String eid) {
+        return amrsRegimenSwitchRepository.findByPatientId(eid);
+    }
+
     public List<AMRSRegimenSwitch> findFirstByOrderByIdDesc() {
         return amrsRegimenSwitchRepository.findFirstByOrderByIdDesc();
     }

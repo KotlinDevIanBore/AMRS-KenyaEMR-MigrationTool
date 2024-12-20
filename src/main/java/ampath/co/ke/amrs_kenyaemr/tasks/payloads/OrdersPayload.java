@@ -159,6 +159,8 @@ public class OrdersPayload {
         Response response = client.newCall(request).execute();
 
         String responseBody = response.body().string(); // Get the response as a string
+
+        System.out.println("Obs Body ndo Hii "+ bodyString);
         JSONObject jsonObject = new JSONObject(responseBody);
         if (response.code() == 201) {
             return true;
