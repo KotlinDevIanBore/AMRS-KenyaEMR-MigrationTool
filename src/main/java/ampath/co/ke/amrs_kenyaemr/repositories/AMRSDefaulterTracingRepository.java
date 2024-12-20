@@ -1,6 +1,5 @@
 package ampath.co.ke.amrs_kenyaemr.repositories;
 
-import ampath.co.ke.amrs_kenyaemr.models.AMRSArtRefill;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSDefaulterTracing;
 import org.springframework.data.jpa.repository.JpaRepository;
 
