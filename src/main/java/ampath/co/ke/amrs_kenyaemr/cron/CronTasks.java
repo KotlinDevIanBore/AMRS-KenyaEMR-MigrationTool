@@ -1,5 +1,6 @@
 package ampath.co.ke.amrs_kenyaemr.cron;
 
+import ampath.co.ke.amrs_kenyaemr.methods.AMRSLocation;
 import ampath.co.ke.amrs_kenyaemr.methods.AMRSTranslater;
 import ampath.co.ke.amrs_kenyaemr.service.*;
 import  ampath.co.ke.amrs_kenyaemr.tasks.MigrateCareData;
@@ -91,13 +92,14 @@ public class CronTasks {
     private AMRSTbScreeningService amrsTbScreeningService;
     @Autowired
     private AMRSOvcService amrsOvcService;
+    @Autowired
+    private LocationService locationService;
 
     @Value("${mapping.endpoint:http://localhost:8082/mappings/concepts}")
     private String mappingEndpoint;
-
     private final RestTemplate restTemplate = new RestTemplate();
 
-     // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void callEndpoint() {
         try {
             String response = restTemplate.getForObject(mappingEndpoint, String.class);
@@ -106,21 +108,32 @@ public class CronTasks {
             System.err.println("Error calling the endpoint: " + e.getMessage());
         }
     }
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+    public void ProcessLocations() throws JSONException, ParseException, SQLException, IOException {
+       /* AMRSLocation amrsLocation = new AMRSLocation();
+        String locationsId = amrsLocation.getLocationsId(locationService);
+        String locationsUuid = amrsLocation.getLocationsUuid(locationService);
+        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+        System.out.println("Location ID: " + locationsId + " UUIDs "+locationsUuid +" KenyaEMRUuid "+ KenyaEMRlocationUuid); */
+        MigrateRegistration.locations(server,username,password, locationService);
+    }
 
-   // @Scheduled(cron = "0 */1 * ? * *")
    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
    public void ProcessUsers() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateRegistration.users(server,username,password,locationId,parentUuid, amrsUserServices,OpenMRSURL,auth);
+        AMRSLocation amrsLocation = new AMRSLocation();
+        String locationId=amrsLocation.getLocationsUuid(locationService);
+        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+        MigrateRegistration.users(server,username,password,locationId, amrsUserServices,OpenMRSURL,auth);
 
     }
 
-    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
     public void ProcessPatients() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService,amrsPatientStatusService,OpenMRSURL,auth);
+        AMRSLocation amrsLocation = new AMRSLocation();
+        String locationId=amrsLocation.getLocationsUuid(locationService);
+        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+        String parentUuid=KenyaEMRlocationUuid;
+        MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService,KenyaEMRlocationUuid,OpenMRSURL,auth);
 
     }
 
@@ -214,7 +227,7 @@ public class CronTasks {
 
 
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ArtRefill() throws JSONException, ParseException, SQLException, IOException {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";

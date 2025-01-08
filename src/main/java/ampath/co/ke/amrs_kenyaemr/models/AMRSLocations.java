@@ -9,15 +9,12 @@ public class AMRSLocations {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Integer id;
-
     @Column(name="child_location_id")
     private String childlocationId;
-
     @Column(name="parent_location_id")
     private String parentlocationId;
     @Column(name="parent_location_name")
     private String parentlocationName;
-
     @Column(name = "mflcode")
     private String mflcode;
     @Column(name = "parent_uuid")

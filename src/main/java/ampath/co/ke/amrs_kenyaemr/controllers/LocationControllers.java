@@ -115,10 +115,17 @@ public class LocationControllers {
                     ResultSet.CONCUR_READ_ONLY);
            // ResultSet rs = stmt.executeQuery("SELECT location_id,location_name,uuid,parent_location,parent_uuid,parent_name,id FROM amrs_etl.location; ");
        // ResultSet rs = stmt.executeQuery("SELECT location_id,location_name,uuid,case when parent_location is null then location_id else parent_location end as parent_location  ,case when parent_location is null then uuid else parent_uuid end parent_uuid ,case when parent_name is null then location_name else parent_name end as location_name,id FROM amrs_etl.location;");
-         ResultSet rs=stmt.executeQuery(" select location_id,name,description,parent_location" +
+        /* ResultSet rs=stmt.executeQuery(" select location_id,name,description,parent_location" +
                  " from amrs.location where location_id in(select distinct(parent_location)\n" +
                  " from amrs.location l where l.parent_location is not null)\n" +
                  " order by name asc");
+        */
+
+        ResultSet rs=stmt.executeQuery("SELECT uuid,location_id,name,COALESCE(parent_location, location_id) AS parent_location FROM amrs.location\n" +
+                "    ORDER BY \n" +
+                "    location_id,parent_location;");
+
+
             rs.last();
             x = rs.getRow();
             rs.beforeFirst();
