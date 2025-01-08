@@ -35,6 +35,10 @@ public class AMRSOvcService {
         return amrsOvcRepository.findByPatientId(pid);
     }
 
+    public List<AMRSOvc> findByVisitId(String vid) {
+        return amrsOvcRepository.findByVisitId(vid);
+    }
+
     public AMRSOvc save(AMRSOvc dataset) {
         return amrsOvcRepository.save(dataset);
     }

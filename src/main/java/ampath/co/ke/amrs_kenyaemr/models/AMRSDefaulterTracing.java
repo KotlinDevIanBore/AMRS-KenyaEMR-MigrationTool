@@ -23,6 +23,8 @@ public class AMRSDefaulterTracing {
     private String kenyaEmrPatientUuid;
     private String kenyaEmrFormUuid;
     private String responseCode;
+    private String visitId;
+    private String obsDatetime;
 
     public Integer getId() {
         return Id;
@@ -126,5 +128,21 @@ public class AMRSDefaulterTracing {
 
     public void setResponseCode(String responseCode) {
         this.responseCode = responseCode;
+    }
+
+    public String getVisitId() {
+        return visitId;
+    }
+
+    public void setVisitId(String visitId) {
+        this.visitId = visitId;
+    }
+
+    public String getObsDatetime() {
+        return obsDatetime;
+    }
+
+    public void setObsDatetime(String obsDatetime) {
+        this.obsDatetime = obsDatetime;
     }
 }

@@ -34,6 +34,10 @@ public class AMRSDefaulterTracingService {
         return amrsDefaulterTracingRepository.findByPatientId(pid);
     }
 
+    public List<AMRSDefaulterTracing> findByVisitId(String vid) {
+        return amrsDefaulterTracingRepository.findByVisitId(vid);
+    }
+
     public AMRSDefaulterTracing save(AMRSDefaulterTracing dataset) {
         return amrsDefaulterTracingRepository.save(dataset);
     }

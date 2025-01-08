@@ -12,4 +12,5 @@ public interface AMRSOvcRepository extends JpaRepository<AMRSOvc, Long> {
     List<AMRSOvc> findFirstByOrderByIdDesc();
     List<AMRSOvc> findByResponseCodeIsNull();
     List<AMRSOvc> findByPatientId(String pid);
+    List<AMRSOvc> findByVisitId(String vid);
 }
