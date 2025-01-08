@@ -152,13 +152,7 @@ public class CronTasks {
         MigrateCareData.visits(server,username,password,locationId,parentUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
     }
 
-    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
-    public void ProcessEncounters() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.encounters(server,username,password,locationId,parentUuid, amrsEncounterService, amrsPatientServices, amrsVisitService, OpenMRSURL,auth);
 
-    }
 
     //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessTriage() throws JSONException, ParseException, SQLException, IOException {
@@ -218,21 +212,7 @@ public class CronTasks {
         MigrateCareData.formsMappings(server,username,password,locationId,parentUuid, formsMappingService, amrsPatientServices, null, OpenMRSURL,auth);
     }
 
-    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
-    public void EncounterFormsMappings() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.EncounterFormsMappings(server,username,password,locationId,parentUuid, amrsEncounterFormsMappingService, amrsPatientServices, null, OpenMRSURL,auth);
-    }
-  //  MCX
 
-    // obs
-    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
-    public void ProcessObs() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.newObs(server,username,password,locationId,parentUuid, amrsObsService,  amrsTranslater,amrsPatientServices,amrsEncounterService ,OpenMRSURL,auth);
-    }
 
     @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ArtRefill() throws JSONException, ParseException, SQLException, IOException {
@@ -283,5 +263,35 @@ public class CronTasks {
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         MigrateCareData.ovc(server,username,password,locationId,parentUuid, amrsOvcService, amrsTranslater, amrsPatientServices, OpenMRSURL,auth);
     }
+
+    //Do not uncomment
+
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    /*public void ProcessEncounters() throws JSONException, ParseException, SQLException, IOException {
+        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        MigrateCareData.encounters(server,username,password,locationId,parentUuid, amrsEncounterService, amrsPatientServices, amrsVisitService, OpenMRSURL,auth);
+
+    }
+    */
+
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+   /* public void EncounterFormsMappings() throws JSONException, ParseException, SQLException, IOException {
+        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        MigrateCareData.EncounterFormsMappings(server,username,password,locationId,parentUuid, amrsEncounterFormsMappingService, amrsPatientServices, null, OpenMRSURL,auth);
+    }
+    */
+    //  MCX
+
+    // obs
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+   /* public void ProcessObs() throws JSONException, ParseException, SQLException, IOException {
+        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        MigrateCareData.newObs(server,username,password,locationId,parentUuid, amrsObsService,  amrsTranslater,amrsPatientServices,amrsEncounterService ,OpenMRSURL,auth);
+    }
+    */
+
 
 }
