@@ -1,0 +1,526 @@
+uuid,location_id,name,description,parent_location
+08feae7c-1352-11df-a1f1-0026b9348838,1,"MTRH Module 1","Moi Teaching and Referral Hospital - Module 1",407
+08feb14c-1352-11df-a1f1-0026b9348838,2,Mosoriot,"Mosoriot Outpatient Center",379
+08feb2dc-1352-11df-a1f1-0026b9348838,3,Turbo,"Turbo heath center Clinic",390
+08feb444-1352-11df-a1f1-0026b9348838,4,"Burnt Forest","Burnt Forest RHDC Clinic",359
+08feb5b6-1352-11df-a1f1-0026b9348838,5,Amukura,"Amukura Health Center",NULL
+08feb6b0-1352-11df-a1f1-0026b9348838,6,Naitiri,"Naitiri Health center",NULL
+08feb7b4-1352-11df-a1f1-0026b9348838,7,Chulaimbo,"Chulaimbo Sub-district hospital (Clinic)",364
+08feb8ae-1352-11df-a1f1-0026b9348838,8,Webuye,"Webuye Hospital",391
+08feb9a8-1352-11df-a1f1-0026b9348838,9,"Mt. Elgon","Mount Elgon Clinic (Kapsokwony)",380
+08feba98-1352-11df-a1f1-0026b9348838,10,Kapenguria,"Kapenguria Clinic",NULL
+08febb92-1352-11df-a1f1-0026b9348838,11,Kitale,"Kitale Clinic",372
+08febf52-1352-11df-a1f1-0026b9348838,12,Teso,"Teso Clinic",389
+08fec056-1352-11df-a1f1-0026b9348838,13,"MTRH Module 2","Moi Teaching and Referral Hospital - Module 2",407
+08fec150-1352-11df-a1f1-0026b9348838,14,"MTRH Module 3","Moi Teaching and Referral Hospital - Module 3",407
+08fec24a-1352-11df-a1f1-0026b9348838,15,"MTRH Module 4","Moi Teaching and Referral Hospital - Module 4",407
+08fec33a-1352-11df-a1f1-0026b9348838,16,Unknown,"Unknown Location",NULL
+08fec42a-1352-11df-a1f1-0026b9348838,17,Iten,"Iten Clinic",366
+08fec51a-1352-11df-a1f1-0026b9348838,18,Kabarnet,"Kabarnet Clinic",NULL
+08fec60a-1352-11df-a1f1-0026b9348838,19,Busia,"Busia Clinic",360
+08fec704-1352-11df-a1f1-0026b9348838,20,"Port Victoria","Port Victoria AMPATH clinic",385
+08fec808-1352-11df-a1f1-0026b9348838,21,"Non AMPATH Site","All clinical locations outside the AMPATH system.",NULL
+08fec916-1352-11df-a1f1-0026b9348838,22,None,"No location.",NULL
+09004e76-1352-11df-a1f1-0026b9348838,23,Khunyangu,"Khunyangu District Hospital",371
+09004fca-1352-11df-a1f1-0026b9348838,24,"Chulaimbo Module 1","Chulaimbo Adult Clinic",7
+090050ce-1352-11df-a1f1-0026b9348838,25,"Chulaimbo Module 2","Chulaimbo Pediatric Clinic",7
+090051c8-1352-11df-a1f1-0026b9348838,26,"Busia Module 1","Busia Module 1",19
+090052b8-1352-11df-a1f1-0026b9348838,27,"Busia Module 2","Busia Module 2",19
+090053b2-1352-11df-a1f1-0026b9348838,28,Ziwa,"Ziwa Clinic",392
+090054a2-1352-11df-a1f1-0026b9348838,30,Anderson,"Anderson Clinic",NULL
+0900559c-1352-11df-a1f1-0026b9348838,31,"Uasin Gishu District Hospital","Uasin Gishu District Hospital (DH)",408
+090056be-1352-11df-a1f1-0026b9348838,32,"Eldoret Catholic Church(IDP)","Internally Displaced AMPATH Patients",NULL
+090057cc-1352-11df-a1f1-0026b9348838,33,"Eldoret Police Station(IDP)","Internally Displaced AMPATH Patients",NULL
+090058e4-1352-11df-a1f1-0026b9348838,34,"Majengo (Our Lady) Church(IDP)","Internally Displaced AMPATH Patients",NULL
+090059f2-1352-11df-a1f1-0026b9348838,35,"Turbo Police Station","Internally Displaced AMPATH Patients",NULL
+09005b0a-1352-11df-a1f1-0026b9348838,36,Nakuru(IDP),"Internally Displaced AMPATH Patients",NULL
+09005c0e-1352-11df-a1f1-0026b9348838,37,Nairobi(IDP),"Internally Displaced AMPATH Patients",NULL
+09005d1c-1352-11df-a1f1-0026b9348838,38,"Eldoret Showground(IDP)","Internally Displaced AMPATH Patients",NULL
+09005e34-1352-11df-a1f1-0026b9348838,39,"Yamumbi (IDP)","Internally Displaced AMPATH Patients",NULL
+09005f38-1352-11df-a1f1-0026b9348838,40,"Matharu Center(IDP)","Internally Displaced AMPATH Patients",NULL
+09006050-1352-11df-a1f1-0026b9348838,41,"Munyaka PCEA Church(IDP)","Internally Displaced AMPATH Patients",NULL
+0900615e-1352-11df-a1f1-0026b9348838,42,"Maji Mazuri(IDP)","Internally Displaced AMPATH Patients",NULL
+0900626c-1352-11df-a1f1-0026b9348838,43,Kamara(IDP),"Internally Displaced AMPATH Patients",NULL
+09006370-1352-11df-a1f1-0026b9348838,44,"Eldamaravine Police Station(IDP)","Internally Displaced AMPATH Patients",NULL
+0900647e-1352-11df-a1f1-0026b9348838,45,Moisbridge(IDP),"Internally Displaced AMPATH Patients",NULL
+09006582-1352-11df-a1f1-0026b9348838,46,"Langas police station(IDP)","Internally Displaced AMPATH Patients",NULL
+09007acc-1352-11df-a1f1-0026b9348838,47,"Timboroa Police Station","Internally Displaced AMPATH Patients",NULL
+09007be4-1352-11df-a1f1-0026b9348838,48,"Bishop Muge(IDP)","Internally Displaced AMPATH Patients",NULL
+09007ce8-1352-11df-a1f1-0026b9348838,49,Kipkenyo(IDP),"Internally Displaced AMPATH Patients",NULL
+09007df6-1352-11df-a1f1-0026b9348838,50,Endebes(IDP),"Internally Displaced AMPATH Patients",NULL
+09007efa-1352-11df-a1f1-0026b9348838,51,Kachibora(IDP),"Internally Displaced AMPATH Patients",NULL
+09007ffe-1352-11df-a1f1-0026b9348838,52,Cherangany(IDP),"Internally Displaced AMPATH Patients",NULL
+09008102-1352-11df-a1f1-0026b9348838,53,"Nzioa Scheme","Internally Displaced AMPATH Patients",NULL
+09008206-1352-11df-a1f1-0026b9348838,54,"Plateau Mission Hospital","Burnt Forest Satellite Clinic",384
+0900831e-1352-11df-a1f1-0026b9348838,55,"Bumala A","Bumala "A" Health Center(Busia Satellite Clinic)",357
+09008422-1352-11df-a1f1-0026b9348838,56,"Eldoret Prison","Satellite Clinic of MTRH Module 3",NULL
+0900851c-1352-11df-a1f1-0026b9348838,57,"Kitale Prison","Satellite Clinic of Kitale",NULL
+09008620-1352-11df-a1f1-0026b9348838,58,"Ngeria Prison","Satellite Clinic of MTRH Module 3",NULL
+0900871a-1352-11df-a1f1-0026b9348838,59,Mautuma,"Satellite Clinic of Turbo",NULL
+0900880a-1352-11df-a1f1-0026b9348838,60,Chepsaita,"Chepsaita Dispensary(Turbo Satellite Clinic)",363
+09008904-1352-11df-a1f1-0026b9348838,61,Kaptagat,"Satellite Clinic of Burnt Forest",NULL
+090089ea-1352-11df-a1f1-0026b9348838,62,Kesses,"Satellite Clinic of Burnt Forest",353
+09008ada-1352-11df-a1f1-0026b9348838,63,Lukolis,"Lukolis Dispensary(Amukura satellite clinic)",NULL
+09008fda-1352-11df-a1f1-0026b9348838,64,Bokoli,"Bokoli Hospital(Webuye satellite clinic)",356
+090090d4-1352-11df-a1f1-0026b9348838,65,Angurai,"Angurai Health Center(Teso satellite clinic)",355
+090091c4-1352-11df-a1f1-0026b9348838,66,Cheptais,"Cheptais Sub-District Hospital(Mt. Elgon Satellite Clinic)",NULL
+090092b4-1352-11df-a1f1-0026b9348838,67,Cheskaki,"Mt. Elgon Satellite Clinic",NULL
+0900939a-1352-11df-a1f1-0026b9348838,68,Marigat,"Satellite Clinic of Kabarnet",NULL
+0900948a-1352-11df-a1f1-0026b9348838,69,"Huruma SDH","Satellite Clinic of Uasin Gishu District Hospital",365
+0900a9ac-1352-11df-a1f1-0026b9348838,70,"Pioneer Sub-District Hospital","Satellite clinic for Mosoriot Health Centre",383
+0900aace-1352-11df-a1f1-0026b9348838,71,"Moi's Bridge","Moi's Bridge Clinic",377
+0900abdc-1352-11df-a1f1-0026b9348838,72,"Moi University","Moi University  Main Campus clinic",NULL
+0900acea-1352-11df-a1f1-0026b9348838,73,Soy,"Soy Clinic",387
+0900adee-1352-11df-a1f1-0026b9348838,74,Mihuu,"Mihuu Dispensary(Webuye satellite clinic)",375
+0900aefc-1352-11df-a1f1-0026b9348838,75,Sinoko,"Sinoko Dispensary(Bungoma East)",386
+0900b000-1352-11df-a1f1-0026b9348838,76,Milo,"Milo Health Center (Satellite clinic to Webuye)",376
+0900b104-1352-11df-a1f1-0026b9348838,77,Moiben,"Satellite Clinic of Ziwa",378
+0900b212-1352-11df-a1f1-0026b9348838,78,Mukhobola,"Mukhobola Clinic",381
+0900b316-1352-11df-a1f1-0026b9348838,79,Nambale,"Nambale Clinic",NULL
+0900b424-1352-11df-a1f1-0026b9348838,80,"MOI BARRACKS","Satellite Clinic of Module 3",NULL
+0900b532-1352-11df-a1f1-0026b9348838,81,"Busia Prison","Busia Satellite Clinic",360
+0900b636-1352-11df-a1f1-0026b9348838,82,Saboti,"Kitale satellite clinic",NULL
+0900b74e-1352-11df-a1f1-0026b9348838,83,"Bumala B","Bumala "B" Health Center (Khunyangu Satellite clinic)",358
+0900b866-1352-11df-a1f1-0026b9348838,84,"Moi Teaching and Referral Hospital","Primary Health Care Clinic Location",407
+0900b974-1352-11df-a1f1-0026b9348838,85,Makutano,"Satellite Clinic Site for Naitiri",NULL
+25972cec-2e14-4047-a537-404c6ad18389,86,"Kaptama ( Friends) Dispensary","Satellite clinic of Mount Elgon(Kapsokwony)",370
+ffb2c2f0-a62c-4be8-960a-05b704bd66cd,87,"Sio Port","Sio port",NULL
+1be88533-0a70-40a4-9c45-1a7a936fd23a,88,Tulwet,"Satellite clinic of Kitale",NULL
+8d502f10-dcaf-41fc-8677-34a6b498ac7a,89,Kopsiro,"Satellite Clinic of Mt. elgon.",NULL
+7a8c0cc5-be43-48e1-aa41-33cb1e9cc26f,90,Changara,"Teso Satellte Clinic",361
+cb31d052-b668-4321-80ad-c0aaa571f87b,91,Malaba,"Satellite clinic of Teso",374
+096ac36e-47f9-49e0-a62b-d87a09753b61,92,Amase,"Amase Dispensary(Amukura satellite clinic)",409
+69d9a87d-18f2-4113-840d-95668d1e9e16,93,Obekai,"Obekai Dispensary(Amukura satellite clinic)",NULL
+19874e26-f614-47bb-99c7-a3756bfe3c64,94,Tambach,"Satellite Clinic to Iten",388
+bcc27a76-1980-4efe-b72e-ca40019ef6ce,95,Tenges,"Satellite clinic to Kabarnet.",NULL
+dba01903-14bd-4978-9264-f6ca896b0ca4,96,Kibisi,"Satellite clinic to Naitiri",NULL
+56cf9621-d946-4ac0-a587-4024792c0934,97,Sango,"Satellite clinic to Naitiri.",NULL
+65bdb112-a254-4cf9-a5a7-29dce997312d,98,"AIC Diguna Royal Toto Children's Home,Ngechek","Mosoriot satellite clinic",379
+851d4b92-763a-4c4a-a9bc-63b12586429f,99,"Lupida Health Centre","Nambale Satellite Clinic",NULL
+00b47ef5-a29b-40a2-a7f4-6851df8d6532,100,Osieko,"A satellite to Port Victoria",382
+79fcf21c-8a00-44ba-9555-dde4dd877c4a,101,"Room 7",Casualty,NULL
+6cd0b441-d644-487c-8466-5820a73f9ce5,102,"Elgeyo Border Dispensary","These is a health centre",472
+2b0419c2-275f-4354-8b49-4c97d033ecbb,103,Riat,"This is a dispensary and its Chulaimbo's Satellites",NULL
+01c73fdc-65ce-4349-abdf-bbc554178b47,104,Sunga,"This is a dispensary and its Chulaimbo's Satellites",NULL
+b5d03983-f24e-4fdc-9ff5-33fc87dee02b,105,Siriba,"This is a dispensary and its Chulaimbo's Satellites",NULL
+8f537fab-0b7f-4b72-a462-042eefad058c,106,Kamolo,"satelite at Kamolo Dispensary,to be run by Teso, AMPATH clinic",368
+8ce15cad-c7ff-41d9-b55c-5230116c3bf7,107,"Kapteren Health Center","A satellite of Iten Clinic",NULL
+27edd245-5205-4e66-82bd-d314c547d16b,108,"Madende Health Center","A satellite of Nambale",NULL
+e2d2926e-49e6-4a27-b701-73b6e263a4fd,109,"Rai Plywoods","Satellite clinic to UGDH",NULL
+4fb82b14-c0e4-46d0-9864-a36e2d6b6c8a,110,Mogoget,"Dispensary in Kosirai Division",NULL
+53c7ebb2-78c2-4ce3-a504-f37a6cb998aa,111,Birbiriet,"Dispensary in Kosirai Division",NULL
+17cc5ee1-b702-4b4b-9ea7-9fc7083dd56e,112,Itigo,"Dispensary in Kosirai Division",NULL
+469471e2-5b1e-46be-9232-a738f8cd717b,113,Lelmokwo,"Dispensary in Kosirai Division",NULL
+8eedf128-40ed-4fba-9240-3cc92234720f,114,Kokwet,"Dispensary in Kosirai Division",NULL
+a30955e0-275f-48ca-974d-438368a0685a,115,Ngechek,"Dispensary in Kosirai Division",NULL
+96d2964e-8cec-4eca-ad05-a9c1fb29a045,116,"Cheramei Health Centre","Cheramei Health Centre in Turbo Division",462
+2003e950-5b62-4330-a94c-cf8165f75084,117,Murgusi,"Dispensary in Turbo Division",NULL
+441451e5-aabd-4e71-87dd-8b7c5f651434,118,Cheplaskei,"Dispensary in Turbo Division",NULL
+4de54b6f-6f60-4b56-a801-087603d2f294,119,Sigot,"Dispensary in Turbo Division",NULL
+f030c7f2-9790-41d0-a704-f5a164909d17,120,"Sugoi A","Dispensary in Turbo Division",NULL
+a27cec49-110c-41a1-9a6f-964d6ac2359d,121,"Sugoi B","Dispensary in Turbo Division",NULL
+d09c6925-1e9a-4973-921d-d0014d7825ec,122,Chepkemel,"Dispensary in Turbo Division",NULL
+12aeb8ab-690c-47e0-b41f-e261dac1279c,123,Chepkemel,"Dispensary in Turbo Division",NULL
+eb32b031-30df-40d9-8aef-d88fbb763852,124,Akichelesit,"Dispensary in Teso Division",NULL
+291bdf8e-93ed-4898-a58f-7d9f7f74128e,125,Aboloi,"Dispensary in Teso Division",NULL
+1243cf8b-fced-482c-9d95-c92f28bfcbea,126,Moding,"Dispensary in Teso Division",NULL
+e8c7759a-c99a-46de-82f8-d7c9f67eb237,127,Sambut,"Sambut - Dispensary in Turbo division",NULL
+00ce435c-3f27-4e89-a7f8-80fd102ff410,128,Ngenyilel,"Dispensary in Turbo division",NULL
+2b338894-e81d-48e9-83d5-9280c8f549d4,129,Sosiani,"Health Centre in Turbo division",NULL
+1d3bc503-925b-4a31-91da-337b611cc27a,130,"Matayos Health Centre","New site from Aphia",NULL
+5c8705ef-3a36-4806-a907-381232f88834,131,Chebaiywa,"Used by CDM team and their forms being entered to AMRS",3
+8bb0593f-5dca-4828-a443-53d41f040d8c,132,"Kapsara Sub-District Hospital","New location in Kitale",NULL
+a8f5b2b9-d2f0-454b-a7aa-46a1fbca17d3,133,Chepterit,"A dispensary in Mosoriot Division",NULL
+e05cbb83-9418-4ebc-9240-ae2512d70321,134,"Kapyemit Dipsensary","A dispensary in Turbo division and Uasin Gishu county",476
+b77f94ea-62ea-469a-8a88-5aa2d33bdaaf,135,Kaborom,"Dispensary - a satellite of Mt Elgon.",367
+e2546b92-17df-4640-a38b-c4f30b0cfd81,136,"Murgor Hills","A dispensary in Turbo",NULL
+3e04788f-6761-412a-8db6-08a713f59afc,137,Osorongai,"A dispensary in Turbo",NULL
+098148c6-9ffd-4c30-9dca-c8fa26c39eaf,138,"Family Health Care Options Kenya - Eldoret","Private Hospital in Eldoret",NULL
+b0773cd5-e0c0-4cc7-8cbd-482407311b50,139,"Elgon View Hospital","Private Hospital in Eldoret",NULL
+dfa41633-bef8-4465-b773-8254cef7cc7f,140,"Cedar Clinical Associates","Private Hospital in Eldoret",NULL
+2f4c8dde-1bc1-4224-9e1e-a4d915e74210,141,"Glory Health Centre and Chemists","Private Hospital in Eldoret",NULL
+22ef1733-f776-4d04-bf5d-2e0c48fe3ca5,142,"Amani Health Centre","Private Hospital in Eldoret",NULL
+d29bad2f-0b89-402f-835e-4e37c7d9334a,143,"Gynocare Health Centre","Private Hospital in Eldoret",NULL
+f83a6fbc-ad66-491e-82d3-72155661c498,144,"St. Marys Health Centre - Kapsoya","Private Hospital in Eldoret",484
+f4121927-e8ac-46d1-8b7d-fa6d9adcb677,145,"SOS Medical Centre - Eldoret","Private Hospital in Eldoret",NULL
+b99d3714-9715-484e-8ad9-bf0ada16fdf4,146,"Imani Hospital","Private Hospital in Eldoret",NULL
+f6d67dad-cdf4-4756-82c8-cb34d1eecc3a,147,"Fountain Health Centre","Private Hospital in Eldoret",NULL
+294efcca-cf90-40da-8abb-1e082866388d,148,"St. Luke's","A Private Hospital in Eldoret",NULL
+8f1c7aca-97e5-4cca-be46-21969abde1c8,149,"Eldoret Hospital","A private hospital in Eldoret.",NULL
+717758f6-8dec-443e-bf1c-ca0bf8a5ec6d,150,"Sisenye Dispensary","Dispensary in Bunyala sub-county",20
+fece02d9-b3cd-4eaf-802f-8ad33ace4c30,151,"Rukala Dispensary","Dispensary in Bunyala Sub-County.",78
+68df53ea-d990-4769-ae2d-34ec85218325,152,"Budalangi Dispensary","A dispensary in Bunyala Sub-county",20
+0c2b5af9-43e1-4182-9292-59f499d23c9c,153,"Reale Hospital","Private Hospital in Eldoret
+under the Private Sector Engagement program
+(formally PPP)",473
+402e0744-82be-4784-bb6e-e5a30d1055cf,154,Sokyot,"A community based in Turbo",NULL
+3824461a-1289-4108-b5b0-98f0f6f8f509,155,Kaptebee/Turbo,"A community in Turbo",NULL
+ac339ab6-49e3-4b33-949d-505358797d5a,156,Ngechek,"A community In Kosirai Division",NULL
+8bfe3e63-ce86-4d5b-b3ae-b9ec13628530,157,Tuigoin,"A community Unit in Turbo Division",NULL
+825a2541-49ff-41b5-b267-7ff0a059f290,158,Leseru,"A community Unit in Turbo Division",NULL
+1dc7a1c9-e553-48a9-8a1e-e97b18a480c5,159,Kosirai,"A community Unit in Kosirai Division",NULL
+52645ed9-c8c4-4912-b66a-a05b201ddb5f,160,Mutwot,"A Community unit in Kosirai Division",NULL
+a4001a80-ac34-4a6f-a7fd-80d689f2b18b,161,Laikipia,"An amrs site in Laikipia County",NULL
+25ff6c5b-d46d-4d8c-bf4c-dae135efa70b,162,"Sirimba Mission Hospital","A health Facility in Busia County",360
+cf044cde-d23b-4bf2-a152-e83a0e9a2288,163,"Nasewa Health Centre","A Health Facility in Nasewa",410
+751a05f1-6889-48ec-911b-d626ac02d9cd,164,Mabunge,"A community unit in Nasewa",410
+f7896a4a-2348-4493-ac02-0772255f49f6,165,Buyama,"A community unit in Nasewa",410
+356f3aaa-bd92-4823-a602-33ea6efe44d4,166,Lung'a,"A community unit in Nasewa",410
+eb85f1ae-6d39-4929-bd99-2002f4eb96a8,167,Nasewa,"A community unit in Nasewa",410
+97157544-80c4-469d-b7bc-92e3053ded8e,168,"Sikarira Dispensary","A health facility in Sikarira",NULL
+a49aa7a3-c5ae-4c7a-a6a0-3b9e5ba60522,169,Bulwani,"A Community Unit in Bwaliro",168
+b940a5af-07ce-4fb0-ae5c-3271943c8ce1,170,Kanjala,"A community unit in Sikarira",168
+1e92054b-9aed-42b7-b358-95cd311f98e2,171,"Sirimba Mission Hospital","A health Facility in Busia County",NULL
+8d2265b4-d311-4a92-a792-2097d22ac174,172,Ruambwa,"A community unit in Sirimba",162
+7f95db31-e91b-4753-8b92-1d52aa9b4abf,173,"Ikonzo Dispensary","A Health Facility in Busia",NULL
+c88683c8-988c-4580-afaa-c2909597f758,174,Namwitsula,"A community unit in Ikonzo",173
+57e7d161-13da-464f-a7b5-bffbade5b2de,175,Ikonzo,"A community Unit in Ikonzo",173
+d83e9d9e-8211-414d-8269-7b9308184b82,176,"West Clinic Health Centre","A health facility in Uasin Gishu",475
+d332cd41-99d5-47bb-baab-0b61a59aadc2,177,Kibulgeng,"A community facility in Uasin Gishu",408
+b35dfc65-80f8-41fa-9932-cd347edd346d,178,"Bujumba Dispensary","Is a health Facility in Bujumba",NULL
+1646cb1f-2e3c-4ca3-9157-a4ad2f67fe38,179,Bujumba,"Is a community Facility in Bujumba",178
+956794fa-2193-4ff6-bad1-65b947d0faa3,183,"Ikonzo Dispensary","A dispensary in Busia",360
+49066b8b-2b9a-43cf-b3e4-18d3759ecd00,184,"Ikonzo Dispensary","A dispensary in Busia",NULL
+cb0a7e64-dd5d-4c46-9cb3-c382d95e9c50,185,Sikarira,"A community unit in Ikonzo",183
+e155b8b0-e89d-4916-8b6c-3af9d93b582b,186,"MTRH Memorial Hospital","PPP Clinic",407
+e02b0e78-4312-4006-9e39-0994a759acb2,187,"Chep'ngoror Dispensary","A dispensary in Burnt Forest",NULL
+659f2926-4712-4bd9-a532-7c1b20a0d47b,188,"Matunda Health Centre","A community unit in Matunda",NULL
+f8bf061a-8ef2-4145-9522-03e642d23eaf,189,"Endebes Health Centre","A Health Centre in Trans nzoia",NULL
+67001f34-4df1-4cfa-8552-04d5236dd3a3,190,"Kwanza Health Centre","A Health Facility in Trans Nzoia",NULL
+4dbd0c2b-cb9f-491a-8dbc-c4e552db1515,191,Anderson,"A health centre in transzoia",NULL
+b56b5219-0c8f-4520-810e-ba43302c63eb,192,"Kapsoya Health Centre","A health centre in Kapsoya",478
+c8ede412-a5da-47be-ae7f-f76a4ffc5065,193,"Sister Freda Medical Centre","A Health facility in Trans Nzoia",NULL
+b3bf1ec7-ea9c-4bc6-af5b-ddb6864b7975,194,"St. Ladislaus Dispensary","A health facility in Uasin Gishu County",NULL
+18c343eb-b353-462a-9139-b16606e6b6c2,195,"Location Test","This is a test location for POC Testers.",354
+538c14c2-c98a-49a2-9e11-0af6f7b912dc,196,"Mediheal Hospital","A ppp Clinic in Eldoret",NULL
+02e85257-94d6-43bf-8603-322248c1a210,197,"MTRH MCH","Used to collect PMTCT data.",407
+10446739-2ef2-4fb3-b134-29840d97acbe,198,"MTRH Adolescent Clinic","Moi Teaching and Referral Hospital Adolescent Clinic.",407
+4ff7f723-95ce-4481-ba47-6539f22aae3c,199,"MTRH Nyayo Ward","MTRH clinic Nyayo Ward",407
+3ce46ae0-7eca-48c9-86d3-d5bdde1c7dab,200,"MTRH Mother & Baby Ward","MTRH Mother & Baby Ward",407
+0d599936-1a29-464b-87ad-c92cf51a6a84,201,"MTRH Pediatric Ward","MTRH Pediatric Ward",407
+2a901f42-bf51-428c-8be3-a135075abcb2,202,"MTRH Other","MTRH Other",407
+20bd486d-5c84-44f4-9ffa-2f1c1d9e79f8,203,Langas,Facility,373
+20967b54-63b5-4311-a68e-2fc04406e56a,204,"MTRH Oncology","Moi Teaching and Referral Hospital - 
+Oncology",407
+584b1638-b11d-4cbe-8e81-ff25b684d63c,205,"Busagwa Dispensary","Busagwa Dispensary",NULL
+7fb68709-6e7b-4eaf-a984-ea111fa45853,206,"MTRH ACTG","MTRH ACTG",407
+5decf6b7-506f-4a67-a8c3-27303d56f867,207,MTRH-Oncology,"Handles patients screened and treated with breast and cervical cancer",NULL
+1ee4e702-913b-40a6-ab9c-26f9b4fced1c,208,"Huruma MCH","Huruma MCH",365
+7bc85590-2de6-4780-b4d8-f167b71c1834,209,Kakamega,"Is a Kakamega County Referral hospital",NULL
+d4f8de72-5058-4db8-b556-324c7020b83b,210,Homabay,"Oncology site",NULL
+af0d01d4-7c15-491d-be73-50512ab67e3a,211,"Alphima Medical Clinic","A Private Hospital in Eldoret",470
+21beec4b-d6d0-4fe3-9711-acab0d577067,212,"Jaramogi Oginga Odinga TRH","Jaramogi Oginga Odinga Training and Referral Hospital.",NULL
+db2bdd7c-5fe6-4ea3-adc1-d2d8dfb3d658,213,Bomet,"Oncology clinic at Bomet",NULL
+1ce5034b-f05d-46b6-910f-fc959e091641,214,"Kapenguria County Referral Hospital","Referral hospital in Kapenguria.",369
+c54cbafc-3d6a-41a0-ae6c-ef40df16e2c9,215,"Hamisi Sub County Hospital","A sub county hospital in Hamisi",NULL
+3acdbf65-644a-44c6-b6fa-9dad734ec442,216,BUTERE,"An Oncology Clinic",NULL
+e8205863-1b9b-4f27-97c3-5f492b2a3830,217,"Turbo CCC","A CDM comprehensive Care center",NULL
+1574b24d-96a3-4d4a-8d70-f4a4ac0fd3df,218,"Huruma CCC","A CDM Comprehensive Care center",NULL
+2a7ef5d8-28b6-4285-8313-c356ebbd3305,219,"St. Elizabeth Lwak Mission Health center","A health Center in Siaya County",NULL
+d6155afe-9258-4632-9723-08de6d7e2602,220,"Madiany sub county hospital","Madiany sub county in Siaya County- Oncology study",NULL
+3d65bfd3-c134-4133-a7aa-f44a2206f403,221,"Bungoma County Referral Hospital","A referral hospital in Bungoma county",NULL
+bf02fef0-0330-4247-82b0-d9ed490206a2,222,"Nyahururu District Hospital","A district Hospital in Laikipia County",NULL
+68cb63f3-992d-4fd0-a80d-47a27fcf8021,223,"MTRH TB","TB Clinic at MTRH",407
+dfc36b77-c059-4a29-8a92-a40d5ad60774,224,"Chemundu Dispensary","A dispensary in Nandi County.",NULL
+261a0504-17fa-4fae-989f-4d4f30767842,225,"AIC Kapsowar Mission Hospital","Mission Hospital in Kapsowar.",NULL
+65225dcd-81cc-4c8f-92e1-bb687995cf24,226,"Vihiga County Referral Hospital.","Referral Hospital in Vihiga county.",NULL
+a36c86bb-7ca3-4319-8674-28c66ba14deb,227,"Iten MCH","An mch facility",366
+dae67604-3af4-416a-a5fa-4de2093b3ce5,228,"Webuye Group 1","This group is a GISHE group that meets in the Webuye Area.",8
+535dc3bd-842b-4ca1-bc7c-357635ab985e,229,"Kitale MCH","mch clinic at kitale",372
+17c97881-90e5-43c8-b8a3-cc0322f89a89,230,"Busia MCH","mch clinic at busia.",360
+f2320960-28de-41cf-b7d5-4734b75bafef,231,"Chulaimbo MCH","mch clinic at chulaimbo.",364
+aa65d6b1-fad8-46a7-94cb-f5247d21509d,232,"Meru County Referral Hospital",NULL,NULL
+ff95cb97-3d9e-4016-aff9-930fed3c55ec,233,"Sori Lake side Hospital","A hospital in Migori County",NULL
+c79828e4-16cd-4c30-8164-13d6005aa879,234,"Nyamira County Referral Hospital","Nyamira County Referral Hospital - Oncology Clinic",NULL
+dbe94e9c-c882-4ec0-9edc-d0038069cd00,235,"Webuye Health Centre","Health Centre in Bungoma County",NULL
+c0f4fd82-0d65-4b0b-aa04-be5914063959,236,"Mulachi Dispensary","A dispensary in Bungoma County",NULL
+cb7fae6f-8daa-4a84-b4b0-7a1852b0526c,237,"Lukusi Dispensary","A dispensary in Bungoma County",NULL
+e2bb5611-a016-4440-951d-f35e42ad4821,238,"Khaoya Dispensary","A dispensary in Bungoma County",8
+df1f80fa-8c43-429d-93b9-bc01d0c898cf,239,"Miendo Dispensary","A dispensary in Bungoma County",NULL
+52d0a75a-b281-4f6d-a7c4-07c0cd5b1ee4,240,"Matulo Dispensary","A dispensary in Bungoma County",NULL
+61492482-4cde-4c71-8d20-e5ab9e858583,241,"Khayaya Dispensary","A dispensary in Bungoma County",NULL
+89442596-43af-4e32-a185-d1b5fbd86549,242,"Namwatikho Dispensary","A dispensary in Bungoma County",8
+90d8e717-36a6-4df2-a321-2fb2e9956bc0,243,"Mukhe Dispensary","A dispensary in Bungoma County",NULL
+299c8c3a-121a-4931-b1fa-fff949292ac3,244,"Khalala Dispensary","A dispensary in Bungoma County",NULL
+a568c19e-cfcb-416a-83ae-9c24b72d2c38,245,"Chemalal Dispensary","A dispensary in Bungoma County",NULL
+6ae719f8-1805-4680-82d3-2bf58c617047,246,"Namarambi Dispensary","A dispensary in Bungoma County",NULL
+122addaa-dc8a-4e86-ad76-695aa35e2f6e,247,"Lurare Dispensary","CDM site",8
+34aec983-646e-4d8f-93a9-fa8156de15ec,248,"Garissa County Referral Hospital","This is an Oncology clinic that the AMPATH oncology will be supporting.",NULL
+379ff09d-c72f-4859-a9dc-3c0295738252,249,"MTRH Anti-coagulation","oncology anti-coagulation treatment.",407
+43af2bcf-ec6c-4db4-a957-120e6d9931b6,250,"Makueni County Hospital","An oncology Clinic",NULL
+fc8ebb3e-7611-4c44-baab-335503f4e3cf,251,"Tingwa Dispensary","A dispensary in Elgeyo Marakwet.",NULL
+651faf6d-5e2e-4e9e-abfb-71cb67ab4f4b,252,"Alupe Sub-county Hospital","Alupe Sub-county Hospital",NULL
+2bd6540f-0d7f-4b9e-a523-2292d3e4211f,253,"Bukalama dispensary","Dispensary in Matayos Sub county",NULL
+81f37501-c461-430d-bd60-bf5429f94ea1,254,"Nambuku health centre","Health Center in Samia sub county",NULL
+32a9ae48-b262-4f00-b489-b1da192ef617,255,"Busibwabo Dispensary","Dispensary in Matayos sub county",NULL
+a77d14b1-e295-4b78-9c64-6bfd2f208a09,256,"Musokoto Dispensary","Dispensary in Nambale sub county",NULL
+0ced720a-820a-4be4-a39e-b6be20090611,257,"Nangina Dispensary","A dispensary in Samia Sub county",NULL
+31dfd5f5-8c5f-42ea-88a6-50f327b1d160,258,"Kamuriai dispensary","A dispensary in Teso North",NULL
+234f54c7-536f-46eb-9c23-26544df9307f,259,"Lwanyange dispensary","A dispensary in Nambale sub county",NULL
+9d33efbc-f6c7-4499-a63e-5d10c3f7c713,260,"Mahanga Dispensary","BI-Kuza Project",8
+7177933e-cc8d-47d9-87e1-c778f30004ea,261,"Kituni Dispensary","BI-Kuza location",8
+79a258ba-19c0-4235-84a5-7f5493e82204,262,"Sitikho Health Centre","BI-Kuza project",8
+19c1af60-1b5f-4097-9553-942140b5f67a,263,"Misikhu Dispensary","BI-Kuza Project",8
+813a9efd-7bcf-4b6a-b920-28ac41dff140,264,"Khalumuli Dispensary","BI-Kuza Project",8
+7f56d073-759e-4d36-96d9-053663e696da,265,".Namwatikho Dispensary","BI-Kuza Project",8
+f525a5b8-3da8-4558-8d24-96ef565f8b53,267,"Sinoko Sub County Hosp","BI-Kuza Project",8
+ee53077f-6b53-47bf-b077-328d442d0469,268,"Alupe sub county","CDM project",12
+ac33a64f-602b-4f3e-bee3-8d0c2c65cf07,269,"Bikeke Health Centre","PIC4 Program",NULL
+7d04e1aa-fb0e-40b5-840d-40c4a3c8558d,270,"Bondeni  Health Centre","PIC4c Project",NULL
+8ddc0497-25a7-4a13-af04-a817cb10ea5d,271,"Chepchoina Dispensary","In Transnzoia",NULL
+9b2be8fe-a94d-478c-af47-57a952a00be2,272,"Cherangany Health Centre","PIC4C Project",NULL
+f51f00c1-56dc-482a-af90-4929d8f20e1d,273,Munongo,"A dispensary in Busia County",360
+5999015c-5492-4f1c-ab07-8df667cf36ee,274,"Kabobo Health Cente",NULL,NULL
+93209925-5c86-4d09-abd0-ac02667ca137,275,"Kipsigak Health Center","CDM Facility",NULL
+f28cac93-e9db-4833-84e3-da87d62ae418,276,"Gitwamba Health Centre","A PIC4C Facility",NULL
+ab408fae-778b-498a-a390-17d0427acc80,277,"Kaisagat Health Centre","A PIC4C Facility",NULL
+e32dc229-5b50-4788-a5ae-c97bc4495545,278,"Kapkoi Health Centre (Kwanza)","A PIC4C Facility",NULL
+5b3345f2-702b-438b-a52a-9bf0153e0a3d,279,"Kaplamai Health Centre","A PIC4C facility",NULL
+1dc987ac-5396-4498-9e87-a344aeb4b290,280,"Kiminini Health Centre","A PIC4C Facility",469
+deedd63b-bc91-47e2-b58e-af751165151a,281,"Kimuri Dispensary","A PIC4C Facility",NULL
+e45c3020-96bd-4602-af7f-b7179f0a1886,282,"Kipsoen Dispensary","A PIC4C facility",NULL
+3c16dbdc-c3ff-4c48-a5cb-da2cdf8ef5e9,283,"Kitalale Dispensary","A PIC4C Facility",NULL
+07177a63-2671-4552-a508-0e41b5f35ea2,284,"Lukhome Dispensary","A PIC4C Facility",NULL
+fef64dbd-ba81-47a5-8c6b-13cff182961b,285,"Mailisaba Dispensary","A PIC4C Facility",NULL
+2a6e4d51-0d2a-47fc-890c-7e3e72945818,286,"Mitume Dispensary","A PIC4C Facility",NULL
+161331bf-516e-48c8-8fca-4ad18df92264,287,"Mt. Elgon National Park Dispensary","A PIC4C Facility",NULL
+a28e4156-89ec-4aaa-b008-640c3887eda2,288,"Namanjalala Dispensary","A PIC4C Facility",NULL
+8a7a35b2-3fd7-47f2-8889-cdec7fa6bbbb,289,"Nzoia Dispensary","A PIC4C Facility",NULL
+9ac3cb04-a998-4391-9b6f-3bcc46ca102a,290,"Sitatunga Dispensary","A PIC4C Facility",NULL
+cee207fb-962d-444c-b233-82ec2ca719bd,291,"Suwerwa Health Centre","A PIC4C Facility",NULL
+6a95496a-5eb3-4d02-a6ec-7c5daca389d9,292,"Tom Mboya Dispensary","A PIC4C Facility",NULL
+b6c4c43f-4cd7-4e31-9fbb-fa3d3d12f566,293,"Weonia Health Centre","A PIC4C Facility",NULL
+52e1a6b8-c6d2-4f03-9a15-5a977802f431,294,"Wiyeta Dispensary","A PIC4C Facility",NULL
+8d5f6027-0cc3-4b1c-b77e-f97253b99d74,295,"Chwele Sub_District hospital","BHIM Facility",NULL
+27c62401-f14a-4a69-b28d-fc0e78e6a1d4,296,"Kabuchai Health Centre","BHIM facility",NULL
+52e2002a-cabc-4927-8cbb-ad6ba5f7d4eb,297,"Bukembe Dispensary",BHIM,NULL
+4c35e6c6-4f57-48e0-97d0-3d00a1a26bc3,298,"Mayanja Dispensary","BHIM facility",NULL
+aa8ebb29-11db-4b50-847a-1eaf10c6958b,299,"Mechimeru Dispensary","BHIM facility",NULL
+5cd5b267-d307-4a6d-bd44-2edd04e9e916,300,"Bahai Dispensary","BHIM facility",NULL
+66ec44ab-8b14-4cb4-8939-942b1ae3d175,301,"Kimilili Sub_County Hospital","BHIM facility",NULL
+85ff4037-273a-409f-b6f0-e47367a14651,302,"Makhonge Health Centre",NULL,NULL
+500eab6a-00ea-464e-b4b8-43cac6b6a42f,303,"Ndaru Health Centre",NULL,NULL
+ab50967e-7001-4e30-83a0-147b612501af,304,"Tongareni Model Health centre","BHIM Facility",NULL
+baebd699-97e9-4cec-9676-299d3c562ae3,305,Kaptama,NULL,370
+29124daf-6422-4896-b70e-daad3b252c9d,306,"Kapenguria County Referral Hospital MCH",NULL,369
+17a3505b-3610-44c3-a698-ef2e23b5e006,307,"Bungoma County","OVC Bungoma",NULL
+1bdc54e3-d7fc-4846-96a3-b702f925d490,308,Kabuchai,"A subcaounty in Bungoma",307
+729dd2aa-fec1-4355-b8d3-af4a89a69663,309,"Kabuchai OVC","A subcaounty in Bungoma",307
+48305e5b-2ca5-44e1-8f6b-008c4d2789ba,310,"Mukhobola MCH","MUkhobola MCH Clinic",381
+f8dd8eb8-b9fe-46d1-bb42-58a5f18cfc25,311,"Osieko MCH","Osieko MCH Clinic",382
+e3cb359e-0b69-4371-aa62-8ca22dca151f,312,"Port Victoria MCH","Port Victoria MCH Clinic",385
+88506d5f-8b48-42ca-88ab-c2855bca9ee2,313,"Matayos MCH","Matayos Health Centre MCH",NULL
+8565e74d-c5df-4c60-aa1b-5976001e3977,314,"Angurai MCH","Angurai Health Centre MCH Clinic",355
+8f5694dc-cba7-47b5-a97c-677cfb9a8d7c,315,"Bumala A MCH","Bumala "A" Health Center MCH",357
+cb4a90fd-28b8-4c01-b15c-242ff5e5e731,316,"Bumala B MCH","Bumala "A" Health Center(Busia Satellite Clinic)",358
+22a1255d-e56b-446a-a32b-e7ea8bd1a89c,317,"Changara MCH","Changara MCH Clinic",361
+6ba7d04a-585b-48b4-895a-fe1af98453bc,318,"Kamolo MCH","Kamolo Health Centre MCH Clinic",368
+e907044b-4170-49e1-98e8-93258596bb23,319,"Khunyangu MCH","Khunyangu District Hospital MCH Clinic",371
+e211bf00-819a-43a5-baa4-354feaa02db8,320,"Malaba MCH","Malaba Health Centre MCH Clinic",374
+60cd8ba2-c4a5-44e5-b7cf-7cc3192756f6,321,"Teso MCH","Teso/Kocholya Sub-County Hospital MCH Clinic",389
+8241f06b-d74d-4f6d-9def-7254d9833e10,322,"Burnt Forest MCH","Burnt Forest MCH Clinic",359
+d560891a-28b9-41cc-8cfc-1efd441bc906,323,"Chepsaita MCH","Chepsaita MCH",363
+f0e8d70a-dd24-4f59-bcf3-3566b8a1d5cc,324,"Langas MCH","Langas PMTCT Clinic",373
+8b6f450b-8a61-4051-b4bd-b1a79cb541ee,325,"Moi's Bridge MCH","Moi's Bridge MCH",377
+0943a3b0-3630-4d71-ad09-cc55cfd3bde1,326,"Moiben MCH","Moiben PMTCT Clinic",378
+78d91367-c020-4c65-b4f3-31ec07fb90d9,327,"Pioneer Sub-District Hospital MCH","Pioneer Sub-District Hospital PMTCT Clinic",383
+469bb74e-18a4-4d74-872e-55fcebe12dc7,328,"Soy MCH","Soy PMTCT clinic",387
+d0fac112-5690-47c5-8ffc-0abcbb5b3124,329,"Turbo MCH","Turbo PMTCT Clinic",390
+8c1ac178-1eef-4195-ba45-f283f95e5775,330,"Uasin Gishu District Hospital MCH","Uasin Gishu District Hospital PMTCT Clinic",408
+fc9e3da3-0128-4ae8-8a23-63561f7aea11,331,"Ziwa MCH","Ziwa PMTCT Clinic",392
+2efc716d-fddf-468e-8365-09cca3fc4d5c,332,"Plateau Mission Hospital MCH","Plateau Mission Hospital PMTCT Site",384
+e93d79ea-13c8-4f0c-a757-0858a7f387eb,333,"Kesses MCH","Kesses PMTCT Clinic",353
+dfc0f21e-2e6c-4052-bdfe-23ee1b8084e8,334,"Bokoli MCH","Bokoli PMTCT Clinic",356
+3d8cdb07-bbe5-495c-b4ae-b9d6a2dc694f,335,"Kaborom MCH","Kaborom PMTCT Clinic",367
+0449c609-d190-4412-80ae-c14444e6a5f2,336,"Kaptama MCH",NULL,370
+abef0621-e2cd-4a65-8893-2ee6e963ab81,337,"Mihuu MCH","Mihuu PMTCT Clinic",375
+b4f7483a-00b8-4ff4-be70-dfefc85c60fa,338,"Milo MCH","Milo PMTCT Clinic",376
+8cad59c8-7f88-4964-aa9e-908f417f70b2,339,"Mosoriot MCH","Mosoriot PMTCT Clinic",379
+1254d7b3-4fb1-407e-b192-57e149225bb3,340,"Sinoko MCH","Sinoko PMTCT Clinic",386
+e9f515c2-7c48-4099-ac76-41db9977f96f,341,"Webuye MCH","Webuye Sub County PMTCT",391
+f7aabb83-7915-4c24-88b2-bcde8b3a9977,342,"Mt. Elgon MCH",NULL,380
+f55549a1-98f2-426d-9bff-0121a64bee02,343,"Bituyu Dispensary","BHIM Facility",NULL
+16a85714-d2c3-41aa-ac69-293fd854d7ca,344,"Bulondo Dispensary","BHIS Facility",NULL
+cc867f2c-3c39-4646-b012-dabab0be4f8a,345,"Karima Dispensary","BHIS Facility",NULL
+919e6881-501c-46a6-af24-c547a565b4b8,346,"Kimalewa Health centre","BHIS Facility",NULL
+5aca018d-07ed-4fc6-b2b2-f22cb1498916,347,"Makutano Dispensary","BHIS Facility",NULL
+75b519d2-ea88-4a24-bc36-8b252d20d349,348,"Nalondo Health centre (Model)","BHIS Facility",NULL
+bab17a99-c355-4bcb-a587-5c53ffeddecb,349,"Nzoia Medical Centre","BHIS Facility",NULL
+e467502b-ac9a-47f8-ad13-9a8e3eda889f,351,"Chepkanga HC CCC","a CCC facility",362
+2313bdd9-54f2-4534-9193-07246f2485d6,352,"Chepkanga HC MCH","a Mch facility",362
+617c45c9-558d-4e6e-bbc8-f149bfb20396,353,KeHCPL,"Kesses Health Center Parent Location",NULL
+4b09439f-d9d8-4dbf-b4bb-27ce317e8a42,354,"Test Parent",NULL,NULL
+4b5fbd17-b86f-4565-b026-201eaf41f6eb,355,"Angurai Health Centre","Angurai Health Centre",NULL
+7cebf377-ece5-4912-bd61-7219707cf601,356,BHPL,"Bokoli Hospital Parent Location",NULL
+6d13cf14-da05-468e-8cb9-6d93c35feab3,357,BAHCPL,"Bumala A Health Centre Parent Location",NULL
+2ba9977a-2d32-4df8-9766-ced7e87f7478,358,BBHCPL,"Bumala B Health Centre Parent Location",NULL
+8156eccb-eb27-4502-a986-d2531e64e968,359,BFMCPL,"Burnt Forest Sub-County Hospital Parent Location",NULL
+7e118a64-63f4-49fe-99d6-73df1449ab91,360,BDHPL,"Busia District Hospital Parent Location",NULL
+6b3d9ef3-88c1-4f1e-bf70-120d85a77d1e,361,CGDPL,"Changara (GOK) Dispensary Parent Location",NULL
+e711e4a9-baf7-4dba-aa36-0537c328e396,362,CHCPL,"Chepkanga Health Centre Parent Location",NULL
+1ddf35dc-c9de-4ee1-b184-5ebc5ffa6c11,363,CDPL,"Chepsaita Dispensary Parent Location",NULL
+a89e71a3-b342-44cb-9086-e96fc0233961,364,CSDHPL,"Chulaimbo Sub-District Hospital Parent Location",NULL
+31531310-9384-4482-8526-5fe710928ff0,365,HDHPL,"Huruma District Hospital Parent Location",NULL
+d0c78ead-1b2f-4a3c-9a6d-2ce4b167b568,366,ICRHPL,"Iten County Referral Hospital Parent Location",NULL
+864bc5c6-4c25-42eb-bfd7-d788db1f7d70,367,KaDPL,"Kaborom Dispensary Parent Location",NULL
+9f144737-e475-4070-8bb7-cd8af4535c86,368,KDPL,"Kamolo Dispensary Parent Location",NULL
+012894f1-ac74-4eb2-937e-65b29c6eb50e,369,KDHPL,"Kapenguria District Hospital Parent Location",NULL
+22b8c643-f199-4c2d-b07c-8981d78b997b,370,KHCPL,"Kaptama (Friends) Health Centre Parent Location",NULL
+112b145a-7467-4abb-8c1c-64304a1760d0,371,KSDHPL,"Khunyangu Sub-District Hospital Parent Location",NULL
+e394202f-7455-4057-a2f3-64fcfa83f5c4,372,KCRHPL,"Kitale County Referral Hospital Parent Location",NULL
+93546e76-54cc-4564-8eb9-97029c9ee623,373,LRPL,"Langas RCEA Parent Location",NULL
+440e2fe3-3f6d-4ecc-8b5b-9c42e184bca3,374,MaDPL,"Malaba Dispensary Parent Location",NULL
+e7e09931-7314-4631-88b1-60ac3a8cd97c,375,MDPL,"Mihuu Dispensary Parent Location",NULL
+61c858dd-fc19-4806-badc-1f1e185757b0,376,MiHCPL,"Milo Health Centre Parent Location",NULL
+93bbe821-63cb-4075-9f87-fae70bb6c2de,377,MBHCPL,"Moi's Bridge Health Centre Parent Location",NULL
+fea6ab04-91bc-4e0a-8d25-9d4815e47ffd,378,MoHCPL,"Moiben Health Centre Parent Location",NULL
+6898767a-468b-4bda-8d2e-b141e624f7ed,379,MRHTCPL,"Mosoriot Rural Health Training Centre Parent Location",NULL
+1acb8e3f-39d5-4fc4-bc3e-c342e98210f6,380,MEDHPL,"Mt Elgon District Hospital Parent Location",NULL
+7e1eacd1-a01c-4599-9fc8-d42f755f8de5,381,MHCPL,"Mukhobola Health Centre Parent Location",NULL
+e14fb308-16ff-4334-a587-70e9b0d02ff2,382,ODPL,"Osieko Dispensary Parent Location",NULL
+1c78f94e-14cc-4549-abb4-9402c3509dda,383,PHCPL,"Pioneer Health Centre Parent Location",NULL
+7dfb608d-7587-4114-961c-5306caf2823b,384,PHPL,"Plateau Hospital Parent Location",NULL
+c5b11bf4-3f16-49b1-849d-af36dcdf72fb,385,PVHPL,"Port Victoria Hospital Parent Location",NULL
+701d53ac-2e4b-40e0-b869-0618212c1d5e,386,SDPL,"Sinoko Dispensary Parent Location",NULL
+de91bba1-5510-4a9e-90a5-c0caa2d30605,387,SHCPL,"Soy Health Centre Parent Location",NULL
+860ccd44-316d-441a-b4b5-29927a733298,388,TSCHPL,"Tambach Sub-County Hospital Parent Location",NULL
+2f02de43-d2e6-41b3-a997-9c714f70bb8b,389,TDHPL,"Teso District Hospital Parent Location",NULL
+625585ab-0b93-490f-bf64-b85dd97a0621,390,THCPL,"Turbo Health Centre Parent Location",NULL
+d0ec5ba7-18ee-4aac-b001-fc61cec8ca26,391,WDHPL,"Webuye District Hospital Parent Location",NULL
+aa14b55e-9b33-4132-ae3b-310960b7d3f6,392,ZSDHPL,"Ziwa Sub-District Hospital Parent Location",NULL
+49fa8ba9-06f4-4072-afe7-fd3e51ed4482,393,"Chepkigen Health Centre","Chepkigen Health Centre",463
+81e709e6-769d-4ac0-95b9-65fffa1b87c3,394,"Kipkabus Dispensary","Kipkabus Dispensary",477
+9125a1fb-2856-49dd-91e0-aecdd85bbb99,395,"Mary Immaculate","Mary Immaculate HC in Ainabkoi Sub County Kapsoya Ward",NULL
+8c7ec4f7-270c-45e9-a4f9-8589242d50d5,396,"Chepkigen Health Centre MCH","Chepkigen Health Centre PMTCT Site",463
+2b1d2083-b4df-4e5c-96fe-af88122ef75b,397,"Cheramei Health Centre MCH","Cheramei Health Centre PMTCT Site",462
+a0badb53-f49f-4d0b-bd3b-a5f435cbaf66,398,"West Clinic Health Centre  MCH","West Clinic Health Centre PMTCT Site",475
+de051b8a-78ab-4fa8-bb08-5364c8e87297,399,"Kapyemit Dipsensary MCH","Kapyemit Dipsensary PMTCT site in Turbo Sub County",476
+523d5060-07ee-46d9-b439-12867c4e83ac,400,"Elgeyo Border Dispensary MCH","Elgeyo Border Dispensary PMTCT Site in Moiben Sub County",472
+09c9dbeb-9a24-4511-9ad2-9cf6601a9023,401,"Kipkabus Dispensary MCH","Kipkabus Dispensary MCH in Ainabkoi SUb County",477
+a7b5bb0a-0244-44da-93b2-4d990f2420c6,402,"Mary Immaculate MCH","Mary Immaculate HC PMTCT site in Ainabkoi Sub County Kapsoya Ward",NULL
+9ddd21c6-f668-44c7-a6c7-041ec1e836a6,403,"St. Marys Health Centre MCH - Kapsoya","St. Marys Health Centre - Kapsoya PMTCT Site in Eldoret",484
+516c889a-f9ea-4861-b89c-e39f08dfb15c,404,"Kapsoya Health Centre MCH","Kapsoya Health Centre PMTCT Site",478
+02b632fd-fef8-444a-9183-50ee4cf3cef9,405,"Emkwen Dispensary","A CDM facility",NULL
+b8135ddf-e02c-4098-b4ce-17880a9ddb0f,406,"Tambach MCH","Tambach PMTCT Site",388
+177c48c3-3b80-4981-8430-6b8d1255d952,407,MTRHPL,"MTRH Parent Location",NULL
+168a43e4-221a-4672-a06a-8fa1ffe4b39d,408,UGDHPL,"Uasin Gishu District Hospital Parent Location",NULL
+30795b10-ae2f-4ea2-8e17-2eda3caab793,409,AHCPL,"Amani Health Center Parent location",NULL
+63f52188-4b3c-49c1-aad2-e129b784cef7,410,NHCPL,"Nasewa Health Centre Parent Location",NULL
+a580930d-9a57-48ec-aa3e-c170802f45b0,411,"Kapteldon Health Centre","Health Centre in Kapteldon",474
+fc4994e5-c92e-4d62-b6b6-d5d4600ac1ad,412,"MTRH Pharmacy","Help tbe pharmacy team provide medication refills to clients.",407
+40a9b2f0-c6f3-423b-881b-77994a41b94e,413,"Metkei Community Dispensary","For CDM project",NULL
+840d4e9c-8f62-4ece-bfd7-64bf04007033,414,"Railways CCC","A CCC location",471
+a473d19b-51ce-429e-927e-a197d36e00f1,415,"Railways MCH","A MCH Facility",471
+4949293e-7b5c-4359-8a55-1196a578143b,416,"Top Station Dispensary","Dispensary in Saboti Subcounty",NULL
+29664340-6318-4808-8adb-6be98ddcb81b,417,"Kobos Health Centre","Health Centre in Kwanza-Subcounty",NULL
+6666bb3c-1500-4320-9c46-78efc5bbaee0,418,"Rafiki Health Centre","A Health Centre in Saboti Sub County",NULL
+bd561f82-7a85-4f8e-a6b3-c7de3711c377,419,"KCRH MCH Module","This is a module under KItale CRH",372
+e466e113-dcfa-4dd0-9404-66a45a9a6a88,420,"KCRH New Module","This is a module  under KCRH for New Clients",372
+345514ae-8f37-42fc-9bbe-993828c2910d,421,"KCRH Module A","This a module under KCRH for General clients",372
+d9076981-4a84-4f6c-9f22-8980376727ae,422,"KCRH Module B","This is a module under KCRH for General clients",372
+4e21fbba-66e4-43d5-94a9-219b25a02ddc,423,"KCRH Champions Module","This is a module for young 24 years and Below under KCRH",372
+9d1025b7-280d-46f7-8f0d-33b3b7aeab41,424,"Alale Health Centre","This is a health centre in  Pokot North",NULL
+d0d133f1-22f3-49c3-b9f1-d2f64944eb0d,425,"Amakuriat Dispensary","This is a Dispensary in Pokot North",NULL
+fc26648e-aa47-4928-8595-5c96943b44b2,426,"Konyao Dispensary","This is a Dispensary in Pokot North",NULL
+0a2d9adf-d758-4c81-8429-2ff54e2c58d6,427,"Lomut Dispensary","This is a facility in Pokot North",NULL
+38eec9dd-8b52-4f8c-ad25-f045486299c1,428,"Murkwijit dispensary","This is a facility in Pokot North",NULL
+3e365f38-28bc-467a-944e-a7f714f68349,429,"Location Test B","This is a test location for POC Testers",354
+cd5554ca-2928-43ef-bcfe-777b7b9d5523,430,"Location Test C",NULL,354
+7a948722-45db-4b55-bbf0-0637644b0228,431,"Kapsitwet health center","New location in Kitale",NULL
+4ce35995-fcc3-4c70-9190-3cd56582cf8f,432,"Lupida MCH","Lupida MCH",NULL
+086e6f2e-b67e-4926-a8fa-23999a7b7af1,433,"Kaptarakwa Sub County Hospital","Kaptarakwa Sub County Hospital POC site",NULL
+0db6a78c-6b64-420c-bc30-ac403417c237,434,"Chesoi Health Centre","Chesoi Health Centre POC site",489
+ce8089a9-d105-4d79-8a0a-d4a389d691b4,435,"Chesongoch Health Centre","Chesongoch Health Centre POC site",488
+5794ab51-f531-46b8-acc0-51d77ff23760,436,"Kaparon Health Centre","Kaparon Health Centre POC site",NULL
+33bca52f-148a-4f86-8897-48da6f8f01ec,437,"Simotwo Dispensary (Keiyo)","Simotwo Dispensary POC site",NULL
+2c89c870-560d-4521-90f9-b62f56939595,438,"Chesoi Health Centre MCH","Chesoi Health Centre MCH",489
+3db5339b-491c-4e80-8c55-7ef21d7141e6,439,"Chesongoch Health Centre MCH","Chesongoch Health Centre MCH",488
+291f7e34-a803-4066-8c43-73c71bf206ce,440,"Kaparon Health Centre MCH","Kaparon Health Centre MCH",NULL
+bc47c92b-9e7f-4e6e-a017-c748cb62a4d3,441,"Kaptarakwa Sub County Hospital MCH","Kaptarakwa Sub County Hospital MCH",NULL
+73366df2-53d1-4e3a-b825-e89aaea19f49,442,"Simotwo Dispensary (Keiyo) MCH","Simotwo Dispensary MCH",NULL
+85e503e8-aaa5-442c-a076-e55a852797b0,443,"Khasoko Health Centre","Khasoko Health Centre POC site",NULL
+0d24ac82-82bf-4bca-a55c-513c4c4baf13,444,"Lunakwe Dispensary","Lunakwe Dispensary POC site",NULL
+96bfc251-9054-4a79-8711-c4403ccb5d83,445,"Miluki Dispensary","Miluki Dispensary POC site",NULL
+2031685c-6313-439a-b1a3-bb26f73616ea,446,"Elgon View Medical Cottage","Elgon View Medical Cottage POC site",NULL
+2d355792-b0c8-42d1-886e-7fb67b80e55c,447,"Mumbule Dispensary","Mumbule Dispensary POC site",NULL
+de0203fe-c860-4dc0-b75e-a3b574e87e66,448,"Nzoia Sugar Dispensary","Nzoia Sugar Dispensary POC site",NULL
+282a4bad-6142-4e9a-9059-701c7bf344d7,449,"Mission of Mercy Clinic","Mission of Mercy Clinic POC",NULL
+6394f3c5-0ced-41c1-b9c4-cb29ad322107,450,"Kimumu Dispensary","Kimumu Dispensary",NULL
+e26cbaf5-fd02-4c4f-a529-7a4dcb5ed5e6,451,"Merewet Dispensary","Merewet Dispensary",NULL
+a36f3b3c-8a07-465e-95e5-9bd08fdffe9c,452,"Survivors organization clinic - Malaba.","A clinic in Malaba",NULL
+6ce08cfd-ae4b-41b8-b0a9-a9c5190c879e,453,"Survivors organization clinic - Busia","A clinic in Busia county",NULL
+e977ee50-2671-4c24-a242-b89be0177848,454,"Kibuke Dispensary","A Dispensary in Bungoma County.",NULL
+233f8a0a-3810-4ec0-85d7-b82ebd88e2fa,455,"Ngalasia Dispensary","A Dispensary in Bungoma county.",NULL
+65962df7-ff09-4e11-a1e0-b56fe28d20b0,456,"Dreamland MC Hospital","A hospital in Bungoma County",NULL
+da7fd43d-d99f-4aa5-9172-2a3e1d3b1340,457,"Kaptanai Dispensary","A dispensary in Bungoma county",NULL
+bfe6d66a-993d-4f11-b5d6-d285179e708a,458,"Lwandanyi Dispensary","A dispensary in Bungoma County.",NULL
+bb180221-51f2-4c6a-9045-876ead4e126d,459,"Tamlega Dispensary","A dispensary in Bungoma County.",NULL
+516b0701-0a9c-4b4e-b69c-b614b2358e53,460,"Chemwa Bridge Dispensary","A dispensary in Bungoma County.",NULL
+aa8a7e3e-1252-458e-a760-69e2e5edbb09,461,"Machwele Dispensary","A dispensary in Bungoma county",NULL
+e651b918-b03b-448b-be98-beff370e2141,462,CHMPL,"Cheramei Parent Location",NULL
+9da575d5-6d9c-4723-b556-dc8ec3dfc547,463,CKHCPL,"Chepkigen Parent location",NULL
+e40c221c-721d-4efd-b351-382512e9f1cd,464,"Msekekwa Health Centre","Msekekwa Health Centre",NULL
+ac8a4f98-260b-41e4-a5de-dc62d027c0ab,465,"Msekekwa Health Centre MCH","Msekekwa Health Centre MCH",NULL
+eae17c8e-98f2-4bd9-a080-a5c3fecf2e06,466,"Cheptongei Health Centre","Cheptongei Health Centre",NULL
+eaae1571-0051-4df7-9ed7-a5215452292b,467,"Tot Sub County Hospital","Tot Sub County Hospital",NULL
+a58f3b40-293a-4d69-abcf-70d7b024b380,468,"Fluospar Health Centre","Fluospar Health Centre",NULL
+c547be0c-5a7d-40e4-8097-dd2c4c96d926,469,KIHCPL,"Kiminini Health Centre Parent Locaion",NULL
+2a19110e-0927-43f4-92c2-79da16d236b0,470,AMCPL,"Alphima Medical Clinic Parent Location",NULL
+a0475d95-e86c-4466-9b24-1a498c472d5d,471,RUGPL,"Railways Parent Location (Uasin Gishu)",NULL
+434feac4-5af2-41e6-a09d-3f14e6271237,472,EGBDPL,"Elgeyo Border Dispensary Parent Location",NULL
+f70629c3-480e-495f-b6f9-329350a071fc,473,RHPL,"Reale Hospital Parent Location",NULL
+22e60cef-8cbe-49ec-ba93-96211cc5a1e5,474,KAHCPL,"Kapteldon Health Centre Parent Location",NULL
+3007b739-7bca-430b-9e20-007032c91238,475,WHLPL,"West Health Centre Parent Location",NULL
+b107093c-380e-484c-a350-aad15d5e4e02,476,KAPDPL,"Kapyemit Dispensary Parent Location",NULL
+4333f5e1-2e6e-43fe-9ff1-ad2fc7bee8a6,477,KIDPL,"Kipkabus Dispensary Parent location",NULL
+d98d1d9a-e13c-42b8-b2f7-4e79ded0080f,478,KAPHCPL,"Kapsoya health centre parent location",NULL
+bb2e14a2-cc55-4ac5-a752-34a807f9fa70,479,"Galilee Medical center","Medical center in Trans-nzoia",NULL
+cd1ff933-bf82-46d5-865f-0d4e8959069b,480,"Kimondo Dispensary","Dispensary in Trans Nzoia",NULL
+94742c3a-17a8-4bf3-b2ba-67d63331d683,481,"Kitum Dispensary","Dispensary in Trans-nzoia",NULL
+93c09c13-f38b-4f18-8cea-dfec6a2cdd0b,482,"Kolongolo Mission Dispensary","Dispensary in Trans-nzoia",NULL
+171b914c-9309-4100-b91b-d4c075bf6d4b,483,"St. Ursula Dispensary","Dispensary in Trans Nzoia",NULL
+4bdc0e98-1d9e-4095-b5ce-5b77915e7b7d,484,SMKPL,"St Mary's Kapsoya parent location",NULL
+7eaaa5e9-64c5-4f5e-bf9e-02ecd13f64a0,485,"Cherangany Nursing Home","Cherangany Nursing Home",NULL
+d1915f5e-7bf2-47dd-93c7-3d2e7b54cbd4,486,"Simit Dispensary","A dispensary in EMC, Keiyo South",NULL
+79a3ccc8-0c8b-48c2-ae54-a3dbe132ed7f,487,"Labot Dispensary","A dispensary in EMC, Marakwet West",NULL
+2b3f5fec-fd44-44bf-9a8c-1c9e5f449f5d,488,CHEPL,"Chesongoch Health Centre Parent Location",NULL
+7c3f1cde-c1e2-437e-beec-b7c2b86ae9a9,489,CHEHCPL,"Chesoi Health Centre Parent Location",NULL
+43239190-96d6-45f8-91fe-02e041c680af,490,"Turkwel Health Centre","A health centre in West Pokot County.",NULL
+5f1c414e-9bc6-4cdf-9307-133625636ddf,491,"Reale Hospital MCH","MCH at Reale hospital",473
+6b9bebc0-bea7-4c90-8dc8-4c14f33c96de,492,"Kapteldon Health Centre MCH","MCH at Kapteldon Health Centre",474
+3149c821-77f3-4ca1-854f-f90bf332ad38,493,"Kapenguria TB","TB Clinic in Kapenguria hospital",369
+d3b68295-efc1-4a2a-9e71-5a31e5eec64f,494,"Iten TB","TB clinic at Iten hospital",366
+a6640952-a4a2-43f6-b6e4-41d108319f19,495,"Oak tree Hospital","Hospital in Uasin gishu",NULL
+0cc1e6c8-69a5-4b78-932d-6170fcfb98fe,496,"Bravo Module-Turbo","A module in Turbo Health Centre",390
+a844aa95-e9a6-416b-942b-ac07c1ef84fe,497,"Maisha Module-Turbo","A module in Turbo Health Centre",390
+c22318da-d854-43fa-bd1e-8cb7d1d16ebf,498,"Victor's Module-Turbo","A module in Turbo Health Centre",390
+acd01eec-bfe6-4050-8e1a-c5dd27a3f741,499,"Tiinei Dispensary","A dispensary in West Pokot",NULL
+f8565d03-0f52-471f-ae81-b31becfd33de,500,"Kaptabuk Dispensary","A Dispensary in West Pokot",NULL
+c7f1edfd-4b89-47b3-abf9-f45c2573f982,501,"Kisor Dispensary","A dispensary in UasinGishu",383
+bf70401b-6eb1-4d5b-bfdf-6956087ad44a,502,"Kipkenyo Dispensary","A dispensary in Uasingishu",383
+37649b75-d92f-4a73-8ffe-42cb62280efc,503,"Moi University MCH","MCH-Moi University  Main Campus clinic",378
+d8cab046-f31e-4e54-9f20-e850c4cfbeb3,504,"Chebiemit Sub County Hospital","Sub County Hospital in EMC",NULL
+dd5f374c-277a-421f-82a1-06ba11a83e6c,505,"Kamwosor Sub County Hospital","Sub County Hospital in EMC",NULL
+8660b2b5-b4c0-4617-8d40-aad3bb428bfd,506,"Kapkoros Dispensary","A dispensary in Turbo, UasinGishu County",NULL
+19dbe2c0-289d-11ed-bdcb-507b9dea1806,517,"Main Store",NULL,NULL
+e790a898-b7de-4c8d-9daa-a10875c742d2,518,"Nabkoi Health Centre","Nabkoi Health Centre",NULL
+9e981178-41c2-4c77-a3f8-94a6b2a3928c,519,"Moi University Parent Location",NULL,NULL
+88323008-4a93-432e-b0a0-cfba5ab7f61c,520,"Muiyengwet Dispensary","A dispensary in Moiben, UG county.",NULL
+cb570390-2a37-47a3-9c10-59639e8d4cd5,521,"Chagaiya Dispensary","Dispensary in Kesses SUB-county",NULL
+c8f982c5-df91-406f-b54f-b105cc8aab85,522,"Chagaiya Dispensary MCH","MCH Chagaiya Dispensary",NULL
+b586b09d-3430-4305-814a-455edfe9fe60,523,"Muiyengwet Dispensary MCH","Muiyengwet Disp MCH",NULL
+869e8752-8be8-46aa-ac8d-67d1592a4a57,524,"Kuinet Dispensary","Dispensary in soy",NULL
+24a2a909-36bc-4b87-b308-848966efd849,525,"Mogoon Dispensary","Dispensary in Soy",NULL
+65c9e132-7b42-4d8b-a15e-5a5e8dc41913,526,"Mobet Dispensary","Dispensary in Soy",NULL
+6178923f-81f0-408b-98d7-8deb0f4b1b85,527,"Chukura Dispensary","Dispensary in Soy",NULL
+5f25049c-cdaa-4efa-96f6-566cba824614,528,"Chembulet Dispensary","Dispensary in Moiben",NULL
+ec030341-30cd-47a6-8b31-2a2627c3e32e,529,"Uhuru Dispensary","Dispensary in Ainabkoi",NULL
+dbd99c38-89f0-4104-baae-df6519b9eaee,530,"Ngelel Tarit Dispensary","Dispensary in Ainabkoi",NULL
+ba07e5bf-a8db-49cb-9e0c-c49d8e4cc47e,531,"Wamalwa Kijana Teaching and Referral Hospital","Wamalwa Kijana Teaching and Referral Hospital",NULL
+2b7beaf3-31d4-4810-a810-c7e1f8a7c8aa,532,"Living room Hospital","PPP Facility",NULL
+ba61d412-95c6-4c2c-9924-d1f460bb3dfa,533,"Barsombe Dispensary","pop site",NULL
+54cdb507-5ba6-4137-aa2a-af3ca14b1b6d,534,"Sinonin Dispensary","cdm site",NULL
+b053317e-c108-4cb7-92d2-56012020cf19,535,"Tarakwa Dispensary","pop site",NULL
+de78505b-5928-4995-b8b8-b883fd7f8e62,536,"Flax Dispensary","pop site",NULL
+2534d470-9299-4b06-a59d-3dc278866888,537,"Chepkorio Health Centre","pop site",NULL
+1b80e12d-9b2c-4d58-8676-204c9ccc6d90,538,"Kabiemit Dispensary","pop site",NULL

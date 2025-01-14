@@ -101,7 +101,7 @@ public class RegisterOpenMRSPayload {
 
     }
 
-    public static void patient(AMRSPatients amrsPatients, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,AMRSPersonAtrributesService amrsPersonAtrributesService,AMRSPatientStatusService amrsPatientStatusService,String url,String auth) throws JSONException, ParseException, IOException {
+    public static void patient(AMRSPatients amrsPatients, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService,AMRSPersonAtrributesService amrsPersonAtrributesService,String kenyaemrLocationUuid,String url,String auth) throws JSONException, ParseException, IOException {
         //OpenMRS Payload
         //identifier
         List<AMRSIdentifiers> identifiers = amrsIdentifiersService.getByPatientID(amrsPatients.getPersonId());
@@ -113,7 +113,7 @@ public class RegisterOpenMRSPayload {
         JSONObject jsonIdentifierOpenMRSID = new JSONObject();
         jsonIdentifierOpenMRSID.put("identifier", OpenMRSID);
         jsonIdentifierOpenMRSID.put("identifierType", "dfacd928-0370-4315-99d7-6ec1c9f7ae76");
-        jsonIdentifierOpenMRSID.put("location", "3e6261cc-ad5e-4834-b85d-af8b42a133e4");
+        jsonIdentifierOpenMRSID.put("location", kenyaemrLocationUuid);
         jsonIdentifierOpenMRSID.put("preferred", "true");
         Identifierarray.put(jsonIdentifierOpenMRSID);
         AMRSIdentifiers ai = new AMRSIdentifiers();
@@ -138,7 +138,7 @@ public class RegisterOpenMRSPayload {
                     JSONObject jsonIdentifier = new JSONObject();
                     jsonIdentifier.put("identifier", identifiers.get(x).getIdentifier());
                     jsonIdentifier.put("identifierType", identifyType);
-                    jsonIdentifier.put("location", "3e6261cc-ad5e-4834-b85d-af8b42a133e4");
+                    jsonIdentifier.put("location", kenyaemrLocationUuid);
                     jsonIdentifier.put("preferred", "false");// identifiers.get(x).getPreferred());
                     Identifierarray.put(jsonIdentifier);
                 }
@@ -146,7 +146,7 @@ public class RegisterOpenMRSPayload {
         }
         //Attributes
         List<AMRSPatientAttributes> amrsPatientAttributes = amrsPersonAtrributesService.getByPatientID(amrsPatients.getPersonId());
-        if(amrsPatientAttributes.size()>0){
+        if(!amrsPatientAttributes.isEmpty()){
             for(int x=0;x<amrsPatientAttributes.size();x++){
                if(amrsPatientAttributes.get(x).getKenyaemrAttributeUuid() != null){
                    JSONObject jsonAttribute = new JSONObject();
@@ -248,8 +248,7 @@ public class RegisterOpenMRSPayload {
     }
     public static void relationship( AMRSPatientRelationshipService amrsPatientRelationshipService, String url, String auth ) throws JSONException, ParseException, IOException {
         List<AMRSPatientRelationship> amrsPatientRelationships = amrsPatientRelationshipService.findByResponseCodeIsNull();
-        if(amrsPatientRelationships.size()>0){
-
+        if(!amrsPatientRelationships.isEmpty()){
             for(int x=0;x<amrsPatientRelationships.size();x++) {
 
                 AMRSPatientRelationship amrsPatientRelationship = amrsPatientRelationships.get(x);

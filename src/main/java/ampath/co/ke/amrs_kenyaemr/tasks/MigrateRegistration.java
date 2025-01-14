@@ -1,5 +1,6 @@
 package ampath.co.ke.amrs_kenyaemr.tasks;
 
+import ampath.co.ke.amrs_kenyaemr.methods.AMRSLocation;
 import ampath.co.ke.amrs_kenyaemr.methods.AMRSSamples;
 import ampath.co.ke.amrs_kenyaemr.methods.AMRSTranslater;
 import ampath.co.ke.amrs_kenyaemr.models.*;
@@ -18,16 +19,59 @@ import java.util.List;
 import static org.thymeleaf.util.StringUtils.substring;
 
 public class MigrateRegistration {
+    @Autowired
+    LocationService locationService;
 
     public static String samplePatientList = AMRSSamples.getPersonIdList();
 
-    @Autowired
-    AMRSPatientServices amrsPatientServices;
 
-    public static void users(String server, String username, String password, String locations, String parentUUID, AMRSUserServices amrsUserServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void locations(String server, String username, String password,LocationService locationsService) throws SQLException, JSONException, ParseException, IOException {
+
+        List<AMRSLocations> amrsLocationsList = locationsService.getAll();
+        if(amrsLocationsList.size()<522) {
+            Connection con = DriverManager.getConnection(server, username, password);
+            int x = 0;
+            Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+
+            String sql = "SELECT uuid,location_id,name,COALESCE(parent_location, location_id) AS parent_location FROM amrs.location\n" +
+                    "ORDER BY location_id,parent_location;";
+            ResultSet rs = stmt.executeQuery(sql);
+            rs.last();
+            x = rs.getRow();
+            rs.beforeFirst();
+            while (rs.next()) {
+                AMRSLocations locations = locationsService.findByChildUUID(rs.getString("uuid"));
+                if (locations == null) {
+                    AMRSLocations ae = new AMRSLocations();
+                    ae.setId(Integer.valueOf(rs.getString("location_id")));
+                    ae.setChildlocationId(rs.getString("location_id"));
+                    ae.setChildlocationName(rs.getString("name"));
+                    ae.setCuuid(rs.getString("uuid"));
+                    ae.setParentlocationId(rs.getString("parent_location"));
+                    //ae.setPuuid(rs.getString(5));
+                    //ae.setParentlocationName(rs.getString(6));
+                    ae.setStatus(1);
+                    locationsService.save(ae);
+                    System.out.println("test here");
+                } else {
+                    AMRSLocations ae = locations;
+                    ae.setStatus(1);
+                    locationsService.save(ae);
+                }
+
+            }
+        }else{
+            System.out.println("Locations already migrated");
+        }
+
+    }
+
+    public static void users(String server, String username, String password, String locations, AMRSUserServices amrsUserServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         String sql = "";
+        String parentUUID="";
         List<AMRSUsers> amrsVisitsList = amrsUserServices.findFirstByOrderByIdDesc();
-        if (amrsVisitsList.size() > 0) {
+        if (!amrsVisitsList.isEmpty()) {
             String visitId = amrsVisitsList.get(0).getUser_id();
             sql = "select \n" +
                     "                u.uuid,\n" +
@@ -96,8 +140,8 @@ public class MigrateRegistration {
         rs.beforeFirst();
         while (rs.next()) {
             System.out.println("User id " + rs.getString(1));
-            List<AMRSUsers> afyastatErrors = amrsUserServices.getUserByLocation(rs.getString(1), parentUUID);
-            if (afyastatErrors.size() == 0) {
+            List<AMRSUsers> amrsUsers = amrsUserServices.getUserByLocation(rs.getString(1), parentUUID);
+            if (amrsUsers.isEmpty()) {
                 AMRSUsers ae = new AMRSUsers();
                 ae.setUuid(rs.getString("uuid"));
                 ae.setUser_id(rs.getString("user_id"));
@@ -128,11 +172,19 @@ public class MigrateRegistration {
     }
 
     //Patients
-    public static void patients(String server, String username, String password, String locations, String parentUUID, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService, AMRSPersonAtrributesService amrsPersonAtrributesService,AMRSPatientStatusService amrsPatientStatusService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-        List<AMRSPatients> patientsListt = amrsPatientServices.findFirstByOrderByIdDesc();
+    public static void patients(String server, String username, String password, String locations, String parentUUID, AMRSPatientServices amrsPatientServices, AMRSIdentifiersService amrsIdentifiersService, AMRSPersonAtrributesService amrsPersonAtrributesService,Boolean samplePatients,String kenyaemrLocationUuid, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
+
+        List<AMRSPatients> patientsListt = amrsPatientServices.findFirstByOrderByIdDesc();
         String sql = "";
-        if (patientsListt.size() == 0) {
+        String whereSQL="";
+        if (samplePatients) {
+            whereSQL ="where l.uuid in ( " + locations + " ) and p.voided=0  and p.person_id in ( " + samplePatientList + ")";
+        }else{
+            whereSQL="where l.uuid in ( " + locations + " ) and p.voided=0  and p.voided=0";
+        }
+        if (patientsListt.isEmpty()) {
+
             sql = "select  \n" +
                     "                   p.uuid, \n" +
                     "                   p.person_id, \n" +
@@ -219,14 +271,19 @@ public class MigrateRegistration {
                     "                   inner join amrs.person_name pn on pn.person_id=p.person_id and pn.voided=0 \n" +
                     "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 and pa.voided=0 \n" +
                     "                   inner join amrs.location l on e.location_id=l.location_id \n" +
-                    "                   where l.uuid in ( " + locations + " ) and p.voided=0  and p.person_id in ( " + samplePatientList + ") and p.voided=0  -- and p.person_id >  + pid +    \n" +
+                    "                   " + whereSQL + " ) \n" +
                     "                   group by pt.patient_id \n" +
-                    "                   order by e.patient_id asc ";
+                    "                   order by e.patient_id asc limit 1000 ";
             System.out.println("SQL ID is " + sql);
         } else {
             String pid = patientsListt.get(0).getPersonId();
             System.out.println("Person ID is " + pid);
             System.out.println("SQL ID is " + sql);
+            if (samplePatients) {
+                whereSQL ="where l.uuid in ( " + locations + " ) and p.voided=0  and p.person_id in ( " + samplePatientList + ")";
+            }else{
+                whereSQL="where l.uuid in ( " + locations + " ) and p.voided=0 and p.person_id >"+ pid +"";
+            }
 
             sql = "select  \n" +
                     "                   p.uuid, \n" +
@@ -314,9 +371,9 @@ public class MigrateRegistration {
                     "                   inner join amrs.person_name pn on pn.person_id=p.person_id and pn.voided=0 \n" +
                     "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 and pa.voided=0 \n" +
                     "                   inner join amrs.location l on e.location_id=l.location_id \n" +
-                    "where l.uuid in (" + locations + ") and p.voided=0  and  p.person_id in (" + samplePatientList + ") \n" + //and p.person_id >"+ pid +"
+                    "" + whereSQL + " \n" +
                     "group by pt.patient_id\n" +
-                    "order by e.patient_id asc";
+                    "order by e.patient_id asc limit 1000";
 
         }
         System.out.println("locations " + locations + " parentUUID " + parentUUID);
@@ -335,8 +392,7 @@ public class MigrateRegistration {
             //List<AMRSPatients> patientsList = amrsPatientServices.getPatientByLocation(rs.getString("person_id"), parentUUID);
 
             List<AMRSPatients> patientsList = amrsPatientServices.getPatientByStatus(rs.getString("person_id"));
-            if (patientsList.size() == 0) {
-
+            if (patientsList.isEmpty()) {
                 String person_id = rs.getString("person_id");
                 AMRSPatients ae = new AMRSPatients();
                 ae.setUuid(rs.getString("uuid"));
@@ -387,7 +443,7 @@ public class MigrateRegistration {
                 rsID.beforeFirst();
                 while (rsID.next()) {
                     List<AMRSIdentifiers> identifiers = amrsIdentifiersService.getPatientByLocation(rsID.getString("patient_id"), parentUUID);
-                    if (identifiers.size() == 0) {
+                    if (identifiers.isEmpty()) {
                         AMRSIdentifiers iden = new AMRSIdentifiers();
                         String pref = "";
                         if (rsID.getString(4).equals("0")) {
@@ -454,7 +510,7 @@ public class MigrateRegistration {
                     rsPA.beforeFirst();
                     while (rsPA.next()) {
                         List<AMRSPatientAttributes> patientAttributes = amrsPersonAtrributesService.getByPatientIDAndPType(rsPA.getString("person_id"), rsPA.getString("person_attribute_type_id"));
-                        if (patientAttributes.size() == 0) {
+                        if (patientAttributes.isEmpty()) {
                             AMRSPatientAttributes apt = new AMRSPatientAttributes();
                             apt.setPatientId(rsPA.getString("person_id"));
                             apt.setPersonAttributeTypeId(rsPA.getString("person_attribute_type_id"));
@@ -467,7 +523,7 @@ public class MigrateRegistration {
                     }
                     //End of Person Attributes
                     //Person Civilstatus
-                    String piddd = rs.getString("person_id");
+                  /*  String piddd = rs.getString("person_id");
                     String pstatusSQl = "SELECT  \n" +
                             "                     pa.person_id, \n" +
                             "                    pt.person_attribute_type_id, \n" +
@@ -574,7 +630,7 @@ public class MigrateRegistration {
                         String patientid = rsPAStatus.getString("person_id");
                         String date_created = rsPAStatus.getString("date_created");
                         List<AMRSPatientStatus> amrsPatientStatusList = amrsPatientStatusService.findByPersonIdAndPersonAttributeTypeId(patientid, personAttributeTypeId);
-                        if (amrsPatientStatusList.size() == 0) {
+                        if (amrsPatientStatusList.isEmpty()) {
                             AMRSPatientStatus cs = new AMRSPatientStatus();
                             cs.setPersonId(personId);
                             cs.setPersonAttributeTypeId(personAttributeTypeId);
@@ -591,11 +647,13 @@ public class MigrateRegistration {
                         }
 
                     }
+
+                   */
                     //End of Person CivilStatus
 
                 }
                 //Migate Patient
-                RegisterOpenMRSPayload.patient(ae, amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService,amrsPatientStatusService, url, auth);
+                RegisterOpenMRSPayload.patient(ae, amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService,kenyaemrLocationUuid, url, auth);
 
             }
 
@@ -649,7 +707,7 @@ public class MigrateRegistration {
 
             List<AMRSPatientRelationship> amrsPatientRelationships = amrsPatientRelationshipService.findByPersonAAndPeronBAndRelationship(persona,personb,relationshipType);
             System.out.println("Totals size  "+ amrsPatientRelationships.size());
-            if (amrsPatientRelationships.size() == 0) {
+            if (amrsPatientRelationships.isEmpty()) {
                 AMRSPatientRelationship pr =new AMRSPatientRelationship();
                 System.out.println("aIsToB "+ aIsToB);
                 System.out.println("bIsToA "+ bIsToA);
@@ -668,8 +726,6 @@ public class MigrateRegistration {
                 amrsPatientRelationshipService.save(pr);
 
             }
-
-
 
         }
         RegisterOpenMRSPayload.relationship(amrsPatientRelationshipService, url, auth);

@@ -16,9 +16,12 @@ import java.util.List;
 public interface LocationsRepository extends JpaRepository<AMRSLocations, Long> {
     AMRSLocations findById(int pid);
     AMRSLocations findByCuuid(String cuuid);
+    AMRSLocations findByChildlocationId(String location_id);
+    List<AMRSLocations> findByChildlocationIdIn(List<String> location_ids);
     List<AMRSLocations> findByMflcode(String mflcode);
     List<AMRSLocations> findAll();
     List<AMRSLocations> findByPuuidAndStatus(String parent_uuid,int status);
+    List<AMRSLocations> findByParentlocationIdOrChildlocationId(String parent_locationId,String  child_locationId);
 
    // @Query("SELECT p FROM PendullumData p WHERE date(p.encounterDate) = date(:encounterDate)")
    // List<AMRSLocations> getAllsummaries(String encounterDate, Pageable pageable);

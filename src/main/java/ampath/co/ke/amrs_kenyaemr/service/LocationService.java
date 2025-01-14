@@ -25,6 +25,15 @@ public class LocationService {
     public AMRSLocations findByChildUUID(String cuuid) {
         return locationsRepository.findByCuuid(cuuid);
     }
+    public AMRSLocations findByLocationId(String locationId) {
+        return locationsRepository.findByChildlocationId(locationId);
+    }
+    public List<AMRSLocations> findByLocationIdIn(List<String> locationId) {
+        return locationsRepository.findByChildlocationIdIn(locationId);
+    }
+    public List<AMRSLocations> findByParentLocation(String p,String c) {
+        return locationsRepository.findByParentlocationIdOrChildlocationId(p,c);
+    }
     public AMRSLocations save(AMRSLocations abstracts) {
         return locationsRepository.save(abstracts);
     }
