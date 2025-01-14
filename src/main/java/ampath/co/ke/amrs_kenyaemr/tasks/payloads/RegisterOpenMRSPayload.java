@@ -249,7 +249,6 @@ public class RegisterOpenMRSPayload {
     public static void relationship( AMRSPatientRelationshipService amrsPatientRelationshipService, String url, String auth ) throws JSONException, ParseException, IOException {
         List<AMRSPatientRelationship> amrsPatientRelationships = amrsPatientRelationshipService.findByResponseCodeIsNull();
         if(!amrsPatientRelationships.isEmpty()){
-
             for(int x=0;x<amrsPatientRelationships.size();x++) {
 
                 AMRSPatientRelationship amrsPatientRelationship = amrsPatientRelationships.get(x);

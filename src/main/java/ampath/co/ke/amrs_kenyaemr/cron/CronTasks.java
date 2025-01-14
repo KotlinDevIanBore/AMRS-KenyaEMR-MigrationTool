@@ -108,7 +108,7 @@ public class CronTasks {
             System.err.println("Error calling the endpoint: " + e.getMessage());
         }
     }
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+   @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
     public void ProcessLocations() throws JSONException, ParseException, SQLException, IOException {
        /* AMRSLocation amrsLocation = new AMRSLocation();
         String locationsId = amrsLocation.getLocationsId(locationService);
@@ -133,7 +133,8 @@ public class CronTasks {
         String locationId=amrsLocation.getLocationsUuid(locationService);
         String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
         String parentUuid=KenyaEMRlocationUuid;
-        MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService,KenyaEMRlocationUuid,OpenMRSURL,auth);
+        Boolean samplePatients = true;
+        MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService,samplePatients,KenyaEMRlocationUuid,OpenMRSURL,auth);
 
     }
 
