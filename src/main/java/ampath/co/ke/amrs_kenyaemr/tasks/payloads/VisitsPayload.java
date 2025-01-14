@@ -13,16 +13,16 @@ import java.text.ParseException;
 import java.util.List;
 
 public class VisitsPayload {
-    public static void visits(AMRSVisitService amrsVisitService, AMRSPatientServices amrsPatientServices, String auth, String url) throws JSONException, ParseException, IOException {
+    public static void visits(AMRSVisitService amrsVisitService,String kenyaEMRLocationUuid, AMRSPatientServices amrsPatientServices, String auth, String url) throws JSONException, ParseException, IOException {
 
         List<AMRSVisits> amrsVisits = amrsVisitService.findByResponseCodeIsNull();
-        if(amrsVisits.size() > 0) {
+        if(!amrsVisits.isEmpty()) {
 
             for (int x = 0; x < amrsVisits.size(); x++) {
                 AMRSVisits av = amrsVisits.get(x);
                 if (av.getKenyaemrVisitUuid() == null) {
                     List<AMRSPatients> patientsList = amrsPatientServices.getByPatientID(av.getPatientId());
-                    if (patientsList.size() > 0) {
+                    if (!patientsList.isEmpty()) {
                         String pid = patientsList.get(0).getKenyaemrpatientUUID();
                         System.out.println("Visits person_ID "+ av.getPatientId()  +"Patient in KenyaEMR "+pid +" AMRS Persionid "+patientsList.get(0).getKenyaemrpatientUUID() );
 
@@ -30,11 +30,10 @@ public class VisitsPayload {
                             String vtype = amrsVisits.get(x).getVisitType();
                             String startDate = amrsVisits.get(x).getDateStarted();
                             String stopDate = amrsVisits.get(x).getDateStop();
-
                             JSONObject jsonVisit = new JSONObject();
                             jsonVisit.put("patient", pid);//"60168b73-60f1-4044-9dc6-84fdcbc1962c");
                             jsonVisit.put("visitType", "3371a4d4-f66f-4454-a86d-92c7b3da990c");
-                            jsonVisit.put("location", "3e6261cc-ad5e-4834-b85d-af8b42a133e4");
+                            jsonVisit.put("location", kenyaEMRLocationUuid);
                             jsonVisit.put("startDatetime", startDate); //+"T06:08:25.000+0000"
                             jsonVisit.put("stopDatetime", stopDate); //+"T06:09:25.000+0000"
 
@@ -71,7 +70,7 @@ public class VisitsPayload {
                         amrsVisitService.save(av);
                     }
                 }else{
-                    System.out.println("Visist Information exists");
+                    System.out.println("Visit Information exists");
                 }
             }
         }
