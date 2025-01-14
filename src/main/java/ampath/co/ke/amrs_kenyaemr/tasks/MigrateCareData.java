@@ -2476,11 +2476,16 @@ public class MigrateCareData {
         }
     }
 
-    public static void patientStatus(String server, String username, String password, String locations, String parentUUID, AMRSPatientStatusService amrsPatientStatusService, AMRSConceptMappingService amrsConceptMappingService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void patientStatus(String server, String username, String password, AMRSPatientStatusService amrsPatientStatusService, AMRSConceptMappingService amrsConceptMappingService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        String samplePatientList = AMRSSamples.getPersonIdList();
+        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
 
-        System.out.println("Sample Clients " + samplePatientList);
+        String PatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+
+
+       // String samplePatientList = AMRSSamples.getPersonIdList();
+
+       // System.out.println("Sample Clients " + samplePatientList);
         String sql = "";
         List<AMRSPatientStatus> amrsCivilStatusList = amrsPatientStatusService.findFirstByOrderByIdDesc();
         String nextEncounterID = "";
@@ -2569,7 +2574,7 @@ public class MigrateCareData {
                     "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
                     "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
                     "                WHERE \n" +
-                    "                       pa.person_id IN (" + samplePatientList + ") \n" +
+                    "                       pa.person_id IN (" + PatientList + ") \n" +
                     "                        AND  \n" +
                     " pa.voided = 0 order by  pa.person_id  asc";
 
@@ -2659,12 +2664,11 @@ public class MigrateCareData {
                     "                    inner join amrs.concept c on c.concept_id = pa.value \n" +
                     "                      inner join amrs.concept_name cn on c.concept_id = cn.concept_id  and cn.locale_preferred=1\n" +
                     "                WHERE \n" +
-                    "                       pa.person_id IN (" + samplePatientList + ") \n" +
+                    "                       pa.person_id IN (" + PatientList + ") \n" +
                     "                        AND pa.voided=0  and   \n" +
                     " pa.voided = 0 order by  pa.person_id  asc";
         }
 
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -2693,7 +2697,7 @@ public class MigrateCareData {
 
             List<AMRSPatientStatus> amrsPatientStatusList = amrsPatientStatusService.findByPersonIdAndPersonAttributeTypeId(patientid, personAttributeTypeId);
 
-            if (amrsPatientStatusList.size() == 0) {
+            if (amrsPatientStatusList.isEmpty()) {
 
                 AMRSPatientStatus cs = new AMRSPatientStatus();
                 cs.setPersonId(personId);
@@ -2706,7 +2710,6 @@ public class MigrateCareData {
                 cs.setValueName(name_value);
                 cs.setKenyaPatientUuid(kenyaemrPatientUuid);
                 cs.setObsDateTime(date_created);
-                System.out.println("Tumefika Hapa!!!" + parentUUID);
                 amrsPatientStatusService.save(cs);
                 if ((!(kenyaemrPatientUuid == null))) {
                     //    CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
@@ -2716,7 +2719,7 @@ public class MigrateCareData {
             System.out.println("Patient_id" + personId);
         }
 
-        CareOpenMRSPayload.patientStatus(amrsPatientStatusService, parentUUID, locations, auth, url);
+        CareOpenMRSPayload.patientStatus(amrsPatientStatusService, auth, url);
 
     }
 

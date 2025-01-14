@@ -364,7 +364,7 @@ public class CareOpenMRSPayload {
         }
     }
 
-    public static void patientStatus(AMRSPatientStatusService amrsPatientStatusService, String parentUUID, String locations, String auth, String url) throws JSONException, IOException {
+    public static void patientStatus(AMRSPatientStatusService amrsPatientStatusService, String auth, String url) throws JSONException, IOException {
         List<AMRSPatientStatus> amrsPatientStatusList = amrsPatientStatusService.findByResponseCodeIsNull();
         if (amrsPatientStatusList.size() > 0) {
 

@@ -26,6 +26,9 @@ public class AMRSPatientServices {
     public List<AMRSPatients> getByPatientID(String pid) {
         return amrsPatientsRespository.findByPersonId(pid);
     }
+    public List<String> getAllPatientID() {
+        return amrsPatientsRespository.findAllPersonId();
+    }
 
     public List<AMRSPatients> getPatientByLocation(String uuid,String location) {
         return amrsPatientsRespository.findByUuidAndParentlocationuuid(uuid, location);
