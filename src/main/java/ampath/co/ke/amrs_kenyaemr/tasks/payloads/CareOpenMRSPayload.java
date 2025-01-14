@@ -18,10 +18,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CareOpenMRSPayload {
-    public static void programs(AMRSProgramService amrsProgramService, String locations, String parentUUID, String url, String auth) throws JSONException, IOException {
+    public static void programs(AMRSProgramService amrsProgramService, String url, String auth) throws JSONException, IOException {
         //List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
         List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByResponseCodeIsNull();
-        if (amrsProgramsList.size() > 0) {
+        if (!amrsProgramsList.isEmpty()) {
             JSONObject jsonProgram = new JSONObject();
             for (int x = 0; x < amrsProgramsList.size(); x++) {
 
@@ -69,15 +69,13 @@ public class CareOpenMRSPayload {
         }
     }
 
-    public static void triage(AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService,AMRSVisitService amrsVisitService, String url, String auth) throws JSONException, IOException {
+    public static void triage( String KenyaEMRLocationUuid,AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService,AMRSVisitService amrsVisitService, String url, String auth) throws JSONException, IOException {
 
         List<AMRSTriage> amrsTriages = amrsTriageService.findByResponseCodeIsNull();
-        if (amrsTriages.size() > 0) {
-
+        if (!amrsTriages.isEmpty()) {
             // Use a Set to store unique encounter IDs
             Set<String> visistIdSet = new HashSet<>();
             List<String> distinctVisitIds = new ArrayList<>();
-
             // Loop through the list
             for (AMRSTriage triage : amrsTriages) {
                 if (triage.getResponseCode() == null) {
@@ -127,13 +125,13 @@ public class CareOpenMRSPayload {
                 } else {
                     List<AMRSVisits> amrsVisits = amrsVisitService.findByVisitID(amrsTriageEncounters.get(0).getVisitId());
 
-                    if (amrsVisits.size() > 0) {
+                    if (!amrsVisits.isEmpty()) {
                         JSONObject jsonEncounter = new JSONObject();
                         jsonEncounter.put("form", "37f6bd8d-586a-4169-95fa-5781f987fe62");
                         jsonEncounter.put("patient", patientuuid);
                         jsonEncounter.put("encounterDatetime", amrsTriageEncounters.get(0).getEncounterDateTime());
                         jsonEncounter.put("encounterType", "d1059fb9-a079-4feb-a749-eedd709ae542");
-                        jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                        jsonEncounter.put("location", KenyaEMRLocationUuid);
                         jsonEncounter.put("visit", amrsVisits.get(0).getKenyaemrVisitUuid());
                         jsonEncounter.put("obs", jsonObservations);
                         System.out.println("Payload for is here " + jsonEncounter.toString());
@@ -275,7 +273,7 @@ public class CareOpenMRSPayload {
     public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, String parentUUID, String locations, String auth, String url) throws JSONException, IOException {
         List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findByResponseCodeIsNull();
 
-        if(amrsRegimenSwitchList.size() > 0) {
+        if(!amrsRegimenSwitchList.isEmpty()) {
             Set<String> regimenSwitchIdSet = new HashSet<>();
             List<String> distinctRegimenSwitchIds= new ArrayList<>();
 
