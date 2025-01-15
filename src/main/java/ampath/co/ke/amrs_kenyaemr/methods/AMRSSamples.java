@@ -42,4 +42,15 @@ public  class AMRSSamples {
         String result = pist.substring(1, pist.length() - 1);
         return result;
     }
+    public static String getPersonIdListKapsoya() {
+
+        List<Integer> numbers = Arrays.asList(
+                1234,8282,20369,22243,24282,24647,29972,161264
+
+        );
+
+        String pist = numbers.toString();
+        String result = pist.substring(1, pist.length() - 1);
+        return result;
+    }
 }

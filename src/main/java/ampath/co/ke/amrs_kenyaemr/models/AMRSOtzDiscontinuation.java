@@ -3,6 +3,7 @@ package ampath.co.ke.amrs_kenyaemr.models;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "amrs_otz_discontinuation")
 public class AMRSOtzDiscontinuation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

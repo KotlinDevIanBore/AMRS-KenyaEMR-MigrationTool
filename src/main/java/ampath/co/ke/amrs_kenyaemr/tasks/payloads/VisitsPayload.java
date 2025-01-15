@@ -62,12 +62,13 @@ public class VisitsPayload {
                                 av.setResponseCode(String.valueOf(response.code()));
                                 amrsVisitService.save(av);
                             }
-                        }else{
+                        }
+                        /*else{
                             System.out.println("Patient is Missing");
                             av.setKenyaemrPatientUuid("Patient is Missing");
                             av.setResponseCode("400");
                         }
-                        amrsVisitService.save(av);
+                        amrsVisitService.save(av);*/
                     }
                 }else{
                     System.out.println("Visit Information exists");

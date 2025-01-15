@@ -22,7 +22,8 @@ public class MigrateRegistration {
     @Autowired
     LocationService locationService;
 
-    public static String samplePatientList = AMRSSamples.getPersonIdList();
+    public static String samplePatientList = AMRSSamples.getPersonIdListKapsoya();
+    //getPersonIdListKapsoya
 
 
     public static void locations(String server, String username, String password,LocationService locationsService) throws SQLException, JSONException, ParseException, IOException {
@@ -188,16 +189,16 @@ public class MigrateRegistration {
             sql = "select  \n" +
                     "                   p.uuid, \n" +
                     "                   p.person_id, \n" +
-                    "                   pn.given_name, \n" +
-                    "                   pn.family_name, \n" +
-                    "                   pn.middle_name, \n" +
+                    "                   case when pn.given_name is null then ' ' else pn.given_name end given_name, \n" +
+                    "                   case when pn.family_name is null then ' ' else pn.family_name end  family_name, \n" +
+                    "                   case when pn.middle_name is null then ' ' else  pn.middle_name end middle_name , \n" +
                     "                   p.gender, \n" +
                     "                   p.birthdate, \n" +
-                    "                   pa.address1, \n" +
-                    "                   pa.county_district, \n" +
-                    "                   pa.address4, \n" +
-                    "                   pa.address5, \n" +
-                    "                   pa.address6, \n" +
+                    " case when pa.address1 is null or pa.address1=''  then 'Missing' else pa.address1 end address1, \n" +
+                    " case when pa.county_district is null or pa.county_district=''  then 'Missing' else pa.county_district end county_district, \n" +
+                    " case when pa.address4 is null or pa.address4=''  then 'Missing' else pa.address4 end address4, \n" +
+                    " case when pa.address5 is null or pa.address5=''  then 'Missing' else pa.address5 end address5, \n" +
+                    " case when pa.address6 is null or pa.address6=''  then 'Missing' else pa.address6 end address6, \n" +
                     "                   p.dead, \n" +
                     "                   p.cause_of_death,\n" +
                     "                   p.death_date,\n" +
@@ -259,26 +260,25 @@ public class MigrateRegistration {
                     "                   p.voided, \n" +
                     "                   l.location_id, \n" +
                     "                   l.name location_name, \n" +
-                    "                   pa.address1 county,  \n" +
-                    "                   pa.address2 sub_county, \n" +
-                    "                   pa.city_village, \n" +
-                    "                   pa.state_province,  \n" +
-                    "                   pa.county_district, \n" +
-                    "                   pa.address3 landmark \n" +
+                    "case when pa.address1 is null or pa.address1=''  then 'Missing' else pa.address1 end county,\n" +
+                    "case when pa.address2 is null or pa.address2=''  then 'Missing' else pa.address2 end sub_county,\n" +
+                    "case when pa.city_village is null or pa.city_village=''  then 'Missing' else pa.city_village end city_village,\n" +
+                    "case when pa.state_province is null or pa.state_province=''  then 'Missing' else pa.state_province end state_province,\n" +
+                    "case when pa.address3 is null or pa.address3=''  then 'Missing' else pa.address3 end landmark\n" +
                     "                   from amrs.encounter e  \n" +
                     "                   inner join amrs.patient pt on e.patient_id =pt.patient_id and pt.voided=0 \n" +
                     "                   inner join amrs.person p on p.person_id=pt.patient_id and p.voided=0 \n" +
                     "                   inner join amrs.person_name pn on pn.person_id=p.person_id and pn.voided=0 \n" +
                     "                   inner join amrs.person_address pa on pa.person_id=p.person_id and pa.preferred=1 and pa.voided=0 \n" +
                     "                   inner join amrs.location l on e.location_id=l.location_id \n" +
-                    "                   " + whereSQL + " ) \n" +
+                    "                   " + whereSQL + " \n" +
                     "                   group by pt.patient_id \n" +
                     "                   order by e.patient_id asc limit 1000 ";
             System.out.println("SQL ID is " + sql);
         } else {
             String pid = patientsListt.get(0).getPersonId();
             System.out.println("Person ID is " + pid);
-            System.out.println("SQL ID is " + sql);
+           // System.out.println("SQL ID is " + sql);
             if (samplePatients) {
                 whereSQL ="where l.uuid in ( " + locations + " ) and p.voided=0  and p.person_id in ( " + samplePatientList + ")";
             }else{
@@ -288,16 +288,17 @@ public class MigrateRegistration {
             sql = "select  \n" +
                     "                   p.uuid, \n" +
                     "                   p.person_id, \n" +
-                    "                   pn.given_name, \n" +
-                    "                   pn.family_name, \n" +
-                    "                   pn.middle_name, \n" +
+                    "                   case when pn.given_name is null then '' else pn.given_name end given_name, \n" +
+                    "                   case when pn.family_name is null then '' else pn.family_name end  family_name, \n" +
+                    "                   case when pn.middle_name is null then '' else  pn.middle_name end middle_name , \n" +
                     "                   p.gender, \n" +
                     "                   p.birthdate, \n" +
-                    "                   pa.address1, \n" +
-                    "                   pa.county_district, \n" +
-                    "                   pa.address4, \n" +
-                    "                   pa.address5, \n" +
-                    "                   pa.address6, \n" +
+                    " case when pa.address1 is null or pa.address1=''  then 'Missing' else pa.address1 end address1, \n" +
+                    " case when pa.county_district is null or pa.county_district=''  then 'Missing' else pa.county_district end county_district, \n" +
+                    " case when pa.address4 is null or pa.address4=''  then 'Missing' else pa.address4 end address4, \n" +
+                    " case when pa.address5 is null or pa.address5=''  then 'Missing' else pa.address5 end address5, \n" +
+                    " case when pa.address6 is null or pa.address6=''  then 'Missing' else pa.address6 end address6, \n" +
+
                     "                   p.dead, \n" +
                     "                   p.cause_of_death,\n" +
                     "                   p.death_date,\n" +
@@ -359,12 +360,11 @@ public class MigrateRegistration {
                     "                   p.voided, \n" +
                     "                   l.location_id, \n" +
                     "                   l.name location_name, \n" +
-                    "                   pa.address1 county,  \n" +
-                    "                   pa.address2 sub_county, \n" +
-                    "                   pa.city_village, \n" +
-                    "                   pa.state_province,  \n" +
-                    "                   pa.county_district, \n" +
-                    "                   pa.address3 landmark \n" +
+                    "case when pa.address1 is null or pa.address1=''  then 'Missing' else pa.address1 end county,\n" +
+                    "case when pa.address2 is null or pa.address2=''  then 'Missing' else pa.address2 end sub_county,\n" +
+                    "case when pa.city_village is null or pa.city_village=''  then 'Missing' else pa.city_village end city_village,\n" +
+                    "case when pa.state_province is null or pa.state_province=''  then 'Missing' else pa.state_province end state_province,\n" +
+                    "case when pa.address3 is null or pa.address3=''  then 'Missing' else pa.address3 end landmark\n" +
                     "                   from amrs.encounter e  \n" +
                     "                   inner join amrs.patient pt on e.patient_id =pt.patient_id and pt.voided=0\n" +
                     "                   inner join amrs.person p on p.person_id=pt.patient_id  and p.voided=0\n" +
@@ -376,7 +376,7 @@ public class MigrateRegistration {
                     "order by e.patient_id asc limit 1000";
 
         }
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        //System.out.println("locations " + locations + " parentUUID " + parentUUID);
         //System.out.println("SQL "+ sql);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -389,9 +389,11 @@ public class MigrateRegistration {
         while (rs.next()) {
 
             System.out.println("User id " + rs.getString(1));
+            String pid = rs.getString("person_id");
             //List<AMRSPatients> patientsList = amrsPatientServices.getPatientByLocation(rs.getString("person_id"), parentUUID);
+            //List<AMRSPatients> patientsList = amrsPatientServices.getPatientByStatus(rs.getString("person_id"));
+            List<AMRSPatients> patientsList = amrsPatientServices.getByPatientID(pid);
 
-            List<AMRSPatients> patientsList = amrsPatientServices.getPatientByStatus(rs.getString("person_id"));
             if (patientsList.isEmpty()) {
                 String person_id = rs.getString("person_id");
                 AMRSPatients ae = new AMRSPatients();
@@ -428,7 +430,7 @@ public class MigrateRegistration {
 
                 String identifiersSQl = "select pi.patient_id,\n" +
                         "pit.uuid identifer_uuid," +
-                        "pi.identifier,pi.preferred,pi.voided,pi.location_id\n" +
+                        "pi.identifier,pi.preferred,pi.voided,pi.location_id,pi.identifier_type\n" +
                         "from amrs.patient_identifier pi\n" +
                         "join amrs.patient_identifier_type pit on pi.identifier_type=pit.patient_identifier_type_id\n" +
                         "inner join amrs.person p on p.person_id =pi.patient_id\n" +
@@ -442,7 +444,7 @@ public class MigrateRegistration {
                 x = rsID.getRow();
                 rsID.beforeFirst();
                 while (rsID.next()) {
-                    List<AMRSIdentifiers> identifiers = amrsIdentifiersService.getPatientByLocation(rsID.getString("patient_id"), parentUUID);
+                    List<AMRSIdentifiers> identifiers = amrsIdentifiersService.findByPatientidAndIdentifierType(rsID.getString("patient_id"),rsID.getString("identifier_type"));
                     if (identifiers.isEmpty()) {
                         AMRSIdentifiers iden = new AMRSIdentifiers();
                         String pref = "";
@@ -466,6 +468,7 @@ public class MigrateRegistration {
                         iden.setLocation(rsID.getString(6));
                         iden.setKenyaemr_uuid(Mappers.identifers(rsID.getString(2)));
                         iden.setParentlocationuuid(parentUUID);
+                        iden.setIdentifierType(rsID.getString("identifier_type"));
 
                         amrsIdentifiersService.save(iden);
 
@@ -525,11 +528,17 @@ public class MigrateRegistration {
 
                 }
                 //Migate Patient
-                RegisterOpenMRSPayload.patient(ae, amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService,kenyaemrLocationUuid, url, auth);
+                RegisterOpenMRSPayload.patient(amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService,kenyaemrLocationUuid, url, auth);
 
+            }
+            else{
+                System.out.println("Patient with ID "+ pid  +" Already Exist");
             }
 
         }
+        //Migate Patient
+        RegisterOpenMRSPayload.patient(amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService,kenyaemrLocationUuid, url, auth);
+
         con.close();
        }
     public static void patient_relationship(String server, String username, String password,AMRSPatientRelationshipService amrsPatientRelationshipService,AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {

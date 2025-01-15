@@ -110,12 +110,7 @@ public class CronTasks {
     }
    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
     public void ProcessLocations() throws JSONException, ParseException, SQLException, IOException {
-       /* AMRSLocation amrsLocation = new AMRSLocation();
-        String locationsId = amrsLocation.getLocationsId(locationService);
-        String locationsUuid = amrsLocation.getLocationsUuid(locationService);
-        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-        System.out.println("Location ID: " + locationsId + " UUIDs "+locationsUuid +" KenyaEMRUuid "+ KenyaEMRlocationUuid); */
-        MigrateRegistration.locations(server,username,password, locationService);
+            MigrateRegistration.locations(server,username,password, locationService);
     }
 
    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
@@ -137,45 +132,45 @@ public class CronTasks {
         MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService,samplePatients,KenyaEMRlocationUuid,OpenMRSURL,auth);
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
     public void ProcessPatientRelationShips() throws JSONException, ParseException, SQLException, IOException {
         MigrateRegistration.patient_relationship(server,username,password,amrsPatientRelationshipService,amrsPatientServices, amrsTranslater,OpenMRSURL,auth);
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void civilStatus() throws JSONException, ParseException, SQLException, IOException {
         MigrateCareData.patientStatus(server, username, password, amrsPatientStatusService, amrsConceptMappingService, amrsPatientServices, OpenMRSURL, auth);
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
    public void ProcessPrograms() throws JSONException, ParseException, SQLException, IOException {
        AMRSLocation amrsLocation = new AMRSLocation();
        String locationId=amrsLocation.getLocationsUuid(locationService);
         MigrateCareData.programs(server,username,password,locationId, amrsProgramService, amrsPatientServices, OpenMRSURL,auth);
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessVisits() throws JSONException, ParseException, SQLException, IOException {
         AMRSLocation amrsLocation = new AMRSLocation();
-        String locationId=amrsLocation.getLocationsUuid(locationService);
+       // String locationId=amrsLocation.getLocationsUuid(locationService);
         String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-        MigrateCareData.visits(server,username,password,locationId,KenyaEMRlocationUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
+        MigrateCareData.visits(server,username,password,KenyaEMRlocationUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessTriage() throws JSONException, ParseException, SQLException, IOException {
         AMRSLocation amrsLocation = new AMRSLocation();
         String locationId=amrsLocation.getLocationsUuid(locationService);
         String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-        MigrateCareData.triage(server,username,password,locationId, KenyaEMRlocationUuid, amrsTriageService, amrsPatientServices, amrsEncounterService,amrsConceptMappingService,amrsVisitService ,OpenMRSURL,auth);
+        MigrateCareData.triage(server,username,password,locationId, KenyaEMRlocationUuid,amrsTranslater, amrsTriageService, amrsPatientServices, amrsEncounterService,amrsConceptMappingService,amrsVisitService ,OpenMRSURL,auth);
 
     }
 
-   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessOrders() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.order(server,username,password,locationId,parentUuid, amrsOrderService, amrsPatientServices, amrsVisitService,amrsTranslater, OpenMRSURL,auth);
+        AMRSLocation amrsLocation = new AMRSLocation();
+        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+        MigrateCareData.order(server,username,password,KenyaEMRlocationUuid, amrsOrderService, amrsPatientServices, amrsVisitService,amrsTranslater, OpenMRSURL,auth);
 
     }
 

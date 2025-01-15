@@ -12,6 +12,7 @@ public interface AMRSIdentifiersRepository extends JpaRepository<AMRSIdentifiers
     AMRSIdentifiers findById(int pid);
     List<AMRSIdentifiers> findByUuid(String uuid);
     List<AMRSIdentifiers> findByPatientid(String uuid);
+    List<AMRSIdentifiers> findByPatientidAndIdentifierType(String uuid,String type);
     List<AMRSIdentifiers> findByUuidAndParentlocationuuid(String uuid,String location);
 
 }

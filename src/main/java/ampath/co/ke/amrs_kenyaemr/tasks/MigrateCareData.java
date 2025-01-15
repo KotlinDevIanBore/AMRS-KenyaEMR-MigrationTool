@@ -43,7 +43,7 @@ public class MigrateCareData {
                     "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
                     "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                     "       inner join amrs.location l on l.location_id = e.location_id\n" +
-                    "       and l.uuid in (" + locations + ") and pp.patient_program_id>=" + ppid + " and e.patient_id in (" + pid + ")  \n" + //and e. patient_id in ('1224605,1222698')
+                    "      and e.patient_id in (" + pid + ")  \n" + //and e. patient_id in ('1224605,1222698') // pp.patient_program_id>=" + ppid + " and
                     "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc";
 
         } else {
@@ -60,7 +60,7 @@ public class MigrateCareData {
                     "       inner join amrs.encounter e on e.patient_id=pp.patient_id\n" +
                     "       inner join amrs.program p on p.program_id=pp.program_id\n" +
                     "       inner join amrs.location l on l.location_id = e.location_id\n" +
-                    "       and l.uuid in (" + locations + ") and e.patient_id in (" + pid + ") \n" + //and e. patient_id in ('1224605,1222698')
+                    "       and e.patient_id in (" + pid + ") \n" + //and e. patient_id in ('1224605,1222698')
                     "       group by  pp.patient_id,p.concept_id  order by pp.patient_program_id asc";
         }
         Connection con = DriverManager.getConnection(server, username, password);
@@ -110,7 +110,7 @@ public class MigrateCareData {
             }
 
             //Migate Programs
-            //  CareOpenMRSPayload.programs(amrsProgramService, locations, parentUUID, url, auth);
+              CareOpenMRSPayload.programs(amrsProgramService, url, auth);
 
         }
 
@@ -879,7 +879,7 @@ public class MigrateCareData {
         EnrollmentsPayload.encounters(url, auth);
     }
 
-    public static void visits(String server, String username, String password, String locations, String kenyaEMRLocationUuid, AMRSVisitService amrsVisitService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void visits(String server, String username, String password, String kenyaEMRLocationUuid, AMRSVisitService amrsVisitService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
         String sql = "";
         List<AMRSVisits> amrsVisitsList = amrsVisitService.findFirstByOrderByIdDesc();
         List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
@@ -899,7 +899,7 @@ public class MigrateCareData {
                     "              from amrs.visit v\n" +
                     "              inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
                     "              inner join amrs.location l on l.location_id=e.location_id\n" +
-                    "              where l.uuid in (" + locations + ") and v.visit_id>" + amrsVisitsList.get(0).getVisitId() + "  and e.patient_id in (" + pid + ") \n " +
+                    "              where  e.patient_id in (" + pid + ") \n " + //and v.visit_id>" + amrsVisitsList.get(0).getVisitId() + "
                     "              and v.voided=0\n" +
                     "              group by  v.visit_id order by v.visit_id asc ";
         } else {
@@ -915,7 +915,7 @@ public class MigrateCareData {
                     "              from amrs.visit v\n" +
                     "              inner join  amrs.encounter e on e.visit_id = v.visit_id\n" +
                     "              inner join amrs.location l on l.location_id=e.location_id\n" +
-                    "              where l.uuid in (" + locations + ") and e.patient_id in (" + pid + ")\n" +
+                    "              where  e.patient_id in (" + pid + ")\n" + //l.uuid in (" + locations + ") and
                     "              and v.voided=0 \n" +
                     "              group by  v.visit_id order by v.visit_id asc ";
         }
@@ -971,20 +971,14 @@ public class MigrateCareData {
     }
 
 
-    public static void order(String server, String username, String password, String locations, String parentUUID, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void order(String server, String username, String password, String KenyaEMRlocationUuid, AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        String samplePatientList = AMRSSamples.getPersonIdList();
-        //  String samplePatientList = "7315,1171851";
+        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+        //String samplePatientList = AMRSSamples.getPersonIdListKapsoya();
+       // String samplePatientList = pid;
 
-//        List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
-//        String pidss = "";
-//        for (int y = 0; y < amrsPatientsList.size(); y++) {
-//            pidss += amrsPatientsList.get(y).getPersonId() + ",";
-//        }
-//
-//        String pid = pidss.substring(0, pidss.length() - 1);
-//
-//        System.out.println("Patient Id " + pid);
+        System.out.println("Data is here "+ samplePatientList);
 
         String sql = "WITH cte_orders as ( SELECT  \n" +
                 "                      t1.patient_id, \n" +
@@ -994,7 +988,7 @@ public class MigrateCareData {
                 "                      t1.order_number AS orderNumber, \n" +
                 "                      t1.concept_id AS concept_id, \n" +
                 "                      case when t1.concept_id = 856 then 'VIRAL LOAD' ELSE t2.name end AS display, \n" +
-                "\t\t\t\t\t  case when ot.order_type_id = 2 then 'drugorder' when ot.order_type_id = 3 then 'testorder' ELSE NULL end AS order_type,      t3.value_numeric as order_result, \n" +
+                " case when ot.order_type_id = 2 then 'drugorder' when ot.order_type_id = 3 then 'testorder' ELSE NULL end AS order_type,      t3.value_numeric as order_result, \n" +
                 "                      GROUP_CONCAT(DISTINCT t6.identifier) AS identifiers, \n" +
                 "                      t1.date_activated AS date_ordered, \n" +
                 "                           t1.urgency as urgency, \n" +
@@ -1006,8 +1000,8 @@ public class MigrateCareData {
                 "                          INNER JOIN amrs.patient p USING (patient_id) \n" +
                 "                          INNER JOIN amrs.person per ON (per.person_id = p.patient_id) \n" +
                 "                          INNER JOIN amrs.orders t1 ON(e.encounter_id = t1.encounter_id) \n" +
-                "\t\t\t\t\t\t  LEFT OUTER JOIN amrs.order_type ot USING(order_type_id)  \n" +
-                "\t\t\t\t\t\t  LEFT OUTER JOIN amrs.obs t5 ON (t1.order_id = t5.order_id AND (t5.voided IS NULL || t5.voided = 0) AND t5.concept_id = 10189) \n" +
+                " LEFT OUTER JOIN amrs.order_type ot USING(order_type_id)  \n" +
+                "  LEFT OUTER JOIN amrs.obs t5 ON (t1.order_id = t5.order_id AND (t5.voided IS NULL || t5.voided = 0) AND t5.concept_id = 10189) \n" +
                 "                          LEFT OUTER JOIN amrs.obs t3 ON (t1.concept_id = t3.concept_id AND (t3.voided IS NULL || t3.voided = 0) AND t1.encounter_id = t3.encounter_id)     \n" +
                 "                          LEFT OUTER JOIN amrs.concept_name t4 ON (t5.value_coded = t4.concept_id) \n" +
                 "                          LEFT OUTER JOIN amrs.concept_name t2 ON (t1.concept_id = t2.concept_id)  \n" +
@@ -1067,7 +1061,7 @@ public class MigrateCareData {
                 "                       ) f  \n" +
                 "                       WHERE f.order_id IS NOT NULL \n" +
                 "                       ), \n" +
-                "\t\t\t\tcte_dna_pcr AS( \n" +
+                " cte_dna_pcr AS( \n" +
                 "                       SELECT  \n" +
                 "                      f.person_id,  \n" +
                 "                      f.concept_id,  \n" +
@@ -1115,7 +1109,7 @@ public class MigrateCareData {
                 "                       ) f  \n" +
                 "                       WHERE f.order_id IS NOT NULL \n" +
                 "                       ), \n" +
-                "\t\t\tcte_cd4 AS( \n" +
+                " cte_cd4 AS( \n" +
                 "                       SELECT  \n" +
                 "                      f.person_id,  \n" +
                 "                      f.concept_id,  \n" +
@@ -1174,7 +1168,7 @@ public class MigrateCareData {
                 "                       group by a.patient_id, a.orderNumber";
 
 
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        System.out.println("Sql is here "  + sql );
 
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
@@ -1234,10 +1228,10 @@ public class MigrateCareData {
         }
 
         // process all un processed orders
-        OrdersPayload.orders(amrsOrderService, amrsPatientServices, amrsVisitService, amrsTranslater, url, auth);
+        OrdersPayload.orders(KenyaEMRlocationUuid,amrsOrderService, amrsPatientServices, amrsVisitService, amrsTranslater, url, auth);
     }
 
-    public static void triage(String server, String username, String password, String locations, String KenyaemrLocationUuid, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void triage(String server, String username, String password, String locations, String KenyaemrLocationUuid,AMRSTranslater amrsTranslater, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
         String pid = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
@@ -1291,10 +1285,11 @@ public class MigrateCareData {
                     "INNER JOIN amrs.encounter e using(encounter_id)\n" +
                     "INNER JOIN amrs.location l on l.location_id= e.location_id\n" +
                     "WHERE o.concept_id IN (SELECT concept_id FROM cte_vitals_concepts) \n" +
-                    "AND l.uuid IN(" + locations + ") \n" +
+                   // "AND l.uuid IN(" + locations + ") \n" +
                     " AND o.person_id in (" + pid + ") \n" + // ( " + pid + " )
                     "GROUP BY o.person_id, o.encounter_id,o.concept_id";
 
+           // System.out.println("SQL is "+ sql);
             Connection con = DriverManager.getConnection(server, username, password);
             int x = 0;
             Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -1342,7 +1337,7 @@ public class MigrateCareData {
             }
 
 
-            CareOpenMRSPayload.triage(KenyaemrLocationUuid,amrsTriageService, amrsPatientServices, amrsEncounterService, amrsVisitService, url, auth);
+            CareOpenMRSPayload.triage(KenyaemrLocationUuid,amrsTranslater,amrsTriageService, amrsPatientServices, amrsEncounterService, amrsVisitService, url, auth);
 
     }
 
