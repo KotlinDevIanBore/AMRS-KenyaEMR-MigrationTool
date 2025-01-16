@@ -7,14 +7,23 @@ import ampath.co.ke.amrs_kenyaemr.models.*;
 import ampath.co.ke.amrs_kenyaemr.service.*;
 import ampath.co.ke.amrs_kenyaemr.tasks.payloads.RegisterOpenMRSPayload;
 import jakarta.persistence.Column;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.*;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.thymeleaf.util.StringUtils.substring;
 
@@ -22,8 +31,56 @@ public class MigrateRegistration {
     @Autowired
     LocationService locationService;
 
-    public static String samplePatientList = AMRSSamples.getPersonIdListKapsoya();
+    public static String samplePatientList = AMRSSamples.getPersonIdList();
     //getPersonIdListKapsoya
+
+    public static void conceptMapping(AMRSMappingService amrsMappingService) throws IOException {
+        ClassPathResource resource = new ClassPathResource("all_revised_concepts.csv");
+        Reader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+        CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord());
+        // Initialize row count
+        int rowCount = 0;
+        // Iterate through the records and count
+        for (CSVRecord records : csvParser) {
+            rowCount++;
+        }
+
+        List<AMRSMappings> amrsMappingsList = amrsMappingService.getAll();
+        System.out.println("AMRS Mappings Size "+ amrsMappingsList.size()+" rows "+ rowCount);
+
+        if(amrsMappingsList.size() < rowCount){
+           // CSVParser csvParserr = new CSVParser(reader, CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord());
+           // System.out.println(" csv "+ csvParser);
+            reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+            csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader().withSkipHeaderRecord());
+
+            for (CSVRecord record : csvParser) {
+                //System.out.println("AMRS Mappings Size "+ record);
+                String amrs_concept_id = record.get("amrs_concept_id").trim();
+                String kenyaemr_concept_uuid = record.get("kenyaemr_concept_uuid").trim();
+
+                String kenyaemrConceptId = kenyaemr_concept_uuid.replaceAll("[^0-9]", "");
+                String uniqueKey = amrs_concept_id + ":" + kenyaemr_concept_uuid;
+                List<AMRSMappings> amrsMappings = amrsMappingService.findByAmrsConceptID(amrs_concept_id);
+                if(amrsMappings.isEmpty()) {
+                    // Process the record (e.g., save to database)
+                    AMRSMappings anc = new AMRSMappings();
+                    anc.setAmrsConceptId(amrs_concept_id);
+                    anc.setKenyaemrConceptUuid(kenyaemr_concept_uuid);
+                    anc.setKenyaemrConceptId(kenyaemrConceptId);
+                    amrsMappingService.save(anc);
+                }
+            }
+
+        }else{
+            System.out.println("Mapping dictionary already migrated");
+        }
+        csvParser.close();
+        Set<String> processedEntries = new HashSet<>();
+
+
+        System.out.println("Locations");
+    }
 
 
     public static void locations(String server, String username, String password,LocationService locationsService) throws SQLException, JSONException, ParseException, IOException {

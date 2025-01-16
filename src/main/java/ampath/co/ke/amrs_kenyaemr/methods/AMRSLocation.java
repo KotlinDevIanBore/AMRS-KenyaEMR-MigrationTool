@@ -16,10 +16,13 @@ import java.util.Map;
 @Controller
 public class AMRSLocation {
     //@Value("${default_amrs_Location}")
-    public  String locationId="404"; // 404 Kapsoya // 339 Mosoriot
+  //  public  String locationId="404"; // 404 Kapsoya // 339 Mosoriot
+    public  String locationId="339"; // 404 Kapsoya // 339 Mosoriot
    // @Value("${default_kenyaemr_Location}")
-    public  String KenyaEMRlocationUuid="47d77697-8675-4966-a2ab-45f72b9113ad"; // 47d77697-8675-4966-a2ab-45f72b9113ad Kapsoya // 3e6261cc-ad5e-4834-b85d-af8b42a133e4 Mosoriot
-   // public static int locationId = amrsLocation;
+   // public  String KenyaEMRlocationUuid="47d77697-8675-4966-a2ab-45f72b9113ad"; // 47d77697-8675-4966-a2ab-45f72b9113ad Kapsoya // 3e6261cc-ad5e-4834-b85d-af8b42a133e4 Mosoriot
+    public  String KenyaEMRlocationUuid="3e6261cc-ad5e-4834-b85d-af8b42a133e4"; // 47d77697-8675-4966-a2ab-45f72b9113ad Kapsoya // 3e6261cc-ad5e-4834-b85d-af8b42a133e4 Mosoriot
+
+    // public static int locationId = amrsLocation;
    // public static String KenyaEMRlocationUuid = KenyaEMRLocation //Kapsoya
 
     public  String getKenyaEMRLocationUuid() {

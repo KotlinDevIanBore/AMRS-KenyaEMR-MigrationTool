@@ -95,6 +95,7 @@ public class CronTasks {
     @Autowired
     private LocationService locationService;
 
+
     @Value("${mapping.endpoint:http://localhost:8082/mappings/concepts}")
     private String mappingEndpoint;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -107,6 +108,10 @@ public class CronTasks {
         } catch (Exception e) {
             System.err.println("Error calling the endpoint: " + e.getMessage());
         }
+    }
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+    public void ProcessMappings() throws JSONException, ParseException, SQLException, IOException {
+        MigrateRegistration.conceptMapping(amrsMappingService);
     }
    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
     public void ProcessLocations() throws JSONException, ParseException, SQLException, IOException {
@@ -122,7 +127,7 @@ public class CronTasks {
 
     }
 
-   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
     public void ProcessPatients() throws JSONException, ParseException, SQLException, IOException {
         AMRSLocation amrsLocation = new AMRSLocation();
         String locationId=amrsLocation.getLocationsUuid(locationService);
@@ -132,24 +137,24 @@ public class CronTasks {
         MigrateRegistration.patients(server,username,password,locationId,parentUuid,amrsPatientServices,amrsIdentifiersService,amrsPersonAtrributesService,samplePatients,KenyaEMRlocationUuid,OpenMRSURL,auth);
     }
 
-   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+   @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
     public void ProcessPatientRelationShips() throws JSONException, ParseException, SQLException, IOException {
         MigrateRegistration.patient_relationship(server,username,password,amrsPatientRelationshipService,amrsPatientServices, amrsTranslater,OpenMRSURL,auth);
     }
 
-   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void civilStatus() throws JSONException, ParseException, SQLException, IOException {
         MigrateCareData.patientStatus(server, username, password, amrsPatientStatusService, amrsConceptMappingService, amrsPatientServices, OpenMRSURL, auth);
     }
 
-   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
-   public void ProcessPrograms() throws JSONException, ParseException, SQLException, IOException {
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    public void ProcessPrograms() throws JSONException, ParseException, SQLException, IOException {
        AMRSLocation amrsLocation = new AMRSLocation();
        String locationId=amrsLocation.getLocationsUuid(locationService);
         MigrateCareData.programs(server,username,password,locationId, amrsProgramService, amrsPatientServices, OpenMRSURL,auth);
     }
 
-    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+     @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessVisits() throws JSONException, ParseException, SQLException, IOException {
         AMRSLocation amrsLocation = new AMRSLocation();
        // String locationId=amrsLocation.getLocationsUuid(locationService);
@@ -157,7 +162,7 @@ public class CronTasks {
         MigrateCareData.visits(server,username,password,KenyaEMRlocationUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
     }
 
-    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+     @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessTriage() throws JSONException, ParseException, SQLException, IOException {
         AMRSLocation amrsLocation = new AMRSLocation();
         String locationId=amrsLocation.getLocationsUuid(locationService);
