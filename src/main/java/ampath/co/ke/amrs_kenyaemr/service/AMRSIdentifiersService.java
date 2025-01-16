@@ -25,6 +25,10 @@ public class AMRSIdentifiersService {
     public List<AMRSIdentifiers> getByPatientID(String patient_id) {
         return amrsIdentifiersRepository.findByPatientid(patient_id);
     }
+    public List<AMRSIdentifiers> findByPatientidAndIdentifierType(String patient_id,String type) {
+        return amrsIdentifiersRepository.findByPatientidAndIdentifierType(patient_id,type);
+    }
+
 
     public List<AMRSIdentifiers> getPatientByLocation(String uuid, String location) {
         return amrsIdentifiersRepository.findByUuidAndParentlocationuuid(uuid, location);

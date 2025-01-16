@@ -1,6 +1,7 @@
 package ampath.co.ke.amrs_kenyaemr.repositories;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSOrders;
+import ampath.co.ke.amrs_kenyaemr.models.AMRSPatientRelationship;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,5 @@ public interface AMRSPatientsRespository extends JpaRepository<AMRSPatients, Lon
     List<AMRSPatients> findByUuidAndResponseCodeIsNull(String uuid);
     List<AMRSPatients> findFirstByOrderByIdDesc();
     List<AMRSPatients> findByResponseCodeIsNull();
+
 }

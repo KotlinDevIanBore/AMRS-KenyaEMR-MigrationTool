@@ -48,6 +48,7 @@ public class AMRSOrders {
     private String patientId;
 
     private String responseCode;
+    private String responseCodeResults;
 
     private String kenyaemrConceptUuid;
 
@@ -348,6 +349,14 @@ public class AMRSOrders {
 
     public void setVisitId(String visitId) {
         this.visitId = visitId;
+    }
+
+    public String getResponseCodeResults() {
+        return responseCodeResults;
+    }
+
+    public void setResponseCodeResults(String responseCodeResults) {
+        this.responseCodeResults = responseCodeResults;
     }
 }
 

@@ -57,10 +57,10 @@ public class CareOpenMRSPayload {
 
                     // String resBody = response.request().toString();
                     int rescode = response.code();
-                    ap.setResponseCode(String.valueOf(rescode));
+                    if(rescode==201) {
+                        ap.setResponseCode(String.valueOf(rescode));
+                    }
                     System.out.println("Imefika Hapa na data " + rescode);
-                } else {
-                    ap.setResponseCode(String.valueOf(400));
                 }
                 amrsProgramService.save(ap);
             }
@@ -68,7 +68,7 @@ public class CareOpenMRSPayload {
         }
     }
 
-    public static void triage( String KenyaEMRLocationUuid,AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService,AMRSVisitService amrsVisitService, String url, String auth) throws JSONException, IOException {
+    public static void triage( String KenyaEMRLocationUuid,AMRSTranslater amrsTranslater,AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService,AMRSVisitService amrsVisitService, String url, String auth) throws JSONException, IOException {
 
         List<AMRSTriage> amrsTriages = amrsTriageService.findByResponseCodeIsNull();
         if (!amrsTriages.isEmpty()) {
@@ -111,7 +111,7 @@ public class CareOpenMRSPayload {
                     jsonObservation.put("obsDatetime", amrsTriageEncounters.get(x).getObsDateTime());///String.valueOf(conceptsetId));
                     jsonObservation.put("value", amrsTriageEncounters.get(x).getValue());
                     jsonObservations.put(jsonObservation);
-                    patientuuid = amrsTriageEncounters.get(x).getKenyaemrPatientUuid();
+                    patientuuid =  amrsTranslater.KenyaemrPatientUuid(amrsTriageEncounters.get(x).getPatientId());
                 }
 
                // System.out.println("Payload for is here " + jsonObservations.toString());

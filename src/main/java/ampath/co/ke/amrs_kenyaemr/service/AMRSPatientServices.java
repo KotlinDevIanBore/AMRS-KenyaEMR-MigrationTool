@@ -1,5 +1,6 @@
 package ampath.co.ke.amrs_kenyaemr.service;
 
+import ampath.co.ke.amrs_kenyaemr.models.AMRSPatientRelationship;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSPatients;
 import ampath.co.ke.amrs_kenyaemr.models.AMRSUsers;
 import ampath.co.ke.amrs_kenyaemr.repositories.AMRSPatientsRespository;
@@ -40,6 +41,9 @@ public class AMRSPatientServices {
 
     public List<AMRSPatients> getPatientByStatus(String uuid) {
         return amrsPatientsRespository.findByUuidAndResponseCodeIsNull(uuid);
+    }
+    public List<AMRSPatients> findByResponseCodeIsNull() {
+        return amrsPatientsRespository.findByResponseCodeIsNull();
     }
     public AMRSPatients save(AMRSPatients dataset) {
         return amrsPatientsRespository.save(dataset);

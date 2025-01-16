@@ -19,6 +19,8 @@ public class AMRSIdentifiers {
     private String kenyaemr_uuid;
     @Column(name="identifier")
     private String identifier;
+    @Column(name="identifier_type")
+    private String identifierType;
     @Column(name = "preferred")
     private String preferred;
     @Column(name = "location")
@@ -100,5 +102,13 @@ public class AMRSIdentifiers {
 
     public void setVoided(String voided) {
         this.voided = voided;
+    }
+
+    public String getIdentifierType() {
+        return identifierType;
+    }
+
+    public void setIdentifierType(String identifierType) {
+        this.identifierType = identifierType;
     }
 }

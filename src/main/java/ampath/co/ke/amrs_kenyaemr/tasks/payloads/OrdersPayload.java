@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class OrdersPayload {
-    public static void orders(AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+    public static void orders(String KenyaEMRlocationUuid,AMRSOrderService amrsOrderService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
         List<AMRSOrders> amrsOrders = amrsOrderService.findByResponseCodeIsNull();
        if(!amrsOrders.isEmpty()) {
 
@@ -48,7 +48,7 @@ public class OrdersPayload {
                         jsonEncounter.put("patient", patintUUID);
                         jsonEncounter.put("encounterDatetime", amrsVisits.get(0).getDateStarted());
                         jsonEncounter.put("encounterType", etypeuuid);
-                        jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                        jsonEncounter.put("location", KenyaEMRlocationUuid);
                         jsonEncounter.put("visit", visituuid);
 
                         System.out.println("Payload for is here " + jsonEncounter.toString());
@@ -75,6 +75,7 @@ public class OrdersPayload {
                         //////////////////////////////////////////////////////
 
                         String result = amrsOrders.get(x).getFinalOrderResult();
+                       // int result = (int) Double.parseDouble(amrsOrders.get(x).getFinalOrderResult());
                         String resultsDate = amrsOrders.get(x).getDateOrdered();
 
                         String orderAction = amrsOrders.get(x).getOrderAction();
@@ -119,18 +120,23 @@ public class OrdersPayload {
                             if (response.code() == 201) {
                                 String orderUuid = jsonObject.getString("uuid");
                                 JSONObject orderResultsObj = new JSONObject();
-                                orderResultsObj.put("person", amrsOrders.get(x).getKenyaemrPatientUuid());
+                                orderResultsObj.put("person", amrsTranslater.KenyaemrPatientUuid(amrsOrders.get(x).getPatientId()));
                                 orderResultsObj.put("concept", concept_uuid);
                                 orderResultsObj.put("encounter", encounterUUID);
                                 orderResultsObj.put("obsDatetime", resultsDate);
                                 orderResultsObj.put("value", result);
-                                orderResultsObj.put("order",orderUuid);
+                                orderResultsObj.put("order", orderUuid);
+                                amrsOrders1.setResponseCode("201");
+                                amrsOrderService.save(amrsOrders1);
 
-                                if(ordersResults(orderResultsObj,url,auth)){
-                                    amrsOrders1.setKenyaemrOrderUuid(orderUuid);
-                                    amrsOrders1.setResponseCode(String.valueOf(response.code()));
-                                    amrsOrderService.save(amrsOrders1);
-                                }
+                                if (result == null){
+                                    if (ordersResults(orderResultsObj, amrsOrders1, amrsOrderService, url, auth)) {
+                                        System.out.println("Results Object is here " + orderResultsObj.toString());
+                                        // amrsOrders1.setKenyaemrOrderUuid(orderUuid);
+                                        //amrsOrders1.setResponseCodeResults(String.valueOf(response.code()));
+                                        amrsOrderService.save(amrsOrders1);
+                                    }
+                            }
 
                             }else{
                                 System.out.println("Response ndo hii " + response.code());
@@ -145,7 +151,7 @@ public class OrdersPayload {
         }
     }
 
-    public static boolean ordersResults(JSONObject orderResultObj, String url, String auth) throws JSONException, IOException {
+    public static boolean ordersResults(JSONObject orderResultObj, AMRSOrders a,AMRSOrderService as, String url, String auth) throws JSONException, IOException {
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, orderResultObj.toString());
@@ -163,9 +169,11 @@ public class OrdersPayload {
         System.out.println("Obs Body ndo Hii "+ bodyString);
         JSONObject jsonObject = new JSONObject(responseBody);
         if (response.code() == 201) {
+            a.setResponseCodeResults("201");
+            as.save(a);
             return true;
         } else {
-            System.out.println("failed saving observations " + response.code());
+            System.out.println("failed saving observations " + response.code() + " response Body" + responseBody);
             return false;
         }
 

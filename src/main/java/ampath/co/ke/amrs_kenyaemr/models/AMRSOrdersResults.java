@@ -3,7 +3,7 @@ package ampath.co.ke.amrs_kenyaemr.models;
 
 import jakarta.persistence.*;
 
-@Table(name = "amrsOrdersResults")
+@Table(name = "amrs_Orders_Results")
 @Entity
 public class AMRSOrdersResults {
     @jakarta.persistence.Id
