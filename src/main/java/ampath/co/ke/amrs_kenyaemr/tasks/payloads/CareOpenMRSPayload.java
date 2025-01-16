@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CareOpenMRSPayload {
     public static void programs(AMRSProgramService amrsProgramService, String url, String auth) throws JSONException, IOException {
@@ -828,9 +827,9 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
                 kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
                 obsDatetime = amrsOvcList.get(x).getObsDateTime();
                 jsonObservationD.put("person", kenyaemrPatientUuid);
-                jsonObservationD.put("concept", amrsOvcList.get(0).getKenyaEmrConceptUuid());
-                jsonObservationD.put("value", amrsOvcList.get(0).getKenyaEmrValue());
-                jsonObservationD.put("obsDatetime", amrsOvcList.get(0).getObsDateTime());
+                jsonObservationD.put("concept", amrsOvcList.get(x).getKenyaEmrConceptUuid());
+                jsonObservationD.put("value", amrsOvcList.get(x).getKenyaEmrValue());
+                jsonObservationD.put("obsDatetime", amrsOvcList.get(x).getObsDateTime());
                 if(!Objects.equals(amrsOvcList.get(0).getKenyaEmrValue(), "") && !Objects.equals(amrsOvcList.get(0).getKenyaEmrConceptUuid(), "") ) {
                     jsonObservations.put(jsonObservationD);
                 }
@@ -890,6 +889,317 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
     }
 
 }
+
+    public static void prepInitial(AMRSPrepInitialService amrsPrepInitialService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException, SQLException {
+        List<AMRSPrepInitial> amrsPrepInitials = amrsPrepInitialService.findByResponseCodeIsNull();
+
+        if (!amrsPrepInitials.isEmpty()) {
+            // Use a Set to store unique patient IDs
+            Set<String> visitIdSet = new HashSet<>();
+            List<String> distinctVisitIds = new ArrayList<>();
+
+            // Collect unique patient IDs
+            for (AMRSPrepInitial amrsPrepInitial : amrsPrepInitials) {
+                if (amrsPrepInitial.getResponseCode() == null && visitIdSet.add(amrsPrepInitial.getVisitId())) {
+                    distinctVisitIds.add(amrsPrepInitial.getVisitId());
+                }
+            }
+
+            System.out.println("list of distinct clients " + distinctVisitIds);
+            for (String visitId : distinctVisitIds) {
+                System.out.println("Processing visit ID: " + visitId);
+
+                List<AMRSPrepInitial> amrsPrepInitialList = amrsPrepInitialService.findByVisitId(visitId);
+                JSONArray jsonObservations = new JSONArray();
+                Set<String> uniqueObservations = new HashSet<>();
+
+                String kenyaemrPatientUuid = "";
+                String kenyaemrVisitUuid = "";
+                String obsDatetime = "";
+
+                // Prepare JSON observations
+                for(int x = 0; x< amrsPrepInitialList.size(); x++) {
+                    kenyaemrPatientUuid = amrsPrepInitialList.get(x).getKenyaEmrPatientUuid();
+                    kenyaemrVisitUuid = amrsPrepInitialList.get(x).getKenyaEmrVisitUuid();
+                    obsDatetime = amrsPrepInitialList.get(x).getObsDateTime();
+
+                    JSONObject jsonObservationD = new JSONObject();
+                    jsonObservationD.put("person", kenyaemrPatientUuid);
+                    jsonObservationD.put("concept", amrsPrepInitialList.get(x).getKenyaEmrConceptUuid());
+                    jsonObservationD.put("value", amrsPrepInitialList.get(x).getKenyaEmrValue());
+                    jsonObservationD.put("obsDatetime", amrsPrepInitialList.get(x).getObsDateTime());
+
+
+                    if(!Objects.equals(amrsPrepInitialList.get(x).getKenyaEmrValue(), "") && !Objects.equals(amrsPrepInitialList.get(x).getKenyaEmrConceptUuid(), "") ) {
+                        // Convert JSON object to string to ensure uniqueness
+                        String jsonString = jsonObservationD.toString();
+                        if (!uniqueObservations.contains(jsonString)) {
+                            uniqueObservations.add(jsonString); // Add to the set
+                            System.out.println("JSON OBSERVATION IS :" + x + jsonString);
+                            if(!Objects.equals(amrsPrepInitialList.get(x).getKenyaEmrConceptUuid(), "152370AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
+
+                            jsonObservations.put(jsonObservationD); // Add to the JSON array
+                            }
+                        }
+                    }
+                }
+
+                    JSONObject jsonEncounter = new JSONObject();
+                    jsonEncounter.put("form", "1bfb09fc-56d7-4108-bd59-b2765fd312b8");
+                    jsonEncounter.put("patient", kenyaemrPatientUuid);
+                    jsonEncounter.put("obs", jsonObservations);
+                    jsonEncounter.put("visit", kenyaemrVisitUuid);
+                    jsonEncounter.put("encounterDatetime", obsDatetime);
+                    jsonEncounter.put("encounterType", "706a8b12-c4ce-40e4-aec3-258b989bf6d3");
+                    jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+
+
+                // Send API request
+                OkHttpClient client = new OkHttpClient();
+                MediaType mediaType = MediaType.parse("application/json");
+                okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
+
+
+                Request request = new Request.Builder()
+                        .url(url + "encounter")
+                        .method("POST", body)
+                        .addHeader("Authorization", "Basic " + auth)
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+
+                System.out.println("Payload is Here "+ jsonEncounter );
+
+                try (Response response = client.newCall(request).execute()) {
+                    String responseBody = response.body().string();
+                    int responseCode = response.code();
+
+                    System.out.println("Response: " + responseBody + " | Status Code: " + responseCode);
+
+                    // Update response code for successful submissions
+                    if (responseCode == 201) {
+                        for (AMRSPrepInitial amrsPrepInitial : amrsPrepInitialList) {
+                            amrsPrepInitial.setResponseCode("201");
+                            amrsPrepInitialService.save(amrsPrepInitial);
+                        }
+                    } else {
+                        System.err.println("Failed to process visit ID: " + visitId + " | Status Code: " + responseCode);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing visit ID: " + visitId + " | " + e.getMessage());
+                }
+            }
+
+        }
+    }
+
+
+    public static void prepFollowUp(AMRSPrepFollowUpService amrsPrepFollowUpService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException, SQLException {
+        List<AMRSPrepFollowUp> amrsPrepFollowUps = amrsPrepFollowUpService.findByResponseCodeIsNull();
+
+        if (!amrsPrepFollowUps.isEmpty()) {
+            // Use a Set to store unique patient IDs
+            Set<String> visitIdSet = new HashSet<>();
+            List<String> distinctVisitIds = new ArrayList<>();
+
+            // Collect unique patient IDs
+            for (AMRSPrepFollowUp amrsPrepFollowUp : amrsPrepFollowUps) {
+                if (amrsPrepFollowUp.getResponseCode() == null && visitIdSet.add(amrsPrepFollowUp.getVisitId())) {
+                    distinctVisitIds.add(amrsPrepFollowUp.getVisitId());
+                }
+            }
+
+            System.out.println("list of distinct clients " + distinctVisitIds);
+            for (String visitId : distinctVisitIds) {
+                System.out.println("Processing visit ID: " + visitId);
+
+                List<AMRSPrepFollowUp> amrsPrepFollowUpList = amrsPrepFollowUpService.findByVisitId(visitId);
+                JSONArray jsonObservations = new JSONArray();
+                Set<String> uniqueObservations = new HashSet<>();
+                String kenyaemrPatientUuid = "";
+                String kenyaemrVisitUuid = "";
+                String obsDatetime = "";
+
+                // Prepare JSON observations
+                for(int x = 0; x< amrsPrepFollowUpList.size(); x++) {
+                    kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(amrsPrepFollowUpList.get(x).getPatientId());
+                    kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+                    obsDatetime = amrsPrepFollowUpList.get(x).getObsDateTime();
+
+                    JSONObject jsonObservationD = new JSONObject();
+                    jsonObservationD.put("person", kenyaemrPatientUuid);
+                    jsonObservationD.put("concept", amrsPrepFollowUpList.get(x).getKenyaEmrConceptUuid());
+                    jsonObservationD.put("value", amrsPrepFollowUpList.get(x).getKenyaEmrValue());
+                    jsonObservationD.put("obsDatetime", amrsPrepFollowUpList.get(x).getObsDateTime());
+                    if(!Objects.equals(amrsPrepFollowUpList.get(x).getKenyaEmrValue(), "") && !Objects.equals(amrsPrepFollowUpList.get(x).getKenyaEmrConceptUuid(), "") ) {
+                        // Convert JSON object to string to ensure uniqueness
+                        String jsonString = jsonObservationD.toString();
+                        if (!uniqueObservations.contains(jsonString)) {
+                            uniqueObservations.add(jsonString); // Add to the set
+                            System.out.println("JSON OBSERVATION IS :" + x + jsonString);
+                            if(!Objects.equals(amrsPrepFollowUpList.get(x).getKenyaEmrConceptUuid(), "152370AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
+
+                                jsonObservations.put(jsonObservationD); // Add to the JSON array
+                            } // Add to the JSON array
+                        }
+                    }
+
+                }
+
+                JSONObject jsonEncounter = new JSONObject();
+
+                    jsonEncounter.put("form", "ee3e2017-52c0-4a54-99ab-ebb542fb8984");
+                    jsonEncounter.put("patient", kenyaemrPatientUuid);
+                    jsonEncounter.put("obs", jsonObservations);
+                    jsonEncounter.put("visit", kenyaemrVisitUuid);
+                    jsonEncounter.put("encounterDatetime", obsDatetime);
+                    jsonEncounter.put("encounterType", "c4a2be28-6673-4c36-b886-ea89b0a42116");
+                    jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+
+
+
+
+                // Send API request
+                OkHttpClient client = new OkHttpClient();
+                MediaType mediaType = MediaType.parse("application/json");
+                okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
+
+
+                Request request = new Request.Builder()
+                        .url(url + "encounter")
+                        .method("POST", body)
+                        .addHeader("Authorization", "Basic " + auth)
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+
+                System.out.println("Payload is Here "+ jsonEncounter );
+
+                try (Response response = client.newCall(request).execute()) {
+                    assert response.body() != null;
+                    String responseBody = response.body().string();
+                    int responseCode = response.code();
+
+                    System.out.println("Response: " + responseBody + " | Status Code: " + responseCode);
+
+                    // Update response code for successful submissions
+                    if (responseCode == 201) {
+                        for (AMRSPrepFollowUp amrsPrepFollowUp : amrsPrepFollowUpList) {
+                            amrsPrepFollowUp.setResponseCode("201");
+                            amrsPrepFollowUpService.save(amrsPrepFollowUp);
+                        }
+                    } else {
+                        System.err.println("Failed to process visit ID: " + visitId + " | Status Code: " + responseCode);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing visit ID: " + visitId + " | " + e.getMessage());
+                }
+            }
+
+        }
+    }
+
+    public static void prepMonthlyRefill(AMRSPrepMonthlyRefillService amrsPrepMonthlyRefillService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException, SQLException  {
+        List<AMRSPrepMonthlyRefill> amrsPrepMonthlyRefills = amrsPrepMonthlyRefillService.findByResponseCodeIsNull();
+
+        if (!amrsPrepMonthlyRefills.isEmpty()) {
+            // Use a Set to store unique patient IDs
+            Set<String> visitIdSet = new HashSet<>();
+            List<String> distinctVisitIds = new ArrayList<>();
+
+            // Collect unique patient IDs
+            for (AMRSPrepMonthlyRefill amrsPrepMonthlyRefill : amrsPrepMonthlyRefills) {
+                if (amrsPrepMonthlyRefill.getResponseCode() == null && visitIdSet.add(amrsPrepMonthlyRefill.getVisitId())) {
+                    distinctVisitIds.add(amrsPrepMonthlyRefill.getVisitId());
+                }
+            }
+
+            System.out.println("list of distinct clients " + distinctVisitIds);
+            for (String visitId : distinctVisitIds) {
+                System.out.println("Processing visit ID: " + visitId);
+
+                List<AMRSPrepMonthlyRefill> amrsPrepMonthlyRefillList = amrsPrepMonthlyRefillService.findByVisitId(visitId);
+                JSONArray jsonObservations = new JSONArray();
+                Set<String> uniqueObservations = new HashSet<>();
+                String kenyaemrPatientUuid = "";
+                String kenyaemrVisitUuid = "";
+                String obsDatetime = "";
+
+                // Prepare JSON observations
+                for(int x = 0; x< amrsPrepMonthlyRefillList.size(); x++) {
+                    kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(amrsPrepMonthlyRefillList.get(x).getPatientId());
+                    kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+                    obsDatetime = amrsPrepMonthlyRefillList.get(x).getObsDateTime();
+
+                    JSONObject jsonObservationD = new JSONObject();
+                    jsonObservationD.put("person", kenyaemrPatientUuid);
+                    jsonObservationD.put("concept", amrsPrepMonthlyRefillList.get(x).getKenyaEmrConceptUuid());
+                    jsonObservationD.put("value", amrsPrepMonthlyRefillList.get(x).getKenyaEmrValue());
+                    jsonObservationD.put("obsDatetime", amrsPrepMonthlyRefillList.get(x).getObsDateTime());
+
+                    if(!Objects.equals(amrsPrepMonthlyRefillList.get(0).getKenyaEmrValue(), "") && !Objects.equals(amrsPrepMonthlyRefillList.get(0).getKenyaEmrConceptUuid(), "") ) {
+                        // Convert JSON object to string to ensure uniqueness
+                        String jsonString = jsonObservationD.toString();
+                        if (!uniqueObservations.contains(jsonString)) {
+                            uniqueObservations.add(jsonString); // Add to the set
+                            System.out.println("JSON OBSERVATION IS :" + x + jsonString);
+                            if(!Objects.equals(amrsPrepMonthlyRefillList.get(x).getKenyaEmrConceptUuid(), "152370AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")) {
+
+                                jsonObservations.put(jsonObservationD); // Add to the JSON array
+                            } // Add to the JSON array
+                        }
+                    }
+                }
+
+
+                JSONObject jsonEncounter = new JSONObject();
+
+                if(!Objects.equals(amrsPrepMonthlyRefillList.get(0).getKenyaEmrVisitUuid(), "")) {
+                    jsonEncounter.put("form", "ee3e2017-52c0-4a54-99ab-ebb542fb8984");
+                    jsonEncounter.put("patient", kenyaemrPatientUuid);
+                    jsonEncounter.put("obs", jsonObservations);
+                    jsonEncounter.put("visit", kenyaemrVisitUuid);
+                    jsonEncounter.put("encounterDatetime", obsDatetime);
+                    jsonEncounter.put("encounterType", "c4a2be28-6673-4c36-b886-ea89b0a42116");
+                    jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                }
+
+                // Send API request
+                OkHttpClient client = new OkHttpClient();
+                MediaType mediaType = MediaType.parse("application/json");
+                okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
+
+
+                Request request = new Request.Builder()
+                        .url(url + "encounter")
+                        .method("POST", body)
+                        .addHeader("Authorization", "Basic " + auth)
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+
+                System.out.println("Payload is Here "+ jsonEncounter );
+
+                try (Response response = client.newCall(request).execute()) {
+                    assert response.body() != null;
+                    String responseBody = response.body().string();
+                    int responseCode = response.code();
+
+                    System.out.println("Response: " + responseBody + " | Status Code: " + responseCode);
+
+                    // Update response code for successful submissions
+                    if (responseCode == 201) {
+                        for (AMRSPrepMonthlyRefill amrsPrepMonthlyRefill : amrsPrepMonthlyRefillList) {
+                            amrsPrepMonthlyRefill.setResponseCode("201");
+                            amrsPrepMonthlyRefillService.save(amrsPrepMonthlyRefill);
+                        }
+                    } else {
+                        System.err.println("Failed to process visit ID: " + visitId + " | Status Code: " + responseCode);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing visit ID: " + visitId + " | " + e.getMessage());
+                }
+            }
+
+        }
+    }
            /* for(int x =0;x<amrsPatientStatusList.size();x++) {
 
 
