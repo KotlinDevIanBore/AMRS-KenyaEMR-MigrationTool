@@ -4401,6 +4401,7 @@ public class MigrateCareData {
         "\tand e.location_id in (2, 98, 339)\n" +
         "\tand e.voided = 0\n" +
         "\tand cd.name <> 'N/A'\n" +
+        "\tand o.person_id in (" + samplePatientList + ")\n" +
         "order by\n" +
         "\to.person_id,\n" +
         "\te.encounter_id desc;";

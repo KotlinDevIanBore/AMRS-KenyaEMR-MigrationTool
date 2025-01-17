@@ -1245,6 +1245,10 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
           formuuid = amrsCovidEncounters.get(x).getKenyaemrFormUuid();
           encounteruuid = amrsCovidEncounters.get(x).getKenyaemrEncounterTypeUuid();
           encounterDatetime = amrsCovidEncounters.get(x).getKenyaEmrEncounterDateTime();
+
+          if(!Objects.equals(amrsCovidEncounters.get(0).getKenyaEmrValue(), "") && !Objects.equals(amrsCovidEncounters.get(0).getKenyaEmrConceptUuid(), "") ) {
+            jsonObservations.put(jsonObservation);
+          }
         }
 
         //Publish the data to KenyaEMR
