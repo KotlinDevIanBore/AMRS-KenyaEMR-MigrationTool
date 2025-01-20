@@ -1296,43 +1296,5 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
             }
         }
     }
-
-           /* for(int x =0;x<amrsPatientStatusList.size();x++) {
-
-
-
-                AMRSPatientStatus amrsPatientStatus = amrsPatientStatusList.get(x);
-
-                JSONObject jsonObservation = new JSONObject();
-                jsonObservation.put("person", amrsPatientStatusList.get(x).getKenyaPatientUuid());///String.valueOf(conceptsetId));
-                jsonObservation.put("concept", amrsPatientStatusList.get(x).getKenyaEmrConceptUuid());///String.valueOf(conceptsetId));
-                jsonObservation.put("value", amrsPatientStatusList.get(x).getKenyaEmrValueUuid());
-                jsonObservation.put("obsDatetime", amrsPatientStatusList.get(x).getObsDateTime());
-                System.out.println("Payload for is here " + jsonObservation.toString());
-               form "add7abdc-59d1-11e8-9c2d-fa7ae01bbebc"
-              encounter -   de1f9d67-b73e-4e1b-90d0-036166fc6995
-              //  OkHttpClient client = new OkHttpClient();
-                MediaType mediaType = MediaType.parse("application/json");
-              //  okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonObservation.toString());
-                //RequestBody body = RequestBody.create(mediaType, jsonEncounter.toString());
-                Request request = new Request.Builder()
-                        .url(url + "obs" )
-                        .method("POST", body)
-                        .addHeader("Authorization", "Basic " + auth)
-                        .addHeader("Content-Type", "application/json")
-                        .build();
-
-                Response response = client.newCall(request).execute();
-                String responseBody = response.body().string(); // Get the response as a string
-                System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
-
-                String resBody = response.request().toString();
-                int rescode = response.code();
-                if(rescode==201) {
-
-                     amrsPatientStatus.setResponseCode("201");
-                        amrsPatientStatusService.save(amrsPatientStatus);
-                }
-            }  */
 }
 
