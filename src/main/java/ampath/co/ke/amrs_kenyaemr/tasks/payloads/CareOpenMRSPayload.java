@@ -17,54 +17,60 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class CareOpenMRSPayload {
-  public static void programs(AMRSProgramService amrsProgramService, String url, String auth) throws JSONException, IOException {
-    //List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
-    List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByResponseCodeIsNull();
-    if (!amrsProgramsList.isEmpty()) {
-      JSONObject jsonProgram = new JSONObject();
-      for (int x = 0; x < amrsProgramsList.size(); x++) {
 
-        String programms = Mappers.programs(String.valueOf(amrsProgramsList.get(x).getProgramUUID()));
-        System.out.println("Program UUID is here " + programms + " amrs UUID " + amrsProgramsList.get(x).getProgramUUID());
-        int pid = amrsProgramsList.get(x).getProgramID();
-        AMRSPrograms ap = amrsProgramsList.get(x);
+    public static void programs(AMRSProgramService amrsProgramService, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+        //List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
+        List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByResponseCodeIsNull();
+        if (!amrsProgramsList.isEmpty()) {
+            JSONObject jsonProgram = new JSONObject();
+            for (int x = 0; x < amrsProgramsList.size(); x++) {
 
-        if (!programms.equals("") || ap.getPatientKenyaemrUuid() != null) {
+                String programms = Mappers.programs(String.valueOf(amrsProgramsList.get(x).getProgramUUID()));
+                System.out.println("Program UUID is here " + programms + " amrs UUID " + amrsProgramsList.get(x).getProgramUUID());
+                int pid = amrsProgramsList.get(x).getProgramID();
+                AMRSPrograms ap = amrsProgramsList.get(x);
 
-          jsonProgram.put("patient", ap.getPatientKenyaemrUuid());
-          jsonProgram.put("program", ap.getKenyaemrProgramUuid());
-          jsonProgram.put("dateEnrolled", ap.getDateEnrolled());
-          //jsonProgram.put("location", ap.getDateEnrolled());
-          if (pid == 1 || pid == 3 || pid == 9 || pid == 20) {
+                if (!programms.isEmpty() || amrsTranslater.KenyaemrPatientUuid(ap.getPatientId()) != null) {
 
-          } else {
-            jsonProgram.put("dateCompleted", ap.getDateCompleted());
-          }
-          System.out.println("Payload for Programs is here " + jsonProgram.toString());
-          OkHttpClient client = new OkHttpClient();
-          MediaType mediaType = MediaType.parse("application/json");
-          okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonProgram.toString());
-          //RequestBody body = RequestBody.create(mediaType, jsonEncounter.toString());
-          Request request = new Request.Builder()
-            .url(url + "programenrollment")
-            .method("POST", body)
-            .addHeader("Authorization", "Basic " + auth)
-            .addHeader("Content-Type", "application/json")
-            .build();
-          Response response = client.newCall(request).execute();
-          String responseBody = response.body().string(); // Get the response as a string
-          System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
+                    jsonProgram.put("patient", amrsTranslater.KenyaemrPatientUuid(ap.getPatientId()));
+                    jsonProgram.put("program", ap.getKenyaemrProgramUuid());
+                    jsonProgram.put("dateEnrolled", ap.getDateEnrolled());
+                    //jsonProgram.put("location", ap.getDateEnrolled());
+                    if (pid == 1 || pid == 3 || pid == 9 || pid == 20) {
 
-          // String resBody = response.request().toString();
-          int rescode = response.code();
-          if (rescode == 201) {
-            ap.setResponseCode(String.valueOf(rescode));
-          }
-          System.out.println("Imefika Hapa na data " + rescode);
-        }
-        amrsProgramService.save(ap);
-      }
+                    } else {
+                        jsonProgram.put("dateCompleted", ap.getDateCompleted());
+                    }
+                    System.out.println("Payload for Programs is here " + jsonProgram.toString());
+                    OkHttpClient client = new OkHttpClient();
+                    MediaType mediaType = MediaType.parse("application/json");
+                    okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonProgram.toString());
+                    //RequestBody body = RequestBody.create(mediaType, jsonEncounter.toString());
+                    Request request = new Request.Builder()
+                            .url(url + "programenrollment")
+                            .method("POST", body)
+                            .addHeader("Authorization", "Basic " + auth)
+                            .addHeader("Content-Type", "application/json")
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    String responseBody = response.body().string(); // Get the response as a string
+                    System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
 
+                    // String resBody = response.request().toString();
+                    int rescode = response.code();
+                    ap.setResponseCode(String.valueOf(rescode));
+                   /* if(rescode==201) {
+                        ap.setResponseCode(String.valueOf(rescode));
+                    }else{
+                        ap.setResponseCode(String.valueOf(rescode));
+                    }*/
+                    System.out.println("Imefika Hapa na data " + rescode);
+                }
+                amrsProgramService.save(ap);
+            }
+
+
+ 
     }
   }
 
@@ -269,19 +275,96 @@ public class CareOpenMRSPayload {
     }
   }
 
-  public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, String parentUUID, String locations, String auth, String url) throws JSONException, IOException {
-    List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findByResponseCodeIsNull();
+
+    public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, String KenyaEMRlocationUuid, String auth, String url) throws JSONException, IOException {
+        List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findByResponseCodeIsNull();
+
 
     if (!amrsRegimenSwitchList.isEmpty()) {
       Set<String> regimenSwitchIdSet = new HashSet<>();
       List<String> distinctRegimenSwitchIds = new ArrayList<>();
 
-      for (AMRSRegimenSwitch regimenSwitches : amrsRegimenSwitchList) {
-        if (regimenSwitches.getResponseCode() == null) {
-          String encounterId = regimenSwitches.getPatientId();
-          if (regimenSwitchIdSet.add(encounterId)) {
-            distinctRegimenSwitchIds.add(encounterId);
-          }
+
+            for(String encounterId: distinctRegimenSwitchIds) {
+                System.out.println("Patient ID for Switches " + encounterId);
+
+                List<AMRSRegimenSwitch> regimenSwitchList = amrsRegimenSwitchService.findByPatientId(encounterId);
+
+                for( int x=0; x < regimenSwitchList.size(); x++ ) {
+
+               String patient = amrsTranslater.KenyaemrPatientUuid(encounterId);
+               String visitId = amrsTranslater.kenyaemrVisitUuid(regimenSwitchList.get(x).getVisitId());
+                    //List<AMRSPatients> amrsPatients = patient;
+                    if (visitId!="") {
+
+                        //PLAN 1255AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        //START 1256AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        //CHANGE 1259AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        //STOP DATE 1191AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        //Reason for stoping 1252AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+                        JSONArray jsonObservations = new JSONArray();
+                        JSONObject jsonObservationPType = new JSONObject();
+                        jsonObservationPType.put("person", patient);
+                        jsonObservationPType.put("concept", "1255AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                        jsonObservationPType.put("value", "1256AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                        jsonObservationPType.put("obsDatetime", regimenSwitchList.get(x).getEncounterDatetime());
+                        jsonObservations.put(jsonObservationPType);
+
+
+                        JSONObject jsonObservation = new JSONObject();
+                        jsonObservation.put("person", patient);
+                        jsonObservation.put("concept", regimenSwitchList.get(x).getKenyaemrConceptUuid());
+                        jsonObservation.put("value", regimenSwitchList.get(x).getKenyaemrValue());
+                        jsonObservationPType.put("obsDatetime", regimenSwitchList.get(x).getEncounterDatetime());
+                        jsonObservations.put(jsonObservation);
+
+
+                        JSONObject jsonRegimenSwitchEncouter = new JSONObject();
+                        jsonRegimenSwitchEncouter.put("form", "da687480-e197-11e8-9f32-f2801f1b9fd1");
+                        jsonRegimenSwitchEncouter.put("encounterType", "7dffc392-13e7-11e9-ab14-d663bd873d93");
+                        jsonRegimenSwitchEncouter.put("location", KenyaEMRlocationUuid);
+                        jsonRegimenSwitchEncouter.put("patient", patient);
+                        jsonRegimenSwitchEncouter.put("encounterDatetime", regimenSwitchList.get(x).getEncounterDatetime());
+                        jsonRegimenSwitchEncouter.put("obs", jsonObservations);
+                        jsonRegimenSwitchEncouter.put("visit", visitId);
+
+                        System.out.println("Payload for is here " + jsonRegimenSwitchEncouter.toString());
+                        // System.out.println("URL is here " + url + "encpunter/" + regimenSwitchList.get(0).getKenyaemrEncounterUuid());
+
+                        OkHttpClient client = new OkHttpClient();
+                        MediaType mediaType = MediaType.parse("application/json");
+                        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonRegimenSwitchEncouter.toString());
+
+                        Request request = new Request.Builder()
+                                .url(url + "encounter")
+                                .method("POST", body)
+                                .addHeader("Authorization", "Basic " + auth)
+                                .addHeader("Content-Type", "application/json")
+                                .build();
+                        Response response = client.newCall(request).execute();
+                        String responseBody = response.body().string();
+                        System.out.println("Response ndo hii " + responseBody + "More message" + response.message());
+
+                        int resCode = response.code();
+                        if (resCode == 200) {
+                            for (int y = 0; y < regimenSwitchList.size(); y++) {
+                                AMRSRegimenSwitch rs = regimenSwitchList.get(y);
+                                rs.setResponseCode("201");
+                                System.out.println("Imefika Hapa na data " + resCode);
+                                amrsRegimenSwitchService.save(rs);
+                            }
+                        }else{
+                            for (int y = 0; y < regimenSwitchList.size(); y++) {
+                                AMRSRegimenSwitch rs = regimenSwitchList.get(y);
+                                rs.setResponseCode("400");
+                                System.out.println("Imefika Hapa na data " + resCode);
+                                amrsRegimenSwitchService.save(rs);
+                            }
+                        }
+                    }
+                }
+            }
         }
       }
 
@@ -395,6 +478,29 @@ public class CareOpenMRSPayload {
           kenyaemrPatientUuid = patientStatusList.get(x).getKenyaPatientUuid();
         }
 
+
+    public static void hivEnrollment(
+            AMRSHIVEnrollmentService amrshivEnrollmentService,
+            AMRSTranslater amrsTranslater,
+            String KenyaEMRlocationUuid,
+            String url,
+            String auth
+    ) throws JSONException, IOException {
+
+        List<AMRSHIVEnrollment> amrshivEnrollments = amrshivEnrollmentService.findByResponseCodeIsNull();
+
+        if (!amrshivEnrollments.isEmpty()) {
+            // Use a Set to store unique patient IDs
+            Set<String> patientIdSet = new HashSet<>();
+            List<String> distinctPatientIds = new ArrayList<>();
+
+            // Collect unique patient IDs
+            for (AMRSHIVEnrollment enrollment : amrshivEnrollments) {
+                if (enrollment.getResponseCode() == null && patientIdSet.add(enrollment.getPatientId())) {
+                    distinctPatientIds.add(enrollment.getPatientId());
+                }
+            }
+
         JSONObject jsonEncounter = new JSONObject();
         jsonEncounter.put("form", "add7abdc-59d1-11e8-9c2d-fa7ae01bbebc");
         jsonEncounter.put("encounterType", "de1f9d67-b73e-4e1b-90d0-036166fc6995");
@@ -429,7 +535,19 @@ public class CareOpenMRSPayload {
           }
         }
 
+
       }
+
+
+                // Prepare JSON encounter
+                JSONObject jsonEncounter = new JSONObject();
+                jsonEncounter.put("form", "e4b506c1-7379-42b6-a374-284469cba8da");
+                jsonEncounter.put("encounterType", "de78a6be-bfc5-4634-adc3-5f1a280455cc");
+                jsonEncounter.put("obs", jsonObservations);
+                jsonEncounter.put("patient", kenyaemrPatientUuid);
+                jsonEncounter.put("visit", visituuid);
+                jsonEncounter.put("encounterDatetime", obsDateTime);
+                jsonEncounter.put("location", KenyaEMRlocationUuid );
 
 
     }
@@ -520,6 +638,7 @@ public class CareOpenMRSPayload {
         jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
 
 
+
                 /*jsonEncounter.put("form", formuuid);
                 jsonEncounter.put("patient", patintUUID);
                 jsonEncounter.put("encounterDatetime", amrsVisits.get(0).getDateStarted());
@@ -586,11 +705,30 @@ public class CareOpenMRSPayload {
 
           System.out.println("Response: " + responseBody + " | Status Code: " + responseCode);
 
+
+                    // Update response code for successful submissions
+                    if (responseCode == 201) {
+                        for (AMRSHIVEnrollment enrollment : amrshivEnrollmentList) {
+                            enrollment.setResponseCode("201");
+                            amrshivEnrollmentService.save(enrollment);
+                        }
+                    } else {
+                        for (AMRSHIVEnrollment enrollment : amrshivEnrollmentList) {
+                            enrollment.setResponseCode("400");
+                            amrshivEnrollmentService.save(enrollment);
+                        }
+                        System.err.println("Failed to process Patient ID: " + patientId + " | Status Code: " + responseCode);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
+                }
+
           // Update response code for successful submissions
           if (responseCode == 201) {
             for (AMRSHIVEnrollment enrollment : amrshivEnrollmentList) {
               enrollment.setResponseCode("201");
               amrshivEnrollmentService.save(enrollment);
+
             }
           } else {
             System.err.println("Failed to process Patient ID: " + patientId + " | Status Code: " + responseCode);
