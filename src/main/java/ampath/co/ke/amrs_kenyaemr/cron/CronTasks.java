@@ -193,34 +193,33 @@ public class CronTasks {
                 }
             });
     }
-
-   // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void HIVEnrollments() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.hivenrollment(server,username,password,locationId,parentUuid, amrsHIVEnrollmentService, amrsTranslater, OpenMRSURL,auth);
+        CompletableFuture.runAsync(() -> {
+            try {
+                AMRSLocation amrsLocation = new AMRSLocation();
+                String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+                MigrateCareData.hivenrollment(server,username,password,KenyaEMRlocationUuid, amrsHIVEnrollmentService, amrsTranslater,amrsPatientServices, OpenMRSURL,auth);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-
-    public void ProcessEncounterMapping() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.encounterMappings(server,username,password,locationId,parentUuid, amrsEncounterMappingService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
-
-    }
-    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessProgramSwitches() throws JSONException, ParseException, SQLException, IOException {
-        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.DrugSwitches(server, username, password, locationId,parentUuid, amrsRegimenSwitchService, amrsTranslater, amrsPatientServices,OpenMRSURL, auth);
+        CompletableFuture.runAsync(() -> {
+            try {
+                    AMRSLocation amrsLocation = new AMRSLocation();
+                    String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+                    MigrateCareData.DrugSwitches(server, username, password, KenyaEMRlocationUuid, amrsRegimenSwitchService, amrsTranslater, amrsPatientServices,OpenMRSURL, auth);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
     }
 
-  //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
-  public void ProcessProgramEnrollments() throws JSONException, ParseException, SQLException, IOException {
-    String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-    String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-    MigrateCareData.programEnrollments(server, username, password, locationId,parentUuid, amrsEnrollmentService, amrsEncounterService, amrsConceptMappingService, OpenMRSURL, auth);
-  }
+
 
     //@Scheduled(initialDelay = 0, fixedRate = 50 * 60 * 1000)
     public void processGreenCard() throws JSONException, ParseException, SQLException, IOException {
@@ -314,6 +313,23 @@ public class CronTasks {
         String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
         MigrateCareData.newObs(server,username,password,locationId,parentUuid, amrsObsService,  amrsTranslater,amrsPatientServices,amrsEncounterService ,OpenMRSURL,auth);
+    }
+
+    */
+
+   /* public void ProcessEncounterMapping() throws JSONException, ParseException, SQLException, IOException {
+        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        MigrateCareData.encounterMappings(server,username,password,locationId,parentUuid, amrsEncounterMappingService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
+
+    }
+    */
+
+    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+  /*  public void ProcessProgramEnrollments() throws JSONException, ParseException, SQLException, IOException {
+        String locationId="'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        String parentUuid="'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
+        MigrateCareData.programEnrollments(server, username, password, locationId,parentUuid, amrsEnrollmentService, amrsEncounterService, amrsConceptMappingService, OpenMRSURL, auth);
     }
     */
 

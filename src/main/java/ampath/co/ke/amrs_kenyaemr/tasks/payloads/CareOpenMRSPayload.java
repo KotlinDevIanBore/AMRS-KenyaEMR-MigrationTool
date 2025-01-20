@@ -268,7 +268,7 @@ public class CareOpenMRSPayload {
         }
     }
 
-    public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, String parentUUID, String locations, String auth, String url) throws JSONException, IOException {
+    public static void amrsRegimenSwitch(AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, String KenyaEMRlocationUuid, String auth, String url) throws JSONException, IOException {
         List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findByResponseCodeIsNull();
 
         if(!amrsRegimenSwitchList.isEmpty()) {
@@ -322,7 +322,7 @@ public class CareOpenMRSPayload {
                         JSONObject jsonRegimenSwitchEncouter = new JSONObject();
                         jsonRegimenSwitchEncouter.put("form", "da687480-e197-11e8-9f32-f2801f1b9fd1");
                         jsonRegimenSwitchEncouter.put("encounterType", "7dffc392-13e7-11e9-ab14-d663bd873d93");
-                        jsonRegimenSwitchEncouter.put("location", "7dffc392-13e7-11e9-ab14-d663bd873d93");
+                        jsonRegimenSwitchEncouter.put("location", KenyaEMRlocationUuid);
                         jsonRegimenSwitchEncouter.put("patient", patient);
                         jsonRegimenSwitchEncouter.put("encounterDatetime", regimenSwitchList.get(x).getEncounterDatetime());
                         jsonRegimenSwitchEncouter.put("obs", jsonObservations);
@@ -350,6 +350,13 @@ public class CareOpenMRSPayload {
                             for (int y = 0; y < regimenSwitchList.size(); y++) {
                                 AMRSRegimenSwitch rs = regimenSwitchList.get(y);
                                 rs.setResponseCode("201");
+                                System.out.println("Imefika Hapa na data " + resCode);
+                                amrsRegimenSwitchService.save(rs);
+                            }
+                        }else{
+                            for (int y = 0; y < regimenSwitchList.size(); y++) {
+                                AMRSRegimenSwitch rs = regimenSwitchList.get(y);
+                                rs.setResponseCode("400");
                                 System.out.println("Imefika Hapa na data " + resCode);
                                 amrsRegimenSwitchService.save(rs);
                             }
@@ -437,8 +444,7 @@ public class CareOpenMRSPayload {
     public static void hivEnrollment(
             AMRSHIVEnrollmentService amrshivEnrollmentService,
             AMRSTranslater amrsTranslater,
-            String locations,
-            String parentUUID,
+            String KenyaEMRlocationUuid,
             String url,
             String auth
     ) throws JSONException, IOException {
@@ -516,7 +522,7 @@ public class CareOpenMRSPayload {
                 jsonEncounter.put("patient", kenyaemrPatientUuid);
                 jsonEncounter.put("visit", visituuid);
                 jsonEncounter.put("encounterDatetime", obsDateTime);
-                jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                jsonEncounter.put("location", KenyaEMRlocationUuid );
 
 
                 /*jsonEncounter.put("form", formuuid);
@@ -593,6 +599,10 @@ public class CareOpenMRSPayload {
                             amrshivEnrollmentService.save(enrollment);
                         }
                     } else {
+                        for (AMRSHIVEnrollment enrollment : amrshivEnrollmentList) {
+                            enrollment.setResponseCode("400");
+                            amrshivEnrollmentService.save(enrollment);
+                        }
                         System.err.println("Failed to process Patient ID: " + patientId + " | Status Code: " + responseCode);
                     }
                 } catch (Exception e) {

@@ -1734,15 +1734,18 @@ public class MigrateCareData {
 
     }
 
-    public static void hivenrollment(String server, String username, String password, String locations, String parentUUID, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void hivenrollment(String server, String username, String password, String KenyaEMRlocationUuid, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        String samplePatientList = AMRSSamples.getPersonIdList();
+       // String samplePatientList = AMRSSamples.getPersonIdList();
         //  String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
+        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+
 
         String sql = "";
         List<AMRSHIVEnrollment> amrshivEnrollmentLists = amrsHIVEnrollmentService.findFirstByOrderByIdDesc();
         String nextEncounterID = "";
-        if (amrshivEnrollmentLists.size() == 0) {
+        if (amrshivEnrollmentLists.isEmpty()) {
 
             sql = "SELECT   \n" +
                     "                                              o.person_id,  \n" +
@@ -1829,7 +1832,7 @@ public class MigrateCareData {
                     "                                           ";
         }
         System.out.println("sqlHivEnrollment" + sql);
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+      //  System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -1890,13 +1893,13 @@ public class MigrateCareData {
                 } else {
                     ahe.setKenyaemrValue(amrsTranslater.translater(value));
                 }
-                System.out.println("Tumefika Hapa!!!" + parentUUID);
+                System.out.println("Tumefika Hapa!!!" + KenyaEMRlocationUuid);
                 amrsHIVEnrollmentService.save(ahe);
             }
 
             System.out.println("Patient_id" + patientId);
         }
-        CareOpenMRSPayload.hivEnrollment(amrsHIVEnrollmentService, amrsTranslater, parentUUID, locations, url, auth);
+        CareOpenMRSPayload.hivEnrollment(amrsHIVEnrollmentService, amrsTranslater, KenyaEMRlocationUuid, url, auth);
 
     }
 
@@ -2060,11 +2063,12 @@ public class MigrateCareData {
     }
     */
 
-    public static void DrugSwitches(String server, String username, String password, String locations, String parentUUID, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void DrugSwitches(String server, String username, String password, String KenyaEMRlocationUuid, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         //String samplePatientList = AMRSSamples.getPersonIdList();
-          String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
-
+        //  String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
+        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
 
         String sql = "";
         List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findFirstByOrderByIdDesc();
@@ -2122,7 +2126,7 @@ public class MigrateCareData {
                     " GROUP BY enc_id, patient_id ORDER BY patient_id ASC,Encounter_Date ASC \n";
         }
         System.out.println("regimenSwitchList" + sql);
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+       // System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -2157,18 +2161,21 @@ public class MigrateCareData {
                 ar.setKenyaemrConceptUuid(kenyaemrConceptUuid);
                 ar.setKenyaemrPatientUuid(kenyaemrPatientUuid);
                 ar.setVisitId(visitId);
-                System.out.println("Tumefika Hapa!!!" + parentUUID);
+                System.out.println("Tumefika Hapa!!!" + KenyaEMRlocationUuid);
                 amrsRegimenSwitchService.save(ar);
             }
 
 
 
-            CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsTranslater, parentUUID, locations,auth,url);
+            CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsTranslater, KenyaEMRlocationUuid,auth,url);
 
 
 
             System.out.println("Patient_id" + patientId);
         }
+
+        CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsTranslater, KenyaEMRlocationUuid ,auth,url);
+
     }
 
     public static void programEnrollments(String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
