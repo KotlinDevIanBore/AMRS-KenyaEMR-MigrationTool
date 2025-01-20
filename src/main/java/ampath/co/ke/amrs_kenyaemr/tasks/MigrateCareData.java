@@ -2773,7 +2773,7 @@ public class MigrateCareData {
         }
     }
 
-    public static void processGreenCard(String server, String username, String password, String locations, String parentUUID, AMRSGreenCardService amrsGreenCardService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void processGreenCard(String server, String username, String password, String KenyaEMRlocationUuid, AMRSGreenCardService amrsGreenCardService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
         String samplePatientList = AMRSSamples.getPersonIdList();
 
@@ -2935,7 +2935,7 @@ public class MigrateCareData {
             amrsGreenCard.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
             amrsGreenCardService.save(amrsGreenCard);
         }
-        GreenCardPayload.processGreenCard(amrsGreenCardService, amrsPatientServices, amrsTranslater, url, auth);
+        GreenCardPayload.processGreenCard(amrsGreenCardService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
     }
 
     public static void ordersResults(String server, String username, String password, String locations, String parentUUID, AMRSOrdersResultsService amrsOrdersResultsService, AMRSConceptMappingService amrsConceptMappingService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
