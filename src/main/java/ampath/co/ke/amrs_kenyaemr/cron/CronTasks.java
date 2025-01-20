@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class CronTasks {
@@ -57,7 +58,6 @@ public class CronTasks {
     private AMRSEncounterMappingService amrsEncounterMappingService;
     @Autowired
     private AMRSEncounterService amrsEncounterService;
-
     @Autowired
     private AMRSHIVEnrollmentService amrsHIVEnrollmentService;
     @Autowired
@@ -68,7 +68,6 @@ public class CronTasks {
     private AMRSRegimenSwitchService amrsRegimenSwitchService;
     @Autowired
     private AMRSPatientStatusService amrsPatientStatusService;
-
     @Autowired
     private AMRSGreenCardService amrstcaService;
     @Autowired
@@ -94,7 +93,6 @@ public class CronTasks {
     private AMRSOvcService amrsOvcService;
     @Autowired
     private LocationService locationService;
-
 
     @Value("${mapping.endpoint:http://localhost:8082/mappings/concepts}")
     private String mappingEndpoint;
@@ -151,32 +149,49 @@ public class CronTasks {
     public void ProcessPrograms() throws JSONException, ParseException, SQLException, IOException {
        AMRSLocation amrsLocation = new AMRSLocation();
        String locationId=amrsLocation.getLocationsUuid(locationService);
-        MigrateCareData.programs(server,username,password,locationId, amrsProgramService, amrsPatientServices, OpenMRSURL,auth);
+        MigrateCareData.programs(server,username,password,locationId, amrsProgramService, amrsPatientServices,amrsTranslater, OpenMRSURL,auth);
     }
 
      @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessVisits() throws JSONException, ParseException, SQLException, IOException {
-        AMRSLocation amrsLocation = new AMRSLocation();
-       // String locationId=amrsLocation.getLocationsUuid(locationService);
-        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-        MigrateCareData.visits(server,username,password,KenyaEMRlocationUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL,auth);
-    }
+         CompletableFuture.runAsync(() -> {
+             try {
+                 AMRSLocation amrsLocation = new AMRSLocation();
+                 // String locationId=amrsLocation.getLocationsUuid(locationService);
+                 String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+                 MigrateCareData.visits(server, username, password, KenyaEMRlocationUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL, auth);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         });
+     }
 
      @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessTriage() throws JSONException, ParseException, SQLException, IOException {
-        AMRSLocation amrsLocation = new AMRSLocation();
-        String locationId=amrsLocation.getLocationsUuid(locationService);
-        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-        MigrateCareData.triage(server,username,password,locationId, KenyaEMRlocationUuid,amrsTranslater, amrsTriageService, amrsPatientServices, amrsEncounterService,amrsConceptMappingService,amrsVisitService ,OpenMRSURL,auth);
-
+        CompletableFuture.runAsync(() -> {
+             try {
+                    AMRSLocation amrsLocation = new AMRSLocation();
+                    String locationId=amrsLocation.getLocationsUuid(locationService);
+                    String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+                    System.out.println("Locations is here "+locationId);
+                    MigrateCareData.triage(server,username,password,locationId, KenyaEMRlocationUuid,amrsTranslater, amrsTriageService, amrsPatientServices, amrsEncounterService,amrsConceptMappingService,amrsVisitService ,OpenMRSURL,auth);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         });
     }
 
     @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ProcessOrders() throws JSONException, ParseException, SQLException, IOException {
-        AMRSLocation amrsLocation = new AMRSLocation();
-        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-        MigrateCareData.order(server,username,password,KenyaEMRlocationUuid, amrsOrderService, amrsPatientServices, amrsVisitService,amrsTranslater, OpenMRSURL,auth);
-
+        CompletableFuture.runAsync(() -> {
+            try {
+                    AMRSLocation amrsLocation = new AMRSLocation();
+                    String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+                    MigrateCareData.order(server,username,password,KenyaEMRlocationUuid, amrsOrderService, amrsPatientServices, amrsVisitService,amrsTranslater, OpenMRSURL,auth);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
     }
 
    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)

@@ -33,7 +33,6 @@ public class MigrateRegistration {
 
     public static String samplePatientList = AMRSSamples.getPersonIdList();
     //getPersonIdListKapsoya
-
     public static void conceptMapping(AMRSMappingService amrsMappingService) throws IOException {
         ClassPathResource resource = new ClassPathResource("all_revised_concepts.csv");
         Reader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
