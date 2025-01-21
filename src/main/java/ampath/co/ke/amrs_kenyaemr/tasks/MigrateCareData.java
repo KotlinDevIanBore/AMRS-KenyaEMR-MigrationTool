@@ -4555,48 +4555,47 @@ public class MigrateCareData {
         HeiOutcomePayload.processHeiOutcome(amrsHeiOutcomeService, amrsPatientServices, amrsTranslater, url, auth);
     }
 
+    public static void processAlcohol(String server, String username, String password, String KenyaEMRlocationUuid, AMRSAlcoholService amrsAlcoholService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-  public static void processAlcohol(String server, String username, String password, String locations, String parentUUID, AMRSAlcoholService amrsAlcoholService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
     String samplePatientList = AMRSSamples.getPersonIdList();
 
-    String sql = "select\n" +
-      "        o.person_id,\n" +
-      "        e.form_id,\n" +
-      "        e.visit_id,\n" +
-      "        cn.name as question,\n" +
-      "        e.encounter_id,\n" +
-      "        e.encounter_datetime,\n" +
-      "        e.encounter_type,\n" +
-      "        o.concept_id,\n" +
-      "        o.obs_datetime,\n" +
-      "        COALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
-      "        cd.name as value_type,\n" +
-      "        c.datatype_id,\n" +
-      "        et.name encounterName,\n" +
-      "        \"Alcohol and Drug Abuse Screening(CAGE-AID/CRAFFT)\" as Category\n" +
-      "from\n" +
-      "        amrs.obs o\n" +
-      "inner join amrs.encounter e on\n" +
-      "        (o.encounter_id = e.encounter_id)\n" +
-      "inner join amrs.encounter_type et on\n" +
-      "        et.encounter_type_id = e.encounter_type\n" +
-      "inner join amrs.concept c on\n" +
-      "        c.concept_id = o.concept_id\n" +
-      "inner join amrs.concept_datatype cd on\n" +
-      "        cd.concept_datatype_id = c.datatype_id\n" +
-      "INNER JOIN amrs.concept_name cn ON\n" +
-      "        o.concept_id = cn.concept_id\n" +
-      "where\n" +
-      "        o.concept_id in (11634, 9100, 11831)\n" +
-      "        and e.location_id in (2, 98, 339)\n" +
-      "        and e.voided = 0\n" +
-      "        and cd.name <> 'N/A'\n" +
-      "        and o.person_id in (" + samplePatientList + ")\n" +
-      "order by\n" +
-      "        o.person_id,\n" +
-      "        e.encounter_id desc;";
-    System.out.println("Query " + sql);
-      System.out.println("locations " + locations + " parentUUID " + parentUUID);
+      String sql = "select\n" +
+        "        o.person_id,\n" +
+        "        e.form_id,\n" +
+        "        e.visit_id,\n" +
+        "        cn.name as question,\n" +
+        "        e.encounter_id,\n" +
+        "        e.encounter_datetime,\n" +
+        "        e.encounter_type,\n" +
+        "        o.concept_id,\n" +
+        "        o.obs_datetime,\n" +
+        "        COALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
+        "        cd.name as value_type,\n" +
+        "        c.datatype_id,\n" +
+        "        et.name encounterName,\n" +
+        "        \"Alcohol and Drug Abuse Screening(CAGE-AID/CRAFFT)\" as Category\n" +
+        "from\n" +
+        "        amrs.obs o\n" +
+        "inner join amrs.encounter e on\n" +
+        "        (o.encounter_id = e.encounter_id)\n" +
+        "inner join amrs.encounter_type et on\n" +
+        "        et.encounter_type_id = e.encounter_type\n" +
+        "inner join amrs.concept c on\n" +
+        "        c.concept_id = o.concept_id\n" +
+        "inner join amrs.concept_datatype cd on\n" +
+        "        cd.concept_datatype_id = c.datatype_id\n" +
+        "INNER JOIN amrs.concept_name cn ON\n" +
+        "        o.concept_id = cn.concept_id\n" +
+        "where\n" +
+        "        o.concept_id in (11634, 9100, 11831)\n" +
+        "        and e.voided = 0\n" +
+        "        and cd.name <> 'N/A'\n" +
+        "        and o.person_id in (" + samplePatientList + ")\n" +
+        "order by\n" +
+        "        o.person_id,\n" +
+        "        e.encounter_id desc;";
+
+    // System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -4607,7 +4606,7 @@ public class MigrateCareData {
     rs.beforeFirst();
     while (rs.next()) {
 
-      String patientId = rs.getString("person_id1");
+      String patientId = rs.getString("person_id");
       String formId = rs.getString("form_id");
       String conceptId = rs.getString("concept_id");
       String encounterId = rs.getString("encounter_id");
@@ -4646,9 +4645,8 @@ public class MigrateCareData {
       amrsModel.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
       amrsAlcoholService.save(amrsModel);
     }
-    CareOpenMRSPayload.processAlcohol(amrsAlcoholService, amrsPatientServices, amrsTranslater, url, auth);
+    CareOpenMRSPayload.processAlcohol(amrsAlcoholService, amrsPatientServices, amrsTranslater,KenyaEMRlocationUuid, url, auth);
   }
-
 
 }
 
