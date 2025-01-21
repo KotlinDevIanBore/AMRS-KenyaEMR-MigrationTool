@@ -2775,7 +2775,10 @@ public class MigrateCareData {
 
     public static void processGreenCard(String server, String username, String password, String KenyaEMRlocationUuid, AMRSGreenCardService amrsGreenCardService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        String samplePatientList = AMRSSamples.getPersonIdList();
+       // String samplePatientList = AMRSSamples.getPersonIdList();
+        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+
 
        /* List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
         String pidss = "";
@@ -3465,26 +3468,16 @@ public class MigrateCareData {
     }
 
     /////////////////
-    public static void artRefill(String server, String username, String password, String locations, String parentUUID, AMRSArtRefillService amrsArtRefillService, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void artRefill(String server, String username, String password, String KenyaEMRlocationUuid, AMRSArtRefillService amrsArtRefillService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
+       // String samplePatientList = AMRSSamples.getPersonIdList();
+        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
 
-       /* List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
-        String pidss = "";
-        for (int y = 0; y < amrsPatientsList.size(); y++) {
-            pidss += amrsPatientsList.get(y).getPersonId() + ",";
-        }
-        String pid = pidss.substring(0, pidss.length() - 1);
-
-        System.out.println("Patient Id " + pid);
-
-
-        System.out.println("Patient Id " + pid);*/
-
-        String samplePatientList = AMRSSamples.getPersonIdList();
 
         String sql = "SELECT o.person_id as patient_id,\n" +
                 "e.form_id,\n" +
-                " e.visit_id,\n"+
+                "e.visit_id,\n"+
                 "o.concept_id,\n" +
                 "o.encounter_id,\n" +
                 "e.encounter_datetime,\n" +
@@ -3497,15 +3490,15 @@ public class MigrateCareData {
                 "                FROM amrs.obs o\n" +
                 "                INNER JOIN amrs.concept c ON o.concept_id=c.concept_id\n" +
                 "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
-                "\t\t\t\tand cn.locale_preferred=1\n" +
-                "                AND o.person_id IN(59807)\n" +
+                "                and cn.locale_preferred=1\n" +
+                "                AND o.person_id IN("+samplePatientList+")\n" +
                 "                 -- AND c.concept_id in (65,70,82,110,231,527,673,819,820,810,683,703,979,980,981,982,983,1010)\n" +
                 "                INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
                 "                and e.encounter_type in(186,242)\n" +
                 "                ORDER BY patient_id ASC,encounter_id DESC";
 
 
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        //System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -3527,7 +3520,7 @@ public class MigrateCareData {
 
 
             List<AMRSArtRefill> artRefillList =amrsArtRefillService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterId,conceptId);
-            if(artRefillList.size()==0) {
+            if(artRefillList.isEmpty()) {
                 AMRSArtRefill amrsArtRefill = new AMRSArtRefill();
                 amrsArtRefill.setPatientId(patientId);
                 amrsArtRefill.setFormId(formId);
@@ -3555,7 +3548,7 @@ public class MigrateCareData {
             // Call method to create and insert the payload
 
         }
-        CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsTranslater, url, auth);
+        CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsTranslater, KenyaEMRlocationUuid,url, auth);
     }
 
 
@@ -4284,7 +4277,10 @@ public class MigrateCareData {
 
     }
 
-    public static void prepMonthlyRefill(String server, String username, String password, String locations, String parentUUID, AMRSPrepMonthlyRefillService amrsPrepMonthlyRefillService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+    public static void prepMonthlyRefill(String server, String username, String password, String KenyaEMRlocationUuid, AMRSPrepMonthlyRefillService amrsPrepMonthlyRefillService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+
+
+
         String sql = "SELECT o.person_id as patient_id, \n" +
                 "                                    e.form_id, \n" +
                 "                                    o.concept_id, \n" +
@@ -4308,7 +4304,7 @@ public class MigrateCareData {
                 "                                                  and e.encounter_type in(262) \n" +
                 "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
 
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+       // System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -4366,12 +4362,13 @@ public class MigrateCareData {
             // Call method to create and insert the payload
         }
 
-//        CareOpenMRSPayload.prepMonthlyRefill(amrsPrepMonthlyRefillService, amrsPatientServices, amrsTranslater, url, auth);
+       CareOpenMRSPayload.prepMonthlyRefill(amrsPrepMonthlyRefillService, amrsPatientServices, amrsTranslater,KenyaEMRlocationUuid, url, auth);
 
 
     }
 
-    public static void processCovid(String server, String username, String password, String locations, String parentUUID, AMRSCovidService amrsCovidService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    public static void processCovid(String server, String username, String password, String KenyaEMRlocationUuid, AMRSCovidService amrsCovidService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
       String samplePatientList = AMRSSamples.getPersonIdList();
 
       String sql = "select\n" +
@@ -4404,7 +4401,7 @@ public class MigrateCareData {
         "where\n" +
         "\te.encounter_type in (208)\n" +
         "\tand o.concept_id in (984, 1390, 1915, 1944, 2300, 6419, 9728, 10485, 10958, 11124, 11899, 11906, 11908, 11909, 11911, 11912, 11916)\n" +
-        "\tand e.location_id in (2, 98, 339)\n" +
+      //  "\tand e.location_id in (2, 98, 339)\n" +
         "\tand e.voided = 0\n" +
         "\tand cd.name <> 'N/A'\n" +
         "\tand o.person_id in (" + samplePatientList + ")\n" +
@@ -4412,7 +4409,7 @@ public class MigrateCareData {
         "\to.person_id,\n" +
         "\te.encounter_id desc;";
 
-      System.out.println("locations " + locations + " parentUUID " + parentUUID);
+     // System.out.println("locations " + locations + " parentUUID " + parentUUID);
       Connection con = DriverManager.getConnection(server, username, password);
       int x = 0;
       Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -4462,7 +4459,7 @@ public class MigrateCareData {
         amrsCovid.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
         amrsCovidService.save(amrsCovid);
       }
-      CareOpenMRSPayload.processCovid(amrsCovidService, amrsPatientServices, amrsTranslater, url, auth);
+      CareOpenMRSPayload.processCovid(amrsCovidService, amrsPatientServices, amrsTranslater,KenyaEMRlocationUuid, url, auth);
     }
 
     public static void processHeiOutcome(String server, String username, String password, String locations, String parentUUID, AMRSHeiOutcomeService amrsHeiOutcomeService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
