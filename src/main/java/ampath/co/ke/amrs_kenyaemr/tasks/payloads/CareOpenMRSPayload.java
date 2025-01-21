@@ -1308,5 +1308,106 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
             }
         }
     }
+
+    public static void processAlcohol(AMRSAlcoholService amrsAlcoholService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String KenyaEMRlocationUuid, String url, String auth) throws JSONException, IOException {
+    List<AMRSAlcohol> amrsModelList = amrsAlcoholService.findByResponseCodeIsNull();
+    if (!amrsModelList.isEmpty()) {
+      // Use a Set to store unique encounter IDs
+      Set<String> visistIdSet = new HashSet<>();
+      List<String> distinctVisitIds = new ArrayList<>();
+
+      // Loop through the list
+      for (AMRSAlcohol amrsAlcohol : amrsModelList) {
+        if (amrsAlcohol.getResponseCode() == null) {
+          String visitId = amrsAlcohol.getVisitId();
+          // Add to the result list only if it hasn't been added already
+          if (visistIdSet.add(visitId)) {
+            distinctVisitIds.add(visitId);
+          }
+        }
+      }
+
+      for (String visitId : distinctVisitIds) {
+        List<AMRSAlcohol> amrsModelEncounters = amrsAlcoholService.findByVisitId(visitId);
+        JSONArray jsonObservations = new JSONArray();
+        String patientuuid = "";
+        String formuuid = "";
+        String encounteruuid = "";
+        String encounterDatetime = "";
+        String obsDatetime = "";
+        String visituuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+
+        for (int x = 0; x < amrsModelEncounters.size(); x++) {
+          String kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(amrsModelEncounters.get(x).getPatientId());
+          JSONObject jsonObservation = new JSONObject();
+          String value = amrsModelEncounters.get(x).getKenyaEmrValue();
+          obsDatetime = amrsModelEncounters.get(x).getObsDateTime();
+          jsonObservation.put("person", kenyaemrPatientUuid);
+          jsonObservation.put("concept", amrsModelEncounters.get(x).getKenyaEmrConceptUuid());
+          jsonObservation.put("obsDatetime", obsDatetime);
+          jsonObservation.put("value", value);
+          jsonObservation.put("location", KenyaEMRlocationUuid);
+
+          patientuuid = amrsTranslater.KenyaemrPatientUuid(amrsModelEncounters.get(x).getPatientId());
+          formuuid = amrsModelEncounters.get(x).getKenyaemrFormUuid();
+          encounteruuid = amrsModelEncounters.get(x).getKenyaemrEncounterTypeUuid();
+          encounterDatetime = amrsModelEncounters.get(x).getKenyaEmrEncounterDateTime();
+
+          if (!Objects.equals(amrsModelEncounters.get(0).getKenyaEmrValue(), "") && !Objects.equals(amrsModelEncounters.get(0).getKenyaEmrConceptUuid(), "")) {
+            jsonObservations.put(jsonObservation);
+          }
+        }
+
+        //Publish the data to KenyaEMR
+        if (!Objects.equals(visituuid, "")) {
+          JSONObject jsonEncounter = new JSONObject();
+          jsonEncounter.put("form", formuuid);
+          jsonEncounter.put("patient", patientuuid);
+          jsonEncounter.put("encounterDatetime", encounterDatetime);
+          jsonEncounter.put("encounterType", encounteruuid);
+          jsonEncounter.put("location", KenyaEMRlocationUuid);
+          jsonEncounter.put("visit", visituuid);
+          jsonEncounter.put("obs", jsonObservations);
+          System.out.println("Payload for is here " + jsonEncounter.toString());
+
+          OkHttpClient client = new OkHttpClient();
+          MediaType mediaType = MediaType.parse("application/json");
+          okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, jsonEncounter.toString());
+          Request request = new Request.Builder()
+            .url(url + "encounter")
+            .method("POST", body)
+            .addHeader("Authorization", "Basic " + auth)
+            .addHeader("Content-Type", "application/json")
+            .build();
+
+          Response response = client.newCall(request).execute();
+          String responseBody = response.body().string(); // Get the response as a string
+          System.out.println("Response ndo hii " + responseBody + " More message " + response.message());
+
+          String resBody = response.request().toString();
+          int rescode = response.code();
+          System.out.println("Response Code Hapa " + rescode);
+
+          if (rescode == 201) {
+            for (int x = 0; x < amrsModelEncounters.size(); x++) {
+              AMRSAlcohol at = amrsModelEncounters.get(x);
+              at.setResponseCode(String.valueOf(rescode));
+              at.setResponseCode("201");
+              System.out.println("Imefika Hapa na data " + rescode);
+              amrsAlcoholService.save(at);
+            }
+          }else{
+            for (int x = 0; x < amrsModelEncounters.size(); x++) {
+              AMRSAlcohol at = amrsModelEncounters.get(x);
+              at.setResponseCode(String.valueOf(rescode));
+              at.setResponseCode("400");
+              System.out.println("Imefika Hapa na data " + rescode);
+              amrsAlcoholService.save(at);
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
