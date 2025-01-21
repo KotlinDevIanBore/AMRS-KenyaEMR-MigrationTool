@@ -19,8 +19,8 @@ import java.util.UUID;
 
 public class MigrateCareData {
 
-    public static void programs(String server, String username, String password, String locations, AMRSProgramService amrsProgramService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-        List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
+  public static void programs(String server, String username, String password, String locations, AMRSProgramService amrsProgramService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+    List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
 
     List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
     String pid = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
@@ -84,37 +84,37 @@ public class MigrateCareData {
       String programId = rs.getString("program_id");
       String patientProgramId = rs.getString("patient_program_id");
 
-            // List<AMRSPrograms> patientsList = amrsProgramService.getprogramByLocation(rs.getString(2),parentUUID);
-          //  List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
-            String person_id = patientId;
-            List<AMRSPrograms> amrsPrograms = amrsProgramService.findByPatientIdAndProgramID(patientId, Integer.parseInt(programId));
-            if (amrsPrograms.isEmpty()) {
-                String kenyaemr_progra_uuid = Mappers.programs(programUuid);
-                AMRSPrograms ae = new AMRSPrograms();
-                ae.setProgramUUID(programUuid);
-                ae.setPatientId(person_id);
-                //ae.setParentLocationUuid(parentUUID);
-                ae.setLocationId(locationId);
-                ae.setUUID(String.valueOf(UUID.randomUUID()));
-                ae.setProgramID(Integer.parseInt(programId));
-                ae.setConceptId(conceptId);
-                ae.setProgramName(programName);
-                ae.setDateEnrolled(dateEnrolled);
-                ae.setDateCompleted(dateCompleted);
-                ae.setPatientKenyaemrUuid(amrsTranslater.KenyaemrPatientUuid(patientId));
-                ae.setKenyaemrProgramUuid(Mappers.programs(programUuid));
-                ae.setAmrsPatientProgramID(patientProgramId);
-                amrsProgramService.save(ae);
-            }
+      // List<AMRSPrograms> patientsList = amrsProgramService.getprogramByLocation(rs.getString(2),parentUUID);
+      //  List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
+      String person_id = patientId;
+      List<AMRSPrograms> amrsPrograms = amrsProgramService.findByPatientIdAndProgramID(patientId, Integer.parseInt(programId));
+      if (amrsPrograms.isEmpty()) {
+        String kenyaemr_progra_uuid = Mappers.programs(programUuid);
+        AMRSPrograms ae = new AMRSPrograms();
+        ae.setProgramUUID(programUuid);
+        ae.setPatientId(person_id);
+        //ae.setParentLocationUuid(parentUUID);
+        ae.setLocationId(locationId);
+        ae.setUUID(String.valueOf(UUID.randomUUID()));
+        ae.setProgramID(Integer.parseInt(programId));
+        ae.setConceptId(conceptId);
+        ae.setProgramName(programName);
+        ae.setDateEnrolled(dateEnrolled);
+        ae.setDateCompleted(dateCompleted);
+        ae.setPatientKenyaemrUuid(amrsTranslater.KenyaemrPatientUuid(patientId));
+        ae.setKenyaemrProgramUuid(Mappers.programs(programUuid));
+        ae.setAmrsPatientProgramID(patientProgramId);
+        amrsProgramService.save(ae);
+      }
 
-            //Migate Programs
-            //  CareOpenMRSPayload.programs(amrsProgramService,amrsTranslater, url, auth);
+      //Migate Programs
+      //  CareOpenMRSPayload.programs(amrsProgramService,amrsTranslater, url, auth);
 
     }
 
-        //Migate Programs
-        CareOpenMRSPayload.programs(amrsProgramService,amrsTranslater, url, auth);
-    }
+    //Migate Programs
+    CareOpenMRSPayload.programs(amrsProgramService, amrsTranslater, url, auth);
+  }
 
   public static void encounters(String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
@@ -128,9 +128,9 @@ public class MigrateCareData {
     String pid = pidss.substring(0, pidss.length() - 1);
     System.out.println("PtientIDs " + pid);
 
-        String sql = "";
-        if (!amrsEncounters.isEmpty()) {
-            String EncounterID = amrsEncounters.get(0).getEncounterId();
+    String sql = "";
+    if (!amrsEncounters.isEmpty()) {
+      String EncounterID = amrsEncounters.get(0).getEncounterId();
 
       sql = "select patient_id as person_id, \n" +
         " e.uuid as amrs_encounter_uuid,\n" +
@@ -431,305 +431,305 @@ public class MigrateCareData {
 
     } else {
 
-            sql = "select patient_id as person_id, \n" +
-                    " e.uuid as amrs_encounter_uuid,\n" +
-                    " encounter_id ,\n" +
-                    "  case\n" +
-                    "  when e.encounter_type = 147 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
-                    "  when e.encounter_type = 55 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
-                    "  when e.encounter_type = 146 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
-                    "  when e.encounter_type = 287 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 96 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
-                    "  when e.encounter_type = 126 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
-                    "  when e.encounter_type = 81 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
-                    "  when e.encounter_type = 70 then '70a0158e-98f3-400b-9c90-a13c84b72065'\n" +
-                    "  when e.encounter_type = 261 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
-                    "  when e.encounter_type = 247 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
-                    "  when e.encounter_type = 211 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
-                    "  when e.encounter_type = 210 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
-                    "  when e.encounter_type = 131 then 'dfcbe5d0-1afb-48a0-8f1e-5e5988b11f15'\n" +
-                    "  when e.encounter_type = 212 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 260 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 86 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
-                    "  when e.encounter_type = 257 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
-                    "  when e.encounter_type = 272 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
-                    "  when e.encounter_type = 276 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
-                    "  when e.encounter_type = 56 then '5c1ecaf1-ec25-46b7-9b5e-ee7fe44f03cf'\n" +
-                    "  when e.encounter_type = 224 then 'de1f9d67-b73e-4e1b-90d0-036166fc6995'\n" +
-                    "  when e.encounter_type = 213 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 275 then '84220f19-9071-4745-9045-3b2f8d3dc128'\n" +
-                    "  when e.encounter_type = 69 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type =110 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
-                    "  when e.encounter_type = 270 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 23 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
-                    "  when e.encounter_type = 22 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
-                    "  when e.encounter_type = 280 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
-                    "  when e.encounter_type = 1 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
-                    "  when e.encounter_type = 14 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 14 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 16 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
-                    "  when e.encounter_type = 16 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
-                    "  when e.encounter_type = 2 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 265 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
-                    "  when e.encounter_type = 264 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 32 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
-                    "  when encounter_type = 33 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 242 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 294 then '5021b1a1-e7f6-44b4-ba02-da2f2bcf8718'\n" +
-                    "  when e.encounter_type = 13 then 'e360f35f-e496-4f01-843b-e2894e278b5b'\n" +
-                    "  when e.encounter_type = 138 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 252 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
-                    "  when e.encounter_type = 209 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
-                    "  when e.encounter_type = 208 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
-                    "  when e.encounter_type = 234 then 'bcc6da85-72f2-4291-b206-789b8186a021'\n" +
-                    "  when e.encounter_type = 233 then '415f5136-ca4a-49a8-8db3-f994187c3af6'\n" +
-                    "  when e.encounter_type = 31 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
-                    "  when e.encounter_type = 127 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 144 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 153 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 181 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 182 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 248 then '7df67b83-1b84-4fe2-b1b7-794b4e9bfcc3'\n" +
-                    "  when e.encounter_type = 249 then '7dffc392-13e7-11e9-ab14-d663bd873d93'\n" +
-                    "  when e.encounter_type = 203 then '7df67b83-1b84-4fe2-b1b7-794b4e9bfcc3'\n" +
-                    "  when e.encounter_type = 186 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 19 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 20 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 26 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 17 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 18 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 279 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
-                    "  when e.encounter_type = 157 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
-                    "  when e.encounter_type = 250 then '9bc15e94-2794-11e8-b467-0ed5f89f718b'\n" +
-                    "  when e.encounter_type = 243 then '975ae894-7660-4224-b777-468c2e710a2a'\n" +
-                    "  when e.encounter_type = 43 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 132 then '975ae894-7660-4224-b777-468c2e710a2a'\n" +
-                    "  when e.encounter_type = 115 then '01894f88-dc73-42d4-97a3-0929118403fb'\n" +
-                    "  when e.encounter_type = 115 then '82169b8d-c945-4c41-be62-433dfd9d6c86'\n" +
-                    "  when e.encounter_type = 115 then '5feee3f1-aa16-4513-8bd0-5d9b27ef1208'\n" +
-                    "  when e.encounter_type = 115 then '415f5136-ca4a-49a8-8db3-f994187c3af6'\n" +
-                    "  when e.encounter_type = 115 then 'bcc6da85-72f2-4291-b206-789b8186a021'\n" +
-                    "  when e.encounter_type = 253 then 'bfbb5dc2-d3e6-41ea-ad86-101336e3e38f'\n" +
-                    "  when e.encounter_type = 129 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
-                    "  when e.encounter_type = 110 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
-                    "  when e.encounter_type = 251 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
-                    "  when e.encounter_type = 227 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
-                    "  when e.encounter_type = 5 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
-                    "  when e.encounter_type = 6 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
-                    "  when e.encounter_type = 8 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
-                    "  when e.encounter_type = 9 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
-                    "  when e.encounter_type = 196 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 121 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
-                    "  when e.encounter_type = 7 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
-                    "  when e.encounter_type = 273 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 274 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 237 then '5feee3f1-aa16-4513-8bd0-5d9b27ef1208'\n" +
-                    "  when e.encounter_type = 235 then '01894f88-dc73-42d4-97a3-0929118403fb'\n" +
-                    "  when e.encounter_type = 236 then '82169b8d-c945-4c41-be62-433dfd9d6c86'\n" +
-                    "  when e.encounter_type = 239 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 240 then '7c426cfc-3b47-4481-b55f-89860c21c7de'\n" +
-                    "  when e.encounter_type = 238 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
-                    "  when e.encounter_type = 268 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 140 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
-                    "  when e.encounter_type = 114 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 120 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 168 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
-                    "  when e.encounter_type = 284 then '162386c8-0464-11ea-9a9f-362b9e155667'\n" +
-                    "  when e.encounter_type = 285 then '162382b8-0464-11ea-9a9f-362b9e155667'\n" +
-                    "  when e.encounter_type = 283 then '16238574-0464-11ea-9a9f-362b9e155667'\n" +
-                    "  when e.encounter_type = 21 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
-                    "  when e.encounter_type = 220 then '5cf00d9e-09da-11ea-8d71-362b9e155667'\n" +
-                    "  when e.encounter_type = 214 then '5cf0124e-09da-11ea-8d71-362b9e155667'\n" +
-                    "  when e.encounter_type = 282 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
-                    "  when e.encounter_type = 3 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
-                    "  when e.encounter_type = 15 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
-                    "  when e.encounter_type = 80 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
-                    "  when e.encounter_type = 4 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 67 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 162 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 10 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 44 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 125 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 11 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 47 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 46 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 266 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 267 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type = 111 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
-                    "  when e.encounter_type = 34 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
-                    "  when e.encounter_type =133 then '706a8b12-c4ce-40e4-aec3-258b989bf6d3'\n" +
-                    "  when e.encounter_type = 263 then 'c4a2be28-6673-4c36-b886-ea89b0a42116'\n" +
-                    "  when e.encounter_type = 263 then '706a8b12-c4ce-40e4-aec3-258b989bf6d3'\n" +
-                    "  when e.encounter_type = 262 then '291c0828-a216-11e9-a2a3-2a2ae2dbcce4'\n" +
-                    "  when e.encounter_type = 134 then 'c4a2be28-6673-4c36-b886-ea89b0a42116'\n" +
-                    "  when e.encounter_type = 117 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 176 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 116 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
-                    "  when e.encounter_type = 119 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 221 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
-                    "  when e.encounter_type = 158 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 281 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
-                    "  when e.encounter_type = 105 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
-                    "  when e.encounter_type = 106 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 163 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
-                    "  when e.encounter_type = 137 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
-                    "  end kenyaemr_encounter_uuid,\n" +
-                    "et.encounter_type_id,\n" +
-                    "et.name as encounterName,\n" +
-                    "e.location_id,\n" +
-                    "e.visit_id,\n" +
-                    "case \n" +
-                    " when e.encounter_type =110 then 6\n" +
-                    " when e.encounter_type = 270 then 8\n" +
-                    " when e.encounter_type = 23 then 303\n" +
-                    " when e.encounter_type = 22 then 303\n" +
-                    " when e.encounter_type = 280 then 302\n" +
-                    " when e.encounter_type = 1 then 7\n" +
-                    " when e.encounter_type = 14 then 21\n" +
-                    " when e.encounter_type = 14 then 8\n" +
-                    " when e.encounter_type = 16 then 6\n" +
-                    " when e.encounter_type = 16 then 252\n" +
-                    " when e.encounter_type = 2 then 8\n" +
-                    " when e.encounter_type = 265 then 14\n" +
-                    " when e.encounter_type = 264 then 15\n" +
-                    " when e.encounter_type = 32 then 14\n" +
-                    " when e.encounter_type = 33 then 15\n" +
-                    " when e.encounter_type = 242 then 21\n" +
-                    " when e.encounter_type = 294 then 73\n" +
-                    " when e.encounter_type = 13 then 300\n" +
-                    " when e.encounter_type = 138 then 8\n" +
-                    " when e.encounter_type = 252 then 243\n" +
-                    " when e.encounter_type = 209 then 243\n" +
-                    " when e.encounter_type = 208 then 243\n" +
-                    " when e.encounter_type = 234 then 10\n" +
-                    " when e.encounter_type = 233 then 9\n" +
-                    " when e.encounter_type = 31 then 2\n" +
-                    " when e.encounter_type = 127 then 8\n" +
-                    " when e.encounter_type = 144 then 8\n" +
-                    " when e.encounter_type = 153 then 8\n" +
-                    " when e.encounter_type = 181 then 21\n" +
-                    " when e.encounter_type = 182 then 21\n" +
-                    " when e.encounter_type = 248 then 24\n" +
-                    " when e.encounter_type = 249 then 29\n" +
-                    " when e.encounter_type = 203 then 24\n" +
-                    " when e.encounter_type = 186 then 21\n" +
-                    " when e.encounter_type = 19 then 21\n" +
-                    " when e.encounter_type = 20 then 21\n" +
-                    " when e.encounter_type = 26 then 21\n" +
-                    " when e.encounter_type = 17 then 21\n" +
-                    " when e.encounter_type = 18 then 21\n" +
-                    " when e.encounter_type = 279 then 303\n" +
-                    " when e.encounter_type = 157 then 2\n" +
-                    " when e.encounter_type = 250 then 28\n" +
-                    " when e.encounter_type = 243 then 22\n" +
-                    " when e.encounter_type = 43 then 8\n" +
-                    " when e.encounter_type = 132 then 22\n" +
-                    " when e.encounter_type = 115 then 11\n" +
-                    " when e.encounter_type = 115 then 12\n" +
-                    " when e.encounter_type = 115 then 13\n" +
-                    "  when e.encounter_type = 115 then 9\n" +
-                    " when e.encounter_type = 115 then 10\n" +
-                    " when e.encounter_type = 253 then 306\n" +
-                    " when e.encounter_type = 129 then 303\n" +
-                    " when e.encounter_type = 110 then 6\n" +
-                    " when e.encounter_type = 251 then 30\n" +
-                    " when e.encounter_type = 227 then 4\n" +
-                    " when e.encounter_type = 5 then 4\n" +
-                    " when e.encounter_type = 6 then 4\n" +
-                    " when e.encounter_type = 8 then 4\n" +
-                    " when e.encounter_type = 9 then 4\n" +
-                    " when e.encounter_type = 196 then 15\n" +
-                    " when e.encounter_type = 121 then 30\n" +
-                    " when e.encounter_type = 7 then 4\n" +
-                    " when e.encounter_type = 273 then 15\n" +
-                    " when e.encounter_type = 274 then 15\n" +
-                    " when e.encounter_type = 237 then 13\n" +
-                    " when e.encounter_type = 235 then 11\n" +
-                    " when e.encounter_type = 236 then 12\n" +
-                    " when e.encounter_type = 239 then 15\n" +
-                    " when e.encounter_type = 240 then 16\n" +
-                    " when e.encounter_type = 238 then 14\n" +
-                    " when e.encounter_type = 268 then 15\n" +
-                    " when e.encounter_type = 140 then 303\n" +
-                    " when e.encounter_type = 114 then 8\n" +
-                    " when e.encounter_type = 120 then 21\n" +
-                    " when e.encounter_type = 168 then 252\n" +
-                    " when e.encounter_type = 284 then 36\n" +
-                    " when e.encounter_type = 285 then 35\n" +
-                    " when e.encounter_type = 283 then 34\n" +
-                    " when e.encounter_type = 21 then 31\n" +
-                    " when e.encounter_type = 220 then 33\n" +
-                    " when e.encounter_type = 214 then 32\n" +
-                    " when e.encounter_type = 282 then 302\n" +
-                    " when e.encounter_type = 3 then 7\n" +
-                    " when e.encounter_type = 15 then 21\n" +
-                    " when e.encounter_type = 80 then 252\n" +
-                    " when e.encounter_type = 4 then 8\n" +
-                    " when e.encounter_type = 67 then 8\n" +
-                    " when e.encounter_type = 162 then 8\n" +
-                    " when e.encounter_type = 10 then 15\n" +
-                    " when e.encounter_type = 44 then 15\n" +
-                    " when e.encounter_type = 125 then 15\n" +
-                    " when e.encounter_type = 11 then 15\n" +
-                    " when e.encounter_type = 47 then 15\n" +
-                    " when e.encounter_type = 46 then 15\n" +
-                    " when e.encounter_type = 266 then 15\n" +
-                    " when e.encounter_type = 267 then 15\n" +
-                    " when e.encounter_type = 111 then 30\n" +
-                    " when e.encounter_type = 34 then 15\n" +
-                    " when e.encounter_type = 133 then 51\n" +
-                    " when e.encounter_type = 263 then 38\n" +
-                    " when e.encounter_type = 263 then 51\n" +
-                    " when e.encounter_type = 262 then 50\n" +
-                    " when e.encounter_type = 134 then 38\n" +
-                    " when e.encounter_type = 117 then 8\n" +
-                    " when e.encounter_type = 176 then 8\n" +
-                    " when e.encounter_type = 116 then 2\n" +
-                    " when e.encounter_type = 119 then 8\n" +
-                    " when e.encounter_type = 221 then 6\n" +
-                    " when e.encounter_type = 158 then 8\n" +
-                    " when e.encounter_type = 281 then 302\n" +
-                    " when e.encounter_type = 105 then 7\n" +
-                    " when e.encounter_type = 106 then 8\n" +
-                    " when e.encounter_type = 163 then 8\n" +
-                    " when e.encounter_type = 137 then 7\n" +
-                    " when e.encounter_type = 69 then 8\n" +
-                    " when e.encounter_type = 275 then 62\n" +
-                    " when e.encounter_type = 213 then 8\n" +
-                    " when e.encounter_type = 224 then 5\n" +
-                    " when e.encounter_type = 56 then 270\n" +
-                    " when e.encounter_type = 276 then 31\n" +
-                    " when e.encounter_type = 272 then 14\n" +
-                    " when e.encounter_type = 257 then 7\n" +
-                    " when e.encounter_type = 86 then 247\n" +
-                    " when e.encounter_type = 260 then 8\n" +
-                    " when e.encounter_type = 212 then 8\n" +
-                    " when e.encounter_type = 131 then 277\n" +
-                    " when e.encounter_type = 211 then 278\n" +
-                    " when e.encounter_type = 210 then 278\n" +
-                    " when e.encounter_type = 147 then 247\n" +
-                    " when e.encounter_type = 261 then 31\n" +
-                    " when e.encounter_type = 70 then 255\n" +
-                    " when e.encounter_type = 81 then 31\n" +
-                    " when e.encounter_type = 126 then 7\n" +
-                    " when e.encounter_type = 96 then 278\n" +
-                    " when e.encounter_type = 287 then 8\n" +
-                    " when e.encounter_type = 146 then 247\n" +
-                    " when e.encounter_type = 55 then 278\n" +
-                    "  end kenyaem_encounter_id,\n" +
-                    " e.creator,\n" +
-                    " e.encounter_datetime ,\n" +
-                    " e.encounter_type,\n" +
-                    " form_id,\n" +
-                    "  e.voided\n" +
-                    " from amrs.encounter e\n" +
-                    " inner join amrs.encounter_type et on  e.encounter_type=et.encounter_type_id\n" +
-                    " inner join amrs.location l on  e.location_id=l.location_id\n" +
-                    " where e.voided =0  and e.patient_id in (" + pid + ")  \n" + // and l.uuid in (" + locations + ")
-                    " order by e.encounter_id asc "
-            ;
-        }
-        // System.out.println("Sql "+ sql);
+      sql = "select patient_id as person_id, \n" +
+        " e.uuid as amrs_encounter_uuid,\n" +
+        " encounter_id ,\n" +
+        "  case\n" +
+        "  when e.encounter_type = 147 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
+        "  when e.encounter_type = 55 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
+        "  when e.encounter_type = 146 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
+        "  when e.encounter_type = 287 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 96 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
+        "  when e.encounter_type = 126 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+        "  when e.encounter_type = 81 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
+        "  when e.encounter_type = 70 then '70a0158e-98f3-400b-9c90-a13c84b72065'\n" +
+        "  when e.encounter_type = 261 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
+        "  when e.encounter_type = 247 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
+        "  when e.encounter_type = 211 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
+        "  when e.encounter_type = 210 then 'b402d094-bff3-4b31-b167-82426b4e3e28'\n" +
+        "  when e.encounter_type = 131 then 'dfcbe5d0-1afb-48a0-8f1e-5e5988b11f15'\n" +
+        "  when e.encounter_type = 212 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 260 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 86 then 'e24209cc-0a1d-11eb-8f2a-bb245320c623'\n" +
+        "  when e.encounter_type = 257 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+        "  when e.encounter_type = 272 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
+        "  when e.encounter_type = 276 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
+        "  when e.encounter_type = 56 then '5c1ecaf1-ec25-46b7-9b5e-ee7fe44f03cf'\n" +
+        "  when e.encounter_type = 224 then 'de1f9d67-b73e-4e1b-90d0-036166fc6995'\n" +
+        "  when e.encounter_type = 213 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 275 then '84220f19-9071-4745-9045-3b2f8d3dc128'\n" +
+        "  when e.encounter_type = 69 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type =110 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
+        "  when e.encounter_type = 270 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 23 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+        "  when e.encounter_type = 22 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+        "  when e.encounter_type = 280 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
+        "  when e.encounter_type = 1 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+        "  when e.encounter_type = 14 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 14 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 16 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
+        "  when e.encounter_type = 16 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
+        "  when e.encounter_type = 2 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 265 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
+        "  when e.encounter_type = 264 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 32 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
+        "  when encounter_type = 33 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 242 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 294 then '5021b1a1-e7f6-44b4-ba02-da2f2bcf8718'\n" +
+        "  when e.encounter_type = 13 then 'e360f35f-e496-4f01-843b-e2894e278b5b'\n" +
+        "  when e.encounter_type = 138 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 252 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
+        "  when e.encounter_type = 209 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
+        "  when e.encounter_type = 208 then '86709cfc-1490-11ec-82a8-0242ac130003'\n" +
+        "  when e.encounter_type = 234 then 'bcc6da85-72f2-4291-b206-789b8186a021'\n" +
+        "  when e.encounter_type = 233 then '415f5136-ca4a-49a8-8db3-f994187c3af6'\n" +
+        "  when e.encounter_type = 31 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
+        "  when e.encounter_type = 127 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 144 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 153 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 181 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 182 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 248 then '7df67b83-1b84-4fe2-b1b7-794b4e9bfcc3'\n" +
+        "  when e.encounter_type = 249 then '7dffc392-13e7-11e9-ab14-d663bd873d93'\n" +
+        "  when e.encounter_type = 203 then '7df67b83-1b84-4fe2-b1b7-794b4e9bfcc3'\n" +
+        "  when e.encounter_type = 186 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 19 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 20 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 26 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 17 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 18 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 279 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+        "  when e.encounter_type = 157 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
+        "  when e.encounter_type = 250 then '9bc15e94-2794-11e8-b467-0ed5f89f718b'\n" +
+        "  when e.encounter_type = 243 then '975ae894-7660-4224-b777-468c2e710a2a'\n" +
+        "  when e.encounter_type = 43 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 132 then '975ae894-7660-4224-b777-468c2e710a2a'\n" +
+        "  when e.encounter_type = 115 then '01894f88-dc73-42d4-97a3-0929118403fb'\n" +
+        "  when e.encounter_type = 115 then '82169b8d-c945-4c41-be62-433dfd9d6c86'\n" +
+        "  when e.encounter_type = 115 then '5feee3f1-aa16-4513-8bd0-5d9b27ef1208'\n" +
+        "  when e.encounter_type = 115 then '415f5136-ca4a-49a8-8db3-f994187c3af6'\n" +
+        "  when e.encounter_type = 115 then 'bcc6da85-72f2-4291-b206-789b8186a021'\n" +
+        "  when e.encounter_type = 253 then 'bfbb5dc2-d3e6-41ea-ad86-101336e3e38f'\n" +
+        "  when e.encounter_type = 129 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+        "  when e.encounter_type = 110 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
+        "  when e.encounter_type = 251 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
+        "  when e.encounter_type = 227 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+        "  when e.encounter_type = 5 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+        "  when e.encounter_type = 6 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+        "  when e.encounter_type = 8 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+        "  when e.encounter_type = 9 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+        "  when e.encounter_type = 196 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 121 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
+        "  when e.encounter_type = 7 then '17a381d1-7e29-406a-b782-aa903b963c28'\n" +
+        "  when e.encounter_type = 273 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 274 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 237 then '5feee3f1-aa16-4513-8bd0-5d9b27ef1208'\n" +
+        "  when e.encounter_type = 235 then '01894f88-dc73-42d4-97a3-0929118403fb'\n" +
+        "  when e.encounter_type = 236 then '82169b8d-c945-4c41-be62-433dfd9d6c86'\n" +
+        "  when e.encounter_type = 239 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 240 then '7c426cfc-3b47-4481-b55f-89860c21c7de'\n" +
+        "  when e.encounter_type = 238 then '3ee036d8-7c13-4393-b5d6-036f2fe45126'\n" +
+        "  when e.encounter_type = 268 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 140 then '54df6991-13de-4efc-a1a9-2d5ac1b72ff8'\n" +
+        "  when e.encounter_type = 114 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 120 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 168 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
+        "  when e.encounter_type = 284 then '162386c8-0464-11ea-9a9f-362b9e155667'\n" +
+        "  when e.encounter_type = 285 then '162382b8-0464-11ea-9a9f-362b9e155667'\n" +
+        "  when e.encounter_type = 283 then '16238574-0464-11ea-9a9f-362b9e155667'\n" +
+        "  when e.encounter_type = 21 then '1495edf8-2df2-11e9-b210-d663bd873d93'\n" +
+        "  when e.encounter_type = 220 then '5cf00d9e-09da-11ea-8d71-362b9e155667'\n" +
+        "  when e.encounter_type = 214 then '5cf0124e-09da-11ea-8d71-362b9e155667'\n" +
+        "  when e.encounter_type = 282 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
+        "  when e.encounter_type = 3 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+        "  when e.encounter_type = 15 then 'e87aa2ad-6886-422e-9dfd-064e3bfe3aad'\n" +
+        "  when e.encounter_type = 80 then '160fcc03-4ff5-413f-b582-7e944a770bed'\n" +
+        "  when e.encounter_type = 4 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 67 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 162 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 10 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 44 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 125 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 11 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 47 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 46 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 266 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 267 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type = 111 then 'e1406e88-e9a9-11e8-9f32-f2801f1b9fd1'\n" +
+        "  when e.encounter_type = 34 then 'c6d09e05-1f25-4164-8860-9f32c5a02df0'\n" +
+        "  when e.encounter_type =133 then '706a8b12-c4ce-40e4-aec3-258b989bf6d3'\n" +
+        "  when e.encounter_type = 263 then 'c4a2be28-6673-4c36-b886-ea89b0a42116'\n" +
+        "  when e.encounter_type = 263 then '706a8b12-c4ce-40e4-aec3-258b989bf6d3'\n" +
+        "  when e.encounter_type = 262 then '291c0828-a216-11e9-a2a3-2a2ae2dbcce4'\n" +
+        "  when e.encounter_type = 134 then 'c4a2be28-6673-4c36-b886-ea89b0a42116'\n" +
+        "  when e.encounter_type = 117 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 176 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 116 then '2bdada65-4c72-4a48-8730-859890e25cee'\n" +
+        "  when e.encounter_type = 119 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 221 then 'd1059fb9-a079-4feb-a749-eedd709ae542'\n" +
+        "  when e.encounter_type = 158 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 281 then 'ec2a91e5-444a-4ca0-87f1-f71ddfaf57eb'\n" +
+        "  when e.encounter_type = 105 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+        "  when e.encounter_type = 106 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 163 then 'a0034eee-1940-4e35-847f-97537a35d05e'\n" +
+        "  when e.encounter_type = 137 then 'de78a6be-bfc5-4634-adc3-5f1a280455cc'\n" +
+        "  end kenyaemr_encounter_uuid,\n" +
+        "et.encounter_type_id,\n" +
+        "et.name as encounterName,\n" +
+        "e.location_id,\n" +
+        "e.visit_id,\n" +
+        "case \n" +
+        " when e.encounter_type =110 then 6\n" +
+        " when e.encounter_type = 270 then 8\n" +
+        " when e.encounter_type = 23 then 303\n" +
+        " when e.encounter_type = 22 then 303\n" +
+        " when e.encounter_type = 280 then 302\n" +
+        " when e.encounter_type = 1 then 7\n" +
+        " when e.encounter_type = 14 then 21\n" +
+        " when e.encounter_type = 14 then 8\n" +
+        " when e.encounter_type = 16 then 6\n" +
+        " when e.encounter_type = 16 then 252\n" +
+        " when e.encounter_type = 2 then 8\n" +
+        " when e.encounter_type = 265 then 14\n" +
+        " when e.encounter_type = 264 then 15\n" +
+        " when e.encounter_type = 32 then 14\n" +
+        " when e.encounter_type = 33 then 15\n" +
+        " when e.encounter_type = 242 then 21\n" +
+        " when e.encounter_type = 294 then 73\n" +
+        " when e.encounter_type = 13 then 300\n" +
+        " when e.encounter_type = 138 then 8\n" +
+        " when e.encounter_type = 252 then 243\n" +
+        " when e.encounter_type = 209 then 243\n" +
+        " when e.encounter_type = 208 then 243\n" +
+        " when e.encounter_type = 234 then 10\n" +
+        " when e.encounter_type = 233 then 9\n" +
+        " when e.encounter_type = 31 then 2\n" +
+        " when e.encounter_type = 127 then 8\n" +
+        " when e.encounter_type = 144 then 8\n" +
+        " when e.encounter_type = 153 then 8\n" +
+        " when e.encounter_type = 181 then 21\n" +
+        " when e.encounter_type = 182 then 21\n" +
+        " when e.encounter_type = 248 then 24\n" +
+        " when e.encounter_type = 249 then 29\n" +
+        " when e.encounter_type = 203 then 24\n" +
+        " when e.encounter_type = 186 then 21\n" +
+        " when e.encounter_type = 19 then 21\n" +
+        " when e.encounter_type = 20 then 21\n" +
+        " when e.encounter_type = 26 then 21\n" +
+        " when e.encounter_type = 17 then 21\n" +
+        " when e.encounter_type = 18 then 21\n" +
+        " when e.encounter_type = 279 then 303\n" +
+        " when e.encounter_type = 157 then 2\n" +
+        " when e.encounter_type = 250 then 28\n" +
+        " when e.encounter_type = 243 then 22\n" +
+        " when e.encounter_type = 43 then 8\n" +
+        " when e.encounter_type = 132 then 22\n" +
+        " when e.encounter_type = 115 then 11\n" +
+        " when e.encounter_type = 115 then 12\n" +
+        " when e.encounter_type = 115 then 13\n" +
+        "  when e.encounter_type = 115 then 9\n" +
+        " when e.encounter_type = 115 then 10\n" +
+        " when e.encounter_type = 253 then 306\n" +
+        " when e.encounter_type = 129 then 303\n" +
+        " when e.encounter_type = 110 then 6\n" +
+        " when e.encounter_type = 251 then 30\n" +
+        " when e.encounter_type = 227 then 4\n" +
+        " when e.encounter_type = 5 then 4\n" +
+        " when e.encounter_type = 6 then 4\n" +
+        " when e.encounter_type = 8 then 4\n" +
+        " when e.encounter_type = 9 then 4\n" +
+        " when e.encounter_type = 196 then 15\n" +
+        " when e.encounter_type = 121 then 30\n" +
+        " when e.encounter_type = 7 then 4\n" +
+        " when e.encounter_type = 273 then 15\n" +
+        " when e.encounter_type = 274 then 15\n" +
+        " when e.encounter_type = 237 then 13\n" +
+        " when e.encounter_type = 235 then 11\n" +
+        " when e.encounter_type = 236 then 12\n" +
+        " when e.encounter_type = 239 then 15\n" +
+        " when e.encounter_type = 240 then 16\n" +
+        " when e.encounter_type = 238 then 14\n" +
+        " when e.encounter_type = 268 then 15\n" +
+        " when e.encounter_type = 140 then 303\n" +
+        " when e.encounter_type = 114 then 8\n" +
+        " when e.encounter_type = 120 then 21\n" +
+        " when e.encounter_type = 168 then 252\n" +
+        " when e.encounter_type = 284 then 36\n" +
+        " when e.encounter_type = 285 then 35\n" +
+        " when e.encounter_type = 283 then 34\n" +
+        " when e.encounter_type = 21 then 31\n" +
+        " when e.encounter_type = 220 then 33\n" +
+        " when e.encounter_type = 214 then 32\n" +
+        " when e.encounter_type = 282 then 302\n" +
+        " when e.encounter_type = 3 then 7\n" +
+        " when e.encounter_type = 15 then 21\n" +
+        " when e.encounter_type = 80 then 252\n" +
+        " when e.encounter_type = 4 then 8\n" +
+        " when e.encounter_type = 67 then 8\n" +
+        " when e.encounter_type = 162 then 8\n" +
+        " when e.encounter_type = 10 then 15\n" +
+        " when e.encounter_type = 44 then 15\n" +
+        " when e.encounter_type = 125 then 15\n" +
+        " when e.encounter_type = 11 then 15\n" +
+        " when e.encounter_type = 47 then 15\n" +
+        " when e.encounter_type = 46 then 15\n" +
+        " when e.encounter_type = 266 then 15\n" +
+        " when e.encounter_type = 267 then 15\n" +
+        " when e.encounter_type = 111 then 30\n" +
+        " when e.encounter_type = 34 then 15\n" +
+        " when e.encounter_type = 133 then 51\n" +
+        " when e.encounter_type = 263 then 38\n" +
+        " when e.encounter_type = 263 then 51\n" +
+        " when e.encounter_type = 262 then 50\n" +
+        " when e.encounter_type = 134 then 38\n" +
+        " when e.encounter_type = 117 then 8\n" +
+        " when e.encounter_type = 176 then 8\n" +
+        " when e.encounter_type = 116 then 2\n" +
+        " when e.encounter_type = 119 then 8\n" +
+        " when e.encounter_type = 221 then 6\n" +
+        " when e.encounter_type = 158 then 8\n" +
+        " when e.encounter_type = 281 then 302\n" +
+        " when e.encounter_type = 105 then 7\n" +
+        " when e.encounter_type = 106 then 8\n" +
+        " when e.encounter_type = 163 then 8\n" +
+        " when e.encounter_type = 137 then 7\n" +
+        " when e.encounter_type = 69 then 8\n" +
+        " when e.encounter_type = 275 then 62\n" +
+        " when e.encounter_type = 213 then 8\n" +
+        " when e.encounter_type = 224 then 5\n" +
+        " when e.encounter_type = 56 then 270\n" +
+        " when e.encounter_type = 276 then 31\n" +
+        " when e.encounter_type = 272 then 14\n" +
+        " when e.encounter_type = 257 then 7\n" +
+        " when e.encounter_type = 86 then 247\n" +
+        " when e.encounter_type = 260 then 8\n" +
+        " when e.encounter_type = 212 then 8\n" +
+        " when e.encounter_type = 131 then 277\n" +
+        " when e.encounter_type = 211 then 278\n" +
+        " when e.encounter_type = 210 then 278\n" +
+        " when e.encounter_type = 147 then 247\n" +
+        " when e.encounter_type = 261 then 31\n" +
+        " when e.encounter_type = 70 then 255\n" +
+        " when e.encounter_type = 81 then 31\n" +
+        " when e.encounter_type = 126 then 7\n" +
+        " when e.encounter_type = 96 then 278\n" +
+        " when e.encounter_type = 287 then 8\n" +
+        " when e.encounter_type = 146 then 247\n" +
+        " when e.encounter_type = 55 then 278\n" +
+        "  end kenyaem_encounter_id,\n" +
+        " e.creator,\n" +
+        " e.encounter_datetime ,\n" +
+        " e.encounter_type,\n" +
+        " form_id,\n" +
+        "  e.voided\n" +
+        " from amrs.encounter e\n" +
+        " inner join amrs.encounter_type et on  e.encounter_type=et.encounter_type_id\n" +
+        " inner join amrs.location l on  e.location_id=l.location_id\n" +
+        " where e.voided =0  and e.patient_id in (" + pid + ")  \n" + // and l.uuid in (" + locations + ")
+        " order by e.encounter_id asc "
+      ;
+    }
+    // System.out.println("Sql "+ sql);
 
     System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
@@ -827,45 +827,45 @@ public class MigrateCareData {
       String treatmentSupporterTelephone = rs.getString("");
       String treatmentSupporterAddress = rs.getString("");
 
-            List<AMRSEnrollments> enrollmentsList = amrsEnrollmentService.getByPatientID(patientId);
-            if (enrollmentsList.isEmpty()) {
-                AMRSEnrollments ae = new AMRSEnrollments();
-                ae.setPatientId(patientId);
-                ae.setEncounterId(encounterId);
-                ae.setEncounterDatetime(encounterDatetime);
-                ae.setFormId(formId);
-                ae.setFormName(formName);
-                ae.setPatientType(patientType);
-                ae.setEntryPoint(entryPoint);
-                ae.setTiFacility(tiFacility);
-                ae.setDateFirstEnrolledInCare(dateFirstEnrolledInCare);
-                ae.setTransferInDate(transferInDate);
-                ae.setDateStartedArtAtTransferringFacility(dateStartedArtAtTransferringFacility);
-                ae.setDateConfirmedHivPositive(dateConfirmedHivPositive);
-                ae.setFacilityConfirmedHivPositive(facilityConfirmedHivPositive);
-                ae.setBaselineArvUse(baselineArvUse);
-                ae.setPurposeOfBaselineArvUse(purposeOfBaselineArvUse);
-                ae.setBaselineArvRegimen(baselineArvRegimen);
-                ae.setBaselineArvRegimenLine(baselineArvRegimenLine);
-                ae.setBaselineArvDateLastUsed(baselineArvDateLastUsed);
-                ae.setBaselineWhoStage(baselineWhoStage);
-                ae.setBaselineCd4Results(baselineCd4Results);
-                ae.setBaselineCd4Date(baselineCd4Date);
-                ae.setBaselineVlResults(baselineVlResults);
-                ae.setBaselineVlDate(baselineVlDate);
-                ae.setBaselineVlLdlResults(baselineVlLdlResults);
-                ae.setBaselineVlLdlDate(baselineVlLdlDate);
-                ae.setBaselineHbvInfected(baselineHbvInfected);
-                ae.setBaselineTbInfected(baselineTbInfected);
-                ae.setBaselinePregnant(baselinePregnant);
-                ae.setBaselineBreastFeeding(baselineBreastFeeding);
-                ae.setBaselineWeight(baselineWeight);
-                ae.setBaselineHeight(baselineHeight);
-                ae.setBaselineBMI(baselineBMI);
-                ae.setNameOfTreatmentSupporter(nameOfTreatmentSupporter);
-                ae.setRelationshipOfTreatmentSupporter(relationshipOfTreatmentSupporter);
-                ae.setTreatmentSupporterTelephone(treatmentSupporterTelephone);
-                ae.setTreatmentSupporterAddress(treatmentSupporterAddress);
+      List<AMRSEnrollments> enrollmentsList = amrsEnrollmentService.getByPatientID(patientId);
+      if (enrollmentsList.isEmpty()) {
+        AMRSEnrollments ae = new AMRSEnrollments();
+        ae.setPatientId(patientId);
+        ae.setEncounterId(encounterId);
+        ae.setEncounterDatetime(encounterDatetime);
+        ae.setFormId(formId);
+        ae.setFormName(formName);
+        ae.setPatientType(patientType);
+        ae.setEntryPoint(entryPoint);
+        ae.setTiFacility(tiFacility);
+        ae.setDateFirstEnrolledInCare(dateFirstEnrolledInCare);
+        ae.setTransferInDate(transferInDate);
+        ae.setDateStartedArtAtTransferringFacility(dateStartedArtAtTransferringFacility);
+        ae.setDateConfirmedHivPositive(dateConfirmedHivPositive);
+        ae.setFacilityConfirmedHivPositive(facilityConfirmedHivPositive);
+        ae.setBaselineArvUse(baselineArvUse);
+        ae.setPurposeOfBaselineArvUse(purposeOfBaselineArvUse);
+        ae.setBaselineArvRegimen(baselineArvRegimen);
+        ae.setBaselineArvRegimenLine(baselineArvRegimenLine);
+        ae.setBaselineArvDateLastUsed(baselineArvDateLastUsed);
+        ae.setBaselineWhoStage(baselineWhoStage);
+        ae.setBaselineCd4Results(baselineCd4Results);
+        ae.setBaselineCd4Date(baselineCd4Date);
+        ae.setBaselineVlResults(baselineVlResults);
+        ae.setBaselineVlDate(baselineVlDate);
+        ae.setBaselineVlLdlResults(baselineVlLdlResults);
+        ae.setBaselineVlLdlDate(baselineVlLdlDate);
+        ae.setBaselineHbvInfected(baselineHbvInfected);
+        ae.setBaselineTbInfected(baselineTbInfected);
+        ae.setBaselinePregnant(baselinePregnant);
+        ae.setBaselineBreastFeeding(baselineBreastFeeding);
+        ae.setBaselineWeight(baselineWeight);
+        ae.setBaselineHeight(baselineHeight);
+        ae.setBaselineBMI(baselineBMI);
+        ae.setNameOfTreatmentSupporter(nameOfTreatmentSupporter);
+        ae.setRelationshipOfTreatmentSupporter(relationshipOfTreatmentSupporter);
+        ae.setTreatmentSupporterTelephone(treatmentSupporterTelephone);
+        ae.setTreatmentSupporterAddress(treatmentSupporterAddress);
 
         amrsEnrollmentService.save(ae);
 
@@ -883,7 +883,7 @@ public class MigrateCareData {
     List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
     String pid = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
 
-        System.out.println("PatientIDs " + pid);
+    System.out.println("PatientIDs " + pid);
 
     if (!amrsVisitsList.isEmpty()) {
       sql = "select v.visit_id,\n" +
@@ -1231,10 +1231,10 @@ public class MigrateCareData {
 
   public static void triage(String server, String username, String password, String locations, String KenyaemrLocationUuid, AMRSTranslater amrsTranslater, AMRSTriageService amrsTriageService, AMRSPatientServices amrsPatientServices, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
-        String pid = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
-       // String pid = AMRSSamples.getPersonIdListKapsoya();
-                System.out.println("PatientIDs " + pid);
+    List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+    String pid = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+    // String pid = AMRSSamples.getPersonIdListKapsoya();
+    System.out.println("PatientIDs " + pid);
 
     String sql = "";
     sql = "WITH cte_vitals_concepts as (\n" +
@@ -1313,24 +1313,24 @@ public class MigrateCareData {
                     kenyaemrPatientUuid = amrsPatients.get(0).getKenyaemrpatientUUID();
                 }
                 */
-                List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID, conceptid);
-                if (amrsTriageList.isEmpty()) {
-                    AMRSTriage at = new AMRSTriage();
-                    at.setPatientId(patientId);
-                    at.setEncounterDateTime(encounterDateTime);
-                    at.setVisitId(visitId);
-                    at.setEncounterId(encounterID);
-                    at.setLocationId(locationId);
-                    at.setObsDateTime(obsDateTime);
-                    at.setValue(obsValue);
-                    at.setConceptId(conceptid);
-                    at.setKenyaemrPatientUuid(kenyaemrPatientUuid);
-                    at.setKenyaemConceptId(kenyaemr_uuid);
-                    at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
-                    amrsTriageService.save(at);
-                    System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
-                } else {
-                    System.out.println("Existing Patient_id " + patientId + "encounterID " + encounterID);
+      List<AMRSTriage> amrsTriageList = amrsTriageService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterID, conceptid);
+      if (amrsTriageList.isEmpty()) {
+        AMRSTriage at = new AMRSTriage();
+        at.setPatientId(patientId);
+        at.setEncounterDateTime(encounterDateTime);
+        at.setVisitId(visitId);
+        at.setEncounterId(encounterID);
+        at.setLocationId(locationId);
+        at.setObsDateTime(obsDateTime);
+        at.setValue(obsValue);
+        at.setConceptId(conceptid);
+        at.setKenyaemrPatientUuid(kenyaemrPatientUuid);
+        at.setKenyaemConceptId(kenyaemr_uuid);
+        at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
+        amrsTriageService.save(at);
+        System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
+      } else {
+        System.out.println("Existing Patient_id " + patientId + "encounterID " + encounterID);
 
       }
     }
@@ -1734,129 +1734,129 @@ public class MigrateCareData {
 
   }
 
-    public static void hivenrollment(String server, String username, String password, String KenyaEMRlocationUuid, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void hivenrollment(String server, String username, String password, String KenyaEMRlocationUuid, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-       // String samplePatientList = AMRSSamples.getPersonIdList();
-        //  String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
-        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
-        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+    // String samplePatientList = AMRSSamples.getPersonIdList();
+    //  String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
+    List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+    String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
 
 
-        String sql = "";
-        List<AMRSHIVEnrollment> amrshivEnrollmentLists = amrsHIVEnrollmentService.findFirstByOrderByIdDesc();
-        String nextEncounterID = "";
-        if (amrshivEnrollmentLists.isEmpty()) {
+    String sql = "";
+    List<AMRSHIVEnrollment> amrshivEnrollmentLists = amrsHIVEnrollmentService.findFirstByOrderByIdDesc();
+    String nextEncounterID = "";
+    if (amrshivEnrollmentLists.isEmpty()) {
 
-            sql = "SELECT   \n" +
-                    "                                              o.person_id,  \n" +
-                    "                                              e.encounter_id,  \n" +
-                    "                                              e.visit_id,  \n" +
-                    "                                              e.encounter_datetime,  \n" +
-                    "                                              e.encounter_type,  \n" +
-                    "                                              l.uuid AS location_uuid,  \n" +
-                    "                                              o.concept_id,  \n" +
-                    "                                              cn.name AS concept_name,  \n" +
-                    "                                               o.obs_datetime,  \n" +
-                    "                                              COALESCE(o.value_coded,  \n" +
-                    "                                                      o.value_datetime,  \n" +
-                    "                                                      o.value_numeric,  \n" +
-                    "                                                      o.value_text) AS value,  \n" +
-                    "                                              cd.name AS value_type,  \n" +
-                    "                                              c.datatype_id,  \n" +
-                    "                                              et.name AS encounterName,  \n" +
-                    "                                              e.creator AS provider_id,  \n" +
-                    "                                              'HIV Enrollment' AS Category  \n" +
-                    "                                          FROM  \n" +
-                    "                                              amrs.obs o  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.encounter e ON (o.encounter_id = e.encounter_id)  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.encounter_type et ON et.encounter_type_id = e.encounter_type  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.concept c ON c.concept_id = o.concept_id  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.concept_name cn ON o.concept_id = cn.concept_id  and cn.locale_preferred = 1 \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.concept_datatype cd ON cd.concept_datatype_id = c.datatype_id  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.location l ON e.location_id = l.location_id  \n" +
-                    "                                          WHERE  \n" +
-                    "                                                  o.concept_id IN(6749,10747,10748,7013,1499,9203,6748,1633,2155,5356,966,1088,5419,10804,6032,6176,5272,5629,1174,7013,1499,9203,6748) -- 5356 \n" +
-                    "                                                  and e.patient_id in (" + samplePatientList + ")  \n" +
-                    "                                                  AND e.voided = 0 \n" +
-                    "                                                 group by o.concept_id,e.patient_id\n" +
-                    "                                          ORDER BY o.encounter_id   ASC \n" +
-                    "                                           ";
-        } else {
-            System.out.println("List" + amrshivEnrollmentLists);
-            nextEncounterID = amrshivEnrollmentLists.get(0).getEncounterID();
-            sql = "SELECT   \n" +
-                    "                                              o.person_id,  \n" +
-                    "                                              e.encounter_id,  \n" +
-                    "                                              e.visit_id,  \n" +
-                    "                                              e.encounter_datetime,  \n" +
-                    "                                              e.encounter_type,  \n" +
-                    "                                              l.uuid AS location_uuid,  \n" +
-                    "                                              o.concept_id,  \n" +
-                    "                                              cn.name AS concept_name,  \n" +
-                    "                                               o.obs_datetime,  \n" +
-                    "                                              COALESCE(o.value_coded,  \n" +
-                    "                                                      o.value_datetime,  \n" +
-                    "                                                      o.value_numeric,  \n" +
-                    "                                                      o.value_text) AS value,  \n" +
-                    "                                              cd.name AS value_type,  \n" +
-                    "                                              c.datatype_id,  \n" +
-                    "                                              et.name AS encounterName,  \n" +
-                    "                                              e.creator AS provider_id,  \n" +
-                    "                                              'HIV Enrollment' AS Category  \n" +
-                    "                                          FROM  \n" +
-                    "                                              amrs.obs o  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.encounter e ON (o.encounter_id = e.encounter_id)  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.encounter_type et ON et.encounter_type_id = e.encounter_type  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.concept c ON c.concept_id = o.concept_id  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.concept_name cn ON o.concept_id = cn.concept_id  and cn.locale_preferred = 1 \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.concept_datatype cd ON cd.concept_datatype_id = c.datatype_id  \n" +
-                    "                                                  INNER JOIN  \n" +
-                    "                                              amrs.location l ON e.location_id = l.location_id  \n" +
-                    "                                          WHERE  \n" +
-                    "                                                  o.concept_id IN(6749,10747,10748,7013,1499,9203,6748,1633,2155,5356,966,1088,5419,10804,6032,6176,5272,5629,1174,7013,1499,9203,6748) -- 5356 \n" +
-                    "                                                  and e.patient_id in (" + samplePatientList + ")  \n" +
-                    "                                                  AND e.voided = 0 \n" +
-                    "                                                 group by o.concept_id,e.patient_id\n" +
-                    "                                          ORDER BY o.encounter_id   ASC \n" +
-                    "                                           ";
-        }
-        System.out.println("sqlHivEnrollment" + sql);
-      //  System.out.println("locations " + locations + " parentUUID " + parentUUID);
-        Connection con = DriverManager.getConnection(server, username, password);
-        int x = 0;
-        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(sql);
-        rs.last();
-        x = rs.getRow();
-        rs.beforeFirst();
-        while (rs.next()) {
-            String patientId = rs.getString("person_id");
-            String conceptId = rs.getString("concept_id");
-            String encounterID = rs.getString("encounter_id");
-            String visit_Id = rs.getString("visit_id");
-            String locationUuid = rs.getString("location_uuid");
-            String encounterDatetime = rs.getString("encounter_datetime");
-            String encounterType = rs.getString("encounter_type");
-            String conceptName = rs.getString("concept_name");
-            String obsDatetime = rs.getString("obs_datetime");
-            String value = rs.getString("value");
-            String valueType = rs.getString("value_type");
-            String datatypeId = rs.getString("datatype_id");
-            String provider = rs.getString("provider_id");
-            String encounterName = rs.getString("encounterName");
-            String category = rs.getString("Category");
+      sql = "SELECT   \n" +
+        "                                              o.person_id,  \n" +
+        "                                              e.encounter_id,  \n" +
+        "                                              e.visit_id,  \n" +
+        "                                              e.encounter_datetime,  \n" +
+        "                                              e.encounter_type,  \n" +
+        "                                              l.uuid AS location_uuid,  \n" +
+        "                                              o.concept_id,  \n" +
+        "                                              cn.name AS concept_name,  \n" +
+        "                                               o.obs_datetime,  \n" +
+        "                                              COALESCE(o.value_coded,  \n" +
+        "                                                      o.value_datetime,  \n" +
+        "                                                      o.value_numeric,  \n" +
+        "                                                      o.value_text) AS value,  \n" +
+        "                                              cd.name AS value_type,  \n" +
+        "                                              c.datatype_id,  \n" +
+        "                                              et.name AS encounterName,  \n" +
+        "                                              e.creator AS provider_id,  \n" +
+        "                                              'HIV Enrollment' AS Category  \n" +
+        "                                          FROM  \n" +
+        "                                              amrs.obs o  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.encounter e ON (o.encounter_id = e.encounter_id)  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.encounter_type et ON et.encounter_type_id = e.encounter_type  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.concept c ON c.concept_id = o.concept_id  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.concept_name cn ON o.concept_id = cn.concept_id  and cn.locale_preferred = 1 \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.concept_datatype cd ON cd.concept_datatype_id = c.datatype_id  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.location l ON e.location_id = l.location_id  \n" +
+        "                                          WHERE  \n" +
+        "                                                  o.concept_id IN(6749,10747,10748,7013,1499,9203,6748,1633,2155,5356,966,1088,5419,10804,6032,6176,5272,5629,1174,7013,1499,9203,6748) -- 5356 \n" +
+        "                                                  and e.patient_id in (" + samplePatientList + ")  \n" +
+        "                                                  AND e.voided = 0 \n" +
+        "                                                 group by o.concept_id,e.patient_id\n" +
+        "                                          ORDER BY o.encounter_id   ASC \n" +
+        "                                           ";
+    } else {
+      System.out.println("List" + amrshivEnrollmentLists);
+      nextEncounterID = amrshivEnrollmentLists.get(0).getEncounterID();
+      sql = "SELECT   \n" +
+        "                                              o.person_id,  \n" +
+        "                                              e.encounter_id,  \n" +
+        "                                              e.visit_id,  \n" +
+        "                                              e.encounter_datetime,  \n" +
+        "                                              e.encounter_type,  \n" +
+        "                                              l.uuid AS location_uuid,  \n" +
+        "                                              o.concept_id,  \n" +
+        "                                              cn.name AS concept_name,  \n" +
+        "                                               o.obs_datetime,  \n" +
+        "                                              COALESCE(o.value_coded,  \n" +
+        "                                                      o.value_datetime,  \n" +
+        "                                                      o.value_numeric,  \n" +
+        "                                                      o.value_text) AS value,  \n" +
+        "                                              cd.name AS value_type,  \n" +
+        "                                              c.datatype_id,  \n" +
+        "                                              et.name AS encounterName,  \n" +
+        "                                              e.creator AS provider_id,  \n" +
+        "                                              'HIV Enrollment' AS Category  \n" +
+        "                                          FROM  \n" +
+        "                                              amrs.obs o  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.encounter e ON (o.encounter_id = e.encounter_id)  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.encounter_type et ON et.encounter_type_id = e.encounter_type  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.concept c ON c.concept_id = o.concept_id  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.concept_name cn ON o.concept_id = cn.concept_id  and cn.locale_preferred = 1 \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.concept_datatype cd ON cd.concept_datatype_id = c.datatype_id  \n" +
+        "                                                  INNER JOIN  \n" +
+        "                                              amrs.location l ON e.location_id = l.location_id  \n" +
+        "                                          WHERE  \n" +
+        "                                                  o.concept_id IN(6749,10747,10748,7013,1499,9203,6748,1633,2155,5356,966,1088,5419,10804,6032,6176,5272,5629,1174,7013,1499,9203,6748) -- 5356 \n" +
+        "                                                  and e.patient_id in (" + samplePatientList + ")  \n" +
+        "                                                  AND e.voided = 0 \n" +
+        "                                                 group by o.concept_id,e.patient_id\n" +
+        "                                          ORDER BY o.encounter_id   ASC \n" +
+        "                                           ";
+    }
+    System.out.println("sqlHivEnrollment" + sql);
+    //  System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+      String patientId = rs.getString("person_id");
+      String conceptId = rs.getString("concept_id");
+      String encounterID = rs.getString("encounter_id");
+      String visit_Id = rs.getString("visit_id");
+      String locationUuid = rs.getString("location_uuid");
+      String encounterDatetime = rs.getString("encounter_datetime");
+      String encounterType = rs.getString("encounter_type");
+      String conceptName = rs.getString("concept_name");
+      String obsDatetime = rs.getString("obs_datetime");
+      String value = rs.getString("value");
+      String valueType = rs.getString("value_type");
+      String datatypeId = rs.getString("datatype_id");
+      String provider = rs.getString("provider_id");
+      String encounterName = rs.getString("encounterName");
+      String category = rs.getString("Category");
 
       List<AMRSHIVEnrollment> amrshivEnrollmentList = amrsHIVEnrollmentService.findByPatientIdAndEncounterIDAndConceptId(patientId, encounterID, conceptId);
       if (amrshivEnrollmentList.isEmpty()) {
@@ -1890,16 +1890,16 @@ public class MigrateCareData {
             ahe.setKenyaemrValue(String.valueOf(bvalue));
           }
 
-                } else {
-                    ahe.setKenyaemrValue(amrsTranslater.translater(value));
-                }
-                System.out.println("Tumefika Hapa!!!" + KenyaEMRlocationUuid);
-                amrsHIVEnrollmentService.save(ahe);
-            }
-
-            System.out.println("Patient_id" + patientId);
+        } else {
+          ahe.setKenyaemrValue(amrsTranslater.translater(value));
         }
-        CareOpenMRSPayload.hivEnrollment(amrsHIVEnrollmentService, amrsTranslater, KenyaEMRlocationUuid, url, auth);
+        System.out.println("Tumefika Hapa!!!" + KenyaEMRlocationUuid);
+        amrsHIVEnrollmentService.save(ahe);
+      }
+
+      System.out.println("Patient_id" + patientId);
+    }
+    CareOpenMRSPayload.hivEnrollment(amrsHIVEnrollmentService, amrsTranslater, KenyaEMRlocationUuid, url, auth);
 
   }
 
@@ -2063,12 +2063,12 @@ public class MigrateCareData {
     }
     */
 
-    public static void DrugSwitches(String server, String username, String password, String KenyaEMRlocationUuid, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void DrugSwitches(String server, String username, String password, String KenyaEMRlocationUuid, AMRSRegimenSwitchService amrsRegimenSwitchService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-        //String samplePatientList = AMRSSamples.getPersonIdList();
-        //  String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
-        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
-        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+    //String samplePatientList = AMRSSamples.getPersonIdList();
+    //  String samplePatientList = "7315,1171851,1174041,1188232,1072350,1212684,1209134";
+    List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+    String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
 
     String sql = "";
     List<AMRSRegimenSwitch> amrsRegimenSwitchList = amrsRegimenSwitchService.findFirstByOrderByIdDesc();
@@ -2101,82 +2101,80 @@ public class MigrateCareData {
     } else {
       System.out.println("List" + amrsRegimenSwitchList);
 //            nextEncounterID = amrsRegimenSwitchList.get(0).getEncounterID();
-            sql = "SELECT patient_id,MIN(regimen_data.enc_id) AS Encounter_ID,MIN(regimen_data.visit_id) AS Visit_Id, \n" +
-                    "concept_id,value_coded,Encounter_Date,GROUP_CONCAT(concept_name SEPARATOR \",\") as Regimen,Reason_for_Change FROM \n" +
-                    "(\n" +
-                    "\tSELECT o.person_id as patient_id,o.encounter_id as enc_id,e.visit_id,o.concept_id,o.value_coded,o.voided,e.encounter_datetime AS Encounter_Date, cn.name as concept_name  \n" +
-                    "\t\tfrom amrs.obs o\n" +
-                    "\t\tINNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and cn.locale='en' and cn.concept_name_type='FULLY_SPECIFIED' \n" +
-                    "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
-                    "\twhere o.concept_id=1088 and o.voided=0 \n" +
-                    // "    and o.location_id in (339)\n" +
-                    "    and o.person_id in (" + samplePatientList + ")\n" + //"+  samplePatientList +"
-                    "\tGROUP BY patient_id, o.value_coded \n" +
-                    ")\n" +
-                    " as regimen_data\n" +
-                    " LEFT OUTER JOIN (\n" +
-                    "\t SELECT encounter_id,cn.name AS Reason_for_Change\n" +
-                    "\t\t FROM amrs.obs o \n" +
-                    "\t\t INNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and o.voided=0 \n" +
-                    "\t AND o.concept_id in (1252, 1262, 1266,1269) and cn.locale='en'  and cn.concept_name_type='FULLY_SPECIFIED' \n" +
-                    "\t GROUP BY encounter_id \n" +
-                    " ) as reg_fail \n" +
-                    " ON regimen_data.enc_id=reg_fail.encounter_id\n" +
-                    " \n" +
-                    " GROUP BY enc_id, patient_id ORDER BY patient_id ASC,Encounter_Date ASC \n";
-        }
-        System.out.println("regimenSwitchList" + sql);
-       // System.out.println("locations " + locations + " parentUUID " + parentUUID);
-        Connection con = DriverManager.getConnection(server, username, password);
-        int x = 0;
-        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(sql);
-        rs.last();
-        x = rs.getRow();
-        rs.beforeFirst();
-        while (rs.next()) {
-            String patientId = rs.getString("patient_id");
-            String encounterId = rs.getString("Encounter_ID");
-            String visitId = rs.getString("visit_id");
-            String conceptId = rs.getString("concept_id");
-            String valueCoded = rs.getString("value_coded");
-            String encounterDatetime = rs.getString("Encounter_Date");
-            String regimen = rs.getString("Regimen");
-            String reasonForChange = rs.getString("Reason_for_Change");
-            String kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
-            String kenyaemrConceptUuid = amrsTranslater.translater("1193");
-            String kenyaemrValue = amrsTranslater.translater(valueCoded);
-
-            if (amrsRegimenSwitchList.isEmpty()) {
-                AMRSRegimenSwitch ar = new AMRSRegimenSwitch();
-                ar.setPatientId(patientId);
-                ar.setEncounterId(encounterId);
-                ar.setConceptId(conceptId);
-                ar.setValueCoded(valueCoded);
-                ar.setEncounterDatetime(encounterDatetime);
-                ar.setRegimen(regimen);
-                ar.setReasonForChange(reasonForChange);
-                ar.setKenyaemrValue(kenyaemrValue);
-                ar.setKenyaemrConceptUuid(kenyaemrConceptUuid);
-                ar.setKenyaemrPatientUuid(kenyaemrPatientUuid);
-                ar.setVisitId(visitId);
-                System.out.println("Tumefika Hapa!!!" + KenyaEMRlocationUuid);
-                amrsRegimenSwitchService.save(ar);
-            }
-
-
-
-            CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsTranslater, KenyaEMRlocationUuid,auth,url);
-
-
-
-            System.out.println("Patient_id" + patientId);
-        }
-
-        CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsTranslater, KenyaEMRlocationUuid ,auth,url);
-
+      sql = "SELECT patient_id,MIN(regimen_data.enc_id) AS Encounter_ID,MIN(regimen_data.visit_id) AS Visit_Id, \n" +
+        "concept_id,value_coded,Encounter_Date,GROUP_CONCAT(concept_name SEPARATOR \",\") as Regimen,Reason_for_Change FROM \n" +
+        "(\n" +
+        "\tSELECT o.person_id as patient_id,o.encounter_id as enc_id,e.visit_id,o.concept_id,o.value_coded,o.voided,e.encounter_datetime AS Encounter_Date, cn.name as concept_name  \n" +
+        "\t\tfrom amrs.obs o\n" +
+        "\t\tINNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and cn.locale='en' and cn.concept_name_type='FULLY_SPECIFIED' \n" +
+        "\t\tINNER JOIN amrs.encounter e ON e.encounter_id=o.encounter_id and e.voided=0 \n" +
+        "\twhere o.concept_id=1088 and o.voided=0 \n" +
+        // "    and o.location_id in (339)\n" +
+        "    and o.person_id in (" + samplePatientList + ")\n" + //"+  samplePatientList +"
+        "\tGROUP BY patient_id, o.value_coded \n" +
+        ")\n" +
+        " as regimen_data\n" +
+        " LEFT OUTER JOIN (\n" +
+        "\t SELECT encounter_id,cn.name AS Reason_for_Change\n" +
+        "\t\t FROM amrs.obs o \n" +
+        "\t\t INNER JOIN amrs.concept_name cn ON o.value_coded=cn.concept_id and o.voided=0 \n" +
+        "\t AND o.concept_id in (1252, 1262, 1266,1269) and cn.locale='en'  and cn.concept_name_type='FULLY_SPECIFIED' \n" +
+        "\t GROUP BY encounter_id \n" +
+        " ) as reg_fail \n" +
+        " ON regimen_data.enc_id=reg_fail.encounter_id\n" +
+        " \n" +
+        " GROUP BY enc_id, patient_id ORDER BY patient_id ASC,Encounter_Date ASC \n";
     }
+    System.out.println("regimenSwitchList" + sql);
+    // System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+      String patientId = rs.getString("patient_id");
+      String encounterId = rs.getString("Encounter_ID");
+      String visitId = rs.getString("visit_id");
+      String conceptId = rs.getString("concept_id");
+      String valueCoded = rs.getString("value_coded");
+      String encounterDatetime = rs.getString("Encounter_Date");
+      String regimen = rs.getString("Regimen");
+      String reasonForChange = rs.getString("Reason_for_Change");
+      String kenyaemrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+      String kenyaemrConceptUuid = amrsTranslater.translater("1193");
+      String kenyaemrValue = amrsTranslater.translater(valueCoded);
+
+      if (amrsRegimenSwitchList.isEmpty()) {
+        AMRSRegimenSwitch ar = new AMRSRegimenSwitch();
+        ar.setPatientId(patientId);
+        ar.setEncounterId(encounterId);
+        ar.setConceptId(conceptId);
+        ar.setValueCoded(valueCoded);
+        ar.setEncounterDatetime(encounterDatetime);
+        ar.setRegimen(regimen);
+        ar.setReasonForChange(reasonForChange);
+        ar.setKenyaemrValue(kenyaemrValue);
+        ar.setKenyaemrConceptUuid(kenyaemrConceptUuid);
+        ar.setKenyaemrPatientUuid(kenyaemrPatientUuid);
+        ar.setVisitId(visitId);
+        System.out.println("Tumefika Hapa!!!" + KenyaEMRlocationUuid);
+        amrsRegimenSwitchService.save(ar);
+      }
+
+
+      CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsTranslater, KenyaEMRlocationUuid, auth, url);
+
+
+      System.out.println("Patient_id" + patientId);
+    }
+
+    CareOpenMRSPayload.amrsRegimenSwitch(amrsRegimenSwitchService, amrsTranslater, KenyaEMRlocationUuid, auth, url);
+
+  }
 
   public static void programEnrollments(String server, String username, String password, String locations, String parentUUID, AMRSEnrollmentService amrsEnrollmentService, AMRSEncounterService amrsEncounterService, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
     String samplePatientList = AMRSSamples.getPersonIdList();
@@ -2773,11 +2771,11 @@ public class MigrateCareData {
     }
   }
 
-    public static void processGreenCard(String server, String username, String password, String KenyaEMRlocationUuid, AMRSGreenCardService amrsGreenCardService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void processGreenCard(String server, String username, String password, String KenyaEMRlocationUuid, AMRSGreenCardService amrsGreenCardService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-       // String samplePatientList = AMRSSamples.getPersonIdList();
-        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
-        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+    // String samplePatientList = AMRSSamples.getPersonIdList();
+    List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+    String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
 
 
        /* List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
@@ -2900,46 +2898,46 @@ public class MigrateCareData {
       String visitId = rs.getString("visit_id");
       String obsDateTime = rs.getString("obs_datetime");
 
-            String kenyaemr_uuid = "";
-            AMRSGreenCard amrsGreenCard = new AMRSGreenCard();
-            String kenyaemr_encounter_id;
-            String kenyaemr_value = "";
-            if (dataType.equals("2")) {
-                kenyaemr_value = amrsTranslater.translater(value);
-            } else if (dataType.equals("10")) {
-                if (Objects.equals(conceptId, "5632")) {
-                    kenyaemr_value = amrsTranslater.translater(value);
-                } else {
-                    boolean vcheck = false;
-                    if (value.equals("1065")) {
-                        vcheck = true;
-                    }
-                    kenyaemr_value = String.valueOf(vcheck);
-                }
-            } else {
-                kenyaemr_value = value;
-            }
-            amrsGreenCard.setPatientId(patientId);
-            amrsGreenCard.setFormId(formId);
-            amrsGreenCard.setConceptId(conceptId);
-            amrsGreenCard.setEncounterId(encounterId);
-            amrsGreenCard.setValue(value);
-            amrsGreenCard.setConceptDataTypeId(dataType);
-            amrsGreenCard.setVisitId(visitId);
-            amrsGreenCard.setQuestion(question);
-            amrsGreenCard.setObsDateTime(obsDateTime);
-            amrsGreenCard.setKenyaemrEncounterTypeUuid("a0034eee-1940-4e35-847f-97537a35d05e");
-            amrsGreenCard.setKenyaemrFormUuid("22c68f86-bbf0-49ba-b2d1-23fa7ccf0259");
-            amrsGreenCard.setKenyaEmrValue(kenyaemr_value);
-            amrsGreenCard.setKenyaEmrEncounterDateTime(encounterDatetime);
-            String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
-            String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
-            amrsGreenCard.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
-            amrsGreenCard.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
-            amrsGreenCardService.save(amrsGreenCard);
+      String kenyaemr_uuid = "";
+      AMRSGreenCard amrsGreenCard = new AMRSGreenCard();
+      String kenyaemr_encounter_id;
+      String kenyaemr_value = "";
+      if (dataType.equals("2")) {
+        kenyaemr_value = amrsTranslater.translater(value);
+      } else if (dataType.equals("10")) {
+        if (Objects.equals(conceptId, "5632")) {
+          kenyaemr_value = amrsTranslater.translater(value);
+        } else {
+          boolean vcheck = false;
+          if (value.equals("1065")) {
+            vcheck = true;
+          }
+          kenyaemr_value = String.valueOf(vcheck);
         }
-        GreenCardPayload.processGreenCard(amrsGreenCardService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
+      } else {
+        kenyaemr_value = value;
+      }
+      amrsGreenCard.setPatientId(patientId);
+      amrsGreenCard.setFormId(formId);
+      amrsGreenCard.setConceptId(conceptId);
+      amrsGreenCard.setEncounterId(encounterId);
+      amrsGreenCard.setValue(value);
+      amrsGreenCard.setConceptDataTypeId(dataType);
+      amrsGreenCard.setVisitId(visitId);
+      amrsGreenCard.setQuestion(question);
+      amrsGreenCard.setObsDateTime(obsDateTime);
+      amrsGreenCard.setKenyaemrEncounterTypeUuid("a0034eee-1940-4e35-847f-97537a35d05e");
+      amrsGreenCard.setKenyaemrFormUuid("22c68f86-bbf0-49ba-b2d1-23fa7ccf0259");
+      amrsGreenCard.setKenyaEmrValue(kenyaemr_value);
+      amrsGreenCard.setKenyaEmrEncounterDateTime(encounterDatetime);
+      String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+      String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+      amrsGreenCard.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+      amrsGreenCard.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+      amrsGreenCardService.save(amrsGreenCard);
     }
+    GreenCardPayload.processGreenCard(amrsGreenCardService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
+  }
 
   public static void ordersResults(String server, String username, String password, String locations, String parentUUID, AMRSOrdersResultsService amrsOrdersResultsService, AMRSConceptMappingService amrsConceptMappingService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
@@ -3467,47 +3465,47 @@ public class MigrateCareData {
     }
   }
 
-    /////////////////
-    public static void artRefill(String server, String username, String password, String KenyaEMRlocationUuid, AMRSArtRefillService amrsArtRefillService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  /// //////////////
+  public static void artRefill(String server, String username, String password, String KenyaEMRlocationUuid, AMRSArtRefillService amrsArtRefillService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-       // String samplePatientList = AMRSSamples.getPersonIdList();
-        List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
-        String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
-
-
-        String sql = "SELECT o.person_id as patient_id,\n" +
-                "e.form_id,\n" +
-                "e.visit_id,\n"+
-                "o.concept_id,\n" +
-                "o.encounter_id,\n" +
-                "e.encounter_datetime,\n" +
-                "cn.name question,\n" +
-                "case when o.value_datetime is not null then o.value_datetime\n" +
-                "                when o.value_coded is not null then o.value_coded\n" +
-                "                when o.value_numeric is not null then o.value_numeric\n" +
-                "                when o.value_text is not null then o.value_text end \n" +
-                "                as value\n" +
-                "                FROM amrs.obs o\n" +
-                "                INNER JOIN amrs.concept c ON o.concept_id=c.concept_id\n" +
-                "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
-                "                and cn.locale_preferred=1\n" +
-                "                AND o.person_id IN("+samplePatientList+")\n" +
-                "                 -- AND c.concept_id in (65,70,82,110,231,527,673,819,820,810,683,703,979,980,981,982,983,1010)\n" +
-                "                INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
-                "                and e.encounter_type in(186,242)\n" +
-                "                ORDER BY patient_id ASC,encounter_id DESC";
+    // String samplePatientList = AMRSSamples.getPersonIdList();
+    List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+    String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
 
 
-        //System.out.println("locations " + locations + " parentUUID " + parentUUID);
-        Connection con = DriverManager.getConnection(server, username, password);
-        int x = 0;
-        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(sql);
-        rs.last();
-        x = rs.getRow();
-        rs.beforeFirst();
-        while (rs.next()) {
+    String sql = "SELECT o.person_id as patient_id,\n" +
+      "e.form_id,\n" +
+      "e.visit_id,\n" +
+      "o.concept_id,\n" +
+      "o.encounter_id,\n" +
+      "e.encounter_datetime,\n" +
+      "cn.name question,\n" +
+      "case when o.value_datetime is not null then o.value_datetime\n" +
+      "                when o.value_coded is not null then o.value_coded\n" +
+      "                when o.value_numeric is not null then o.value_numeric\n" +
+      "                when o.value_text is not null then o.value_text end \n" +
+      "                as value\n" +
+      "                FROM amrs.obs o\n" +
+      "                INNER JOIN amrs.concept c ON o.concept_id=c.concept_id\n" +
+      "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
+      "                and cn.locale_preferred=1\n" +
+      "                AND o.person_id IN(" + samplePatientList + ")\n" +
+      "                 -- AND c.concept_id in (65,70,82,110,231,527,673,819,820,810,683,703,979,980,981,982,983,1010)\n" +
+      "                INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
+      "                and e.encounter_type in(186,242)\n" +
+      "                ORDER BY patient_id ASC,encounter_id DESC";
+
+
+    //System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
 
       String patientId = rs.getString("patient_id");
       String formId = rs.getString("form_id");
@@ -3519,37 +3517,37 @@ public class MigrateCareData {
       String obsDateTime = rs.getString(("encounter_datetime"));
 
 
-            List<AMRSArtRefill> artRefillList =amrsArtRefillService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterId,conceptId);
-            if(artRefillList.isEmpty()) {
-                AMRSArtRefill amrsArtRefill = new AMRSArtRefill();
-                amrsArtRefill.setPatientId(patientId);
-                amrsArtRefill.setFormId(formId);
-                amrsArtRefill.setConceptId(conceptId);
-                amrsArtRefill.setEncounterId(encounterId);
-                amrsArtRefill.setQuestion(question);
-                amrsArtRefill.setValue(value);
-                amrsArtRefill.setVisitId(visitId);
-                amrsArtRefill.setObsDateTime(obsDateTime);
-                String kenyaemr_patient_uuid =  amrsTranslater.KenyaemrPatientUuid(patientId);
-                amrsArtRefill.setKenyaEmrPatientUuid(kenyaemr_patient_uuid);
-                String kenyaEmrEncounterUuid = "e87aa2ad-6886-422e-9dfd-064e3bfe3aad";
-                amrsArtRefill.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
-                String kenyaEmrFormUuid = "83fb6ab2-faec-4d87-a714-93e77a28a201";
-                amrsArtRefill.setKenyaEmrFormUuid(kenyaEmrFormUuid);
-                String kenyaEmrConceptUuid = "";
-                kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
-                amrsArtRefill.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
-                String kenyaEmrValueUuid = "";
-                kenyaEmrValueUuid = amrsTranslater.translater(value);
-                amrsArtRefill.setKenyaEmrValue(kenyaEmrValueUuid);
-                amrsArtRefillService.save(amrsArtRefill);
-            }
+      List<AMRSArtRefill> artRefillList = amrsArtRefillService.findByPatientIdAndEncounterIdAndConceptId(patientId, encounterId, conceptId);
+      if (artRefillList.isEmpty()) {
+        AMRSArtRefill amrsArtRefill = new AMRSArtRefill();
+        amrsArtRefill.setPatientId(patientId);
+        amrsArtRefill.setFormId(formId);
+        amrsArtRefill.setConceptId(conceptId);
+        amrsArtRefill.setEncounterId(encounterId);
+        amrsArtRefill.setQuestion(question);
+        amrsArtRefill.setValue(value);
+        amrsArtRefill.setVisitId(visitId);
+        amrsArtRefill.setObsDateTime(obsDateTime);
+        String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+        amrsArtRefill.setKenyaEmrPatientUuid(kenyaemr_patient_uuid);
+        String kenyaEmrEncounterUuid = "e87aa2ad-6886-422e-9dfd-064e3bfe3aad";
+        amrsArtRefill.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+        String kenyaEmrFormUuid = "83fb6ab2-faec-4d87-a714-93e77a28a201";
+        amrsArtRefill.setKenyaEmrFormUuid(kenyaEmrFormUuid);
+        String kenyaEmrConceptUuid = "";
+        kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+        amrsArtRefill.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+        String kenyaEmrValueUuid = "";
+        kenyaEmrValueUuid = amrsTranslater.translater(value);
+        amrsArtRefill.setKenyaEmrValue(kenyaEmrValueUuid);
+        amrsArtRefillService.save(amrsArtRefill);
+      }
 
       // Call method to create and insert the payload
 
-        }
-        CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsTranslater, KenyaEMRlocationUuid,url, auth);
     }
+    CareOpenMRSPayload.artRefill(amrsArtRefillService, amrsTranslater, KenyaEMRlocationUuid, url, auth);
+  }
 
 
   public static void defaulterTracing(String server, String username, String password, String locations, String parentUUID, AMRSDefaulterTracingService amrsDefaulterTracingService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, SQLException, JSONException {
@@ -4188,42 +4186,42 @@ public class MigrateCareData {
 
   }
 
-    public static void prepFollowUp(String server, String username, String password, String KenyaEMRlocationUuid, AMRSPrepFollowUpService amrsPrepFollowUpService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+  public static void prepFollowUp(String server, String username, String password, String KenyaEMRlocationUuid, AMRSPrepFollowUpService amrsPrepFollowUpService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
 
 
-        String sql = "SELECT o.person_id as patient_id, \n" +
-                "                                    e.form_id, \n" +
-                "                                    o.concept_id, \n" +
-                "                                    o.encounter_id, \n" +
-                "                                    cn.name question, \n" +
-                "                                    e.visit_id, \n" +
-                "                                    e.encounter_datetime, \n" +
-                "                                    o.obs_datetime, \n" +
-                "                                    case when o.value_datetime is not null then o.value_datetime \n" +
-                "                                                    when o.value_coded is not null then o.value_coded \n" +
-                "                                                    when o.value_numeric is not null then o.value_numeric \n" +
-                "                                                    when o.value_text is not null then o.value_text end  \n" +
-                "                                                    as value \n" +
-                "                                                    FROM amrs.obs o \n" +
-                "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
-                "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
-                "                                                   and cn.locale_preferred=1 \n" +
-                "                                                     AND o.person_id IN(1151769) \n" +
-                "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
-                "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
-                "                                                  and e.encounter_type in(134) \n" +
-                "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
+    String sql = "SELECT o.person_id as patient_id, \n" +
+      "                                    e.form_id, \n" +
+      "                                    o.concept_id, \n" +
+      "                                    o.encounter_id, \n" +
+      "                                    cn.name question, \n" +
+      "                                    e.visit_id, \n" +
+      "                                    e.encounter_datetime, \n" +
+      "                                    o.obs_datetime, \n" +
+      "                                    case when o.value_datetime is not null then o.value_datetime \n" +
+      "                                                    when o.value_coded is not null then o.value_coded \n" +
+      "                                                    when o.value_numeric is not null then o.value_numeric \n" +
+      "                                                    when o.value_text is not null then o.value_text end  \n" +
+      "                                                    as value \n" +
+      "                                                    FROM amrs.obs o \n" +
+      "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+      "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+      "                                                   and cn.locale_preferred=1 \n" +
+      "                                                     AND o.person_id IN(1151769) \n" +
+      "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
+      "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+      "                                                  and e.encounter_type in(134) \n" +
+      "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
 
-        //System.out.println("locations " + locations + " parentUUID " + parentUUID);
-        Connection con = DriverManager.getConnection(server, username, password);
-        int x = 0;
-        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(sql);
-        rs.last();
-        x = rs.getRow();
-        rs.beforeFirst();
-        while (rs.next()) {
+    //System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
 
       String patientId = rs.getString("patient_id");
       String formId = rs.getString("form_id");
@@ -4279,43 +4277,42 @@ public class MigrateCareData {
 
   }
 
-    public static void prepMonthlyRefill(String server, String username, String password, String KenyaEMRlocationUuid, AMRSPrepMonthlyRefillService amrsPrepMonthlyRefillService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+  public static void prepMonthlyRefill(String server, String username, String password, String KenyaEMRlocationUuid, AMRSPrepMonthlyRefillService amrsPrepMonthlyRefillService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
 
 
+    String sql = "SELECT o.person_id as patient_id, \n" +
+      "                                    e.form_id, \n" +
+      "                                    o.concept_id, \n" +
+      "                                    o.encounter_id, \n" +
+      "                                    cn.name question, \n" +
+      "                                    e.visit_id, \n" +
+      "                                    e.encounter_datetime, \n" +
+      "                                    o.obs_datetime, \n" +
+      "                                    case when o.value_datetime is not null then o.value_datetime \n" +
+      "                                                    when o.value_coded is not null then o.value_coded \n" +
+      "                                                    when o.value_numeric is not null then o.value_numeric \n" +
+      "                                                    when o.value_text is not null then o.value_text end  \n" +
+      "                                                    as value \n" +
+      "                                                    FROM amrs.obs o \n" +
+      "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+      "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+      "\t\t\t\t\t\t\t\t\t\t\t\t\tand cn.locale_preferred=1 \n" +
+      "                                                     AND o.person_id IN(1151769) \n" +
+      "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
+      "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+      "                                                  and e.encounter_type in(262) \n" +
+      "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
 
-        String sql = "SELECT o.person_id as patient_id, \n" +
-                "                                    e.form_id, \n" +
-                "                                    o.concept_id, \n" +
-                "                                    o.encounter_id, \n" +
-                "                                    cn.name question, \n" +
-                "                                    e.visit_id, \n" +
-                "                                    e.encounter_datetime, \n" +
-                "                                    o.obs_datetime, \n" +
-                "                                    case when o.value_datetime is not null then o.value_datetime \n" +
-                "                                                    when o.value_coded is not null then o.value_coded \n" +
-                "                                                    when o.value_numeric is not null then o.value_numeric \n" +
-                "                                                    when o.value_text is not null then o.value_text end  \n" +
-                "                                                    as value \n" +
-                "                                                    FROM amrs.obs o \n" +
-                "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
-                "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
-                "\t\t\t\t\t\t\t\t\t\t\t\t\tand cn.locale_preferred=1 \n" +
-                "                                                     AND o.person_id IN(1151769) \n" +
-                "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
-                "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
-                "                                                  and e.encounter_type in(262) \n" +
-                "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
-
-       // System.out.println("locations " + locations + " parentUUID " + parentUUID);
-        Connection con = DriverManager.getConnection(server, username, password);
-        int x = 0;
-        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(sql);
-        rs.last();
-        x = rs.getRow();
-        rs.beforeFirst();
-        while (rs.next()) {
+    // System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
 
       String patientId = rs.getString("patient_id");
       String formId = rs.getString("form_id");
@@ -4364,63 +4361,63 @@ public class MigrateCareData {
       // Call method to create and insert the payload
     }
 
-       CareOpenMRSPayload.prepMonthlyRefill(amrsPrepMonthlyRefillService, amrsPatientServices, amrsTranslater,KenyaEMRlocationUuid, url, auth);
+    CareOpenMRSPayload.prepMonthlyRefill(amrsPrepMonthlyRefillService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
 
 
   }
 
-    public static void processCovid(String server, String username, String password, String KenyaEMRlocationUuid, AMRSCovidService amrsCovidService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void processCovid(String server, String username, String password, String KenyaEMRlocationUuid, AMRSCovidService amrsCovidService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-      String samplePatientList = AMRSSamples.getPersonIdList();
+    String samplePatientList = AMRSSamples.getPersonIdList();
 
-      String sql = "select\n" +
-        "\to.person_id,\n" +
-        "\te.form_id,\n" +
-        "\te.visit_id,\n" +
-        "\tcn.name as question,\n" +
-        "\te.encounter_id,\n" +
-        "\te.encounter_datetime,\n" +
-        "\te.encounter_type,\n" +
-        "\to.concept_id,\n" +
-        "\to.obs_datetime,\n" +
-        "\tCOALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
-        "\tcd.name as value_type,\n" +
-        "\tc.datatype_id,\n" +
-        "\tet.name encounterName,\n" +
-        "\t\"COVID-19 Assessment form\" as Category\n" +
-        "from\n" +
-        "\tamrs.obs o\n" +
-        "inner join amrs.encounter e on\n" +
-        "\t(o.encounter_id = e.encounter_id)\n" +
-        "inner join amrs.encounter_type et on\n" +
-        "\tet.encounter_type_id = e.encounter_type\n" +
-        "inner join amrs.concept c on\n" +
-        "\tc.concept_id = o.concept_id\n" +
-        "inner join amrs.concept_datatype cd on\n" +
-        "\tcd.concept_datatype_id = c.datatype_id\n" +
-        "INNER JOIN amrs.concept_name cn ON\n" +
-        "\to.concept_id = cn.concept_id\n" +
-        "where\n" +
-        "\te.encounter_type in (208)\n" +
-        "\tand o.concept_id in (984, 1390, 1915, 1944, 2300, 6419, 9728, 10485, 10958, 11124, 11899, 11906, 11908, 11909, 11911, 11912, 11916)\n" +
+    String sql = "select\n" +
+      "\to.person_id,\n" +
+      "\te.form_id,\n" +
+      "\te.visit_id,\n" +
+      "\tcn.name as question,\n" +
+      "\te.encounter_id,\n" +
+      "\te.encounter_datetime,\n" +
+      "\te.encounter_type,\n" +
+      "\to.concept_id,\n" +
+      "\to.obs_datetime,\n" +
+      "\tCOALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
+      "\tcd.name as value_type,\n" +
+      "\tc.datatype_id,\n" +
+      "\tet.name encounterName,\n" +
+      "\t\"COVID-19 Assessment form\" as Category\n" +
+      "from\n" +
+      "\tamrs.obs o\n" +
+      "inner join amrs.encounter e on\n" +
+      "\t(o.encounter_id = e.encounter_id)\n" +
+      "inner join amrs.encounter_type et on\n" +
+      "\tet.encounter_type_id = e.encounter_type\n" +
+      "inner join amrs.concept c on\n" +
+      "\tc.concept_id = o.concept_id\n" +
+      "inner join amrs.concept_datatype cd on\n" +
+      "\tcd.concept_datatype_id = c.datatype_id\n" +
+      "INNER JOIN amrs.concept_name cn ON\n" +
+      "\to.concept_id = cn.concept_id\n" +
+      "where\n" +
+      "\te.encounter_type in (208)\n" +
+      "\tand o.concept_id in (984, 1390, 1915, 1944, 2300, 6419, 9728, 10485, 10958, 11124, 11899, 11906, 11908, 11909, 11911, 11912, 11916)\n" +
       //  "\tand e.location_id in (2, 98, 339)\n" +
-        "\tand e.voided = 0\n" +
-        "\tand cd.name <> 'N/A'\n" +
-        "\tand o.person_id in (" + samplePatientList + ")\n" +
-        "order by\n" +
-        "\to.person_id,\n" +
-        "\te.encounter_id desc;";
+      "\tand e.voided = 0\n" +
+      "\tand cd.name <> 'N/A'\n" +
+      "\tand o.person_id in (" + samplePatientList + ")\n" +
+      "order by\n" +
+      "\to.person_id,\n" +
+      "\te.encounter_id desc;";
 
-     // System.out.println("locations " + locations + " parentUUID " + parentUUID);
-      Connection con = DriverManager.getConnection(server, username, password);
-      int x = 0;
-      Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-        ResultSet.CONCUR_READ_ONLY);
-      ResultSet rs = stmt.executeQuery(sql);
-      rs.last();
-      x = rs.getRow();
-      rs.beforeFirst();
-      while (rs.next()) {
+    // System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
 
       String patientId = rs.getString("person_id");
       String formId = rs.getString("form_id");
@@ -4441,159 +4438,159 @@ public class MigrateCareData {
       }
       String kenyaemr_value = dataType.equals("2") ? amrsTranslater.translater(value) : value;
 
-        AMRSCovid amrsCovid = new AMRSCovid();
-        amrsCovid.setPatientId(patientId);
-        amrsCovid.setFormId(formId);
-        amrsCovid.setConceptId(conceptId);
-        amrsCovid.setEncounterId(encounterId);
-        amrsCovid.setValue(value);
-        amrsCovid.setConceptDataTypeId(dataType);
-        amrsCovid.setVisitId(visitId);
-        amrsCovid.setQuestion(question);
-        amrsCovid.setObsDateTime(obsDateTime);
-        amrsCovid.setKenyaemrEncounterTypeUuid("86709cfc-1490-11ec-82a8-0242ac130003");
-        amrsCovid.setKenyaemrFormUuid("86709f36-1490-11ec-82a8-0242ac130003");
-        amrsCovid.setKenyaEmrValue(kenyaemr_value);
-        amrsCovid.setKenyaEmrEncounterDateTime(encounterDatetime);
-        String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
-        String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
-        amrsCovid.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
-        amrsCovid.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
-        amrsCovidService.save(amrsCovid);
-      }
-      CareOpenMRSPayload.processCovid(amrsCovidService, amrsPatientServices, amrsTranslater,KenyaEMRlocationUuid, url, auth);
+      AMRSCovid amrsCovid = new AMRSCovid();
+      amrsCovid.setPatientId(patientId);
+      amrsCovid.setFormId(formId);
+      amrsCovid.setConceptId(conceptId);
+      amrsCovid.setEncounterId(encounterId);
+      amrsCovid.setValue(value);
+      amrsCovid.setConceptDataTypeId(dataType);
+      amrsCovid.setVisitId(visitId);
+      amrsCovid.setQuestion(question);
+      amrsCovid.setObsDateTime(obsDateTime);
+      amrsCovid.setKenyaemrEncounterTypeUuid("86709cfc-1490-11ec-82a8-0242ac130003");
+      amrsCovid.setKenyaemrFormUuid("86709f36-1490-11ec-82a8-0242ac130003");
+      amrsCovid.setKenyaEmrValue(kenyaemr_value);
+      amrsCovid.setKenyaEmrEncounterDateTime(encounterDatetime);
+      String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+      String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+      amrsCovid.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+      amrsCovid.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+      amrsCovidService.save(amrsCovid);
     }
+    CareOpenMRSPayload.processCovid(amrsCovidService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
+  }
 
-    public static void processHeiOutcome(String server, String username, String password, String locations, String parentUUID, AMRSHeiOutcomeService amrsHeiOutcomeService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
-
-        String samplePatientList = AMRSSamples.getPersonIdList();
-
-        String sql = "SELECT \n" +
-                " o.person_id AS patient_id,\n" +
-                " e.form_id,\n" +
-                " e.visit_id,\n" +
-                " o.concept_id,\n" +
-                " o.encounter_id,\n" +
-                " o.obs_datetime,\n" +
-                " e.encounter_datetime,\n" +
-                " cn.name question,\n" +
-                " e.location_id,\n" +
-                " c.datatype_id,\n" +
-                " CASE\n" +
-                " WHEN o.value_datetime IS NOT NULL THEN o.value_datetime\n" +
-                " WHEN o.value_coded IS NOT NULL THEN o.value_coded\n" +
-                " WHEN o.value_numeric IS NOT NULL THEN o.value_numeric\n" +
-                " WHEN o.value_text IS NOT NULL THEN o.value_text\n" +
-                " END AS value\n" +
-                "FROM\n" +
-                " amrs.obs o\n" +
-                " INNER JOIN\n" +
-                " amrs.concept c ON o.concept_id = c.concept_id\n" +
-                " INNER JOIN\n" +
-                " amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
-                " AND cn.locale_preferred = 1\n" +
-                " AND o.concept_id IN (8586)\n" +
-                " INNER JOIN\n" +
-                " amrs.encounter e ON o.encounter_id = e.encounter_id\n" +
-                "AND o.person_id IN(1171851)\n" +
-                " AND e.voided = 0\n" +
-                " AND o.voided = 0\n" +
-                " AND e.encounter_type IN (115)\n" +
-                "ORDER BY patient_id ASC";
-
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
-        Connection con = DriverManager.getConnection(server, username, password);
-        int x = 0;
-        Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(sql);
-        rs.last();
-        x = rs.getRow();
-        rs.beforeFirst();
-        while (rs.next()) {
-
-            String patientId = rs.getString("patient_id");
-            String formId = rs.getString("form_id");
-            String conceptId = rs.getString("concept_id");
-            String encounterId = rs.getString("encounter_id");
-            String encounterDatetime = rs.getString("encounter_datetime");
-            String value = rs.getString("value");
-            String question = rs.getString("question");
-            String dataType = rs.getString("datatype_id");
-            String visitId = rs.getString("visit_id");
-            String obsDateTime = rs.getString("obs_datetime");
-
-// Check if record already exists
-            List<AMRSHeiOutcome> existingRecords = amrsHeiOutcomeService.findByEncounterConceptAndPatient(encounterId, conceptId, patientId);
-            if (!existingRecords.isEmpty()) {
-                System.out.println("Duplicate record found for encounterId: " + encounterId + ", conceptId: " + conceptId + ", patientId: " + patientId);
-                continue; // Skip saving to avoid duplication
-            }
-
-            String kenyaemr_value = dataType.equals("2") ? amrsTranslater.translater(value) : value;
-
-            AMRSHeiOutcome amrsHeiOutcome = new AMRSHeiOutcome();
-            amrsHeiOutcome.setPatientId(patientId);
-            amrsHeiOutcome.setFormId(formId);
-            amrsHeiOutcome.setConceptId(conceptId);
-            amrsHeiOutcome.setEncounterId(encounterId);
-            amrsHeiOutcome.setValue(value);
-            amrsHeiOutcome.setConceptDataTypeId(dataType);
-            amrsHeiOutcome.setVisitId(visitId);
-            amrsHeiOutcome.setQuestion(question);
-            amrsHeiOutcome.setObsDateTime(obsDateTime);
-            amrsHeiOutcome.setKenyaemrEncounterTypeUuid("01894f88-dc73-42d4-97a3-0929118403fb");
-            amrsHeiOutcome.setKenyaemrFormUuid("d823f1ef-0973-44ee-b113-7090dc23257b");
-            amrsHeiOutcome.setKenyaEmrValue(kenyaemr_value);
-            amrsHeiOutcome.setKenyaEmrEncounterDateTime(encounterDatetime);
-            String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
-            String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
-            amrsHeiOutcome.setKenyaEmrConceptUuid("159427AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            amrsHeiOutcome.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
-            amrsHeiOutcomeService.save(amrsHeiOutcome);
-        }
-        HeiOutcomePayload.processHeiOutcome(amrsHeiOutcomeService, amrsPatientServices, amrsTranslater, url, auth);
-    }
-
-    public static void processAlcohol(String server, String username, String password, String KenyaEMRlocationUuid, AMRSAlcoholService amrsAlcoholService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void processHeiOutcome(String server, String username, String password, String locations, String parentUUID, AMRSHeiOutcomeService amrsHeiOutcomeService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
     String samplePatientList = AMRSSamples.getPersonIdList();
 
-      String sql = "select\n" +
-        "        o.person_id,\n" +
-        "        e.form_id,\n" +
-        "        e.visit_id,\n" +
-        "        cn.name as question,\n" +
-        "        e.encounter_id,\n" +
-        "        e.encounter_datetime,\n" +
-        "        e.encounter_type,\n" +
-        "        o.concept_id,\n" +
-        "        o.obs_datetime,\n" +
-        "        COALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
-        "        cd.name as value_type,\n" +
-        "        c.datatype_id,\n" +
-        "        et.name encounterName,\n" +
-        "        \"Alcohol and Drug Abuse Screening(CAGE-AID/CRAFFT)\" as Category\n" +
-        "from\n" +
-        "        amrs.obs o\n" +
-        "inner join amrs.encounter e on\n" +
-        "        (o.encounter_id = e.encounter_id)\n" +
-        "inner join amrs.encounter_type et on\n" +
-        "        et.encounter_type_id = e.encounter_type\n" +
-        "inner join amrs.concept c on\n" +
-        "        c.concept_id = o.concept_id\n" +
-        "inner join amrs.concept_datatype cd on\n" +
-        "        cd.concept_datatype_id = c.datatype_id\n" +
-        "INNER JOIN amrs.concept_name cn ON\n" +
-        "        o.concept_id = cn.concept_id\n" +
-        "where\n" +
-        "        o.concept_id in (11634, 9100, 11831)\n" +
-        "        and e.voided = 0\n" +
-        "        and cd.name <> 'N/A'\n" +
-        "        and o.person_id in (" + samplePatientList + ")\n" +
-        "order by\n" +
-        "        o.person_id,\n" +
-        "        e.encounter_id desc;";
+    String sql = "SELECT \n" +
+      " o.person_id AS patient_id,\n" +
+      " e.form_id,\n" +
+      " e.visit_id,\n" +
+      " o.concept_id,\n" +
+      " o.encounter_id,\n" +
+      " o.obs_datetime,\n" +
+      " e.encounter_datetime,\n" +
+      " cn.name question,\n" +
+      " e.location_id,\n" +
+      " c.datatype_id,\n" +
+      " CASE\n" +
+      " WHEN o.value_datetime IS NOT NULL THEN o.value_datetime\n" +
+      " WHEN o.value_coded IS NOT NULL THEN o.value_coded\n" +
+      " WHEN o.value_numeric IS NOT NULL THEN o.value_numeric\n" +
+      " WHEN o.value_text IS NOT NULL THEN o.value_text\n" +
+      " END AS value\n" +
+      "FROM\n" +
+      " amrs.obs o\n" +
+      " INNER JOIN\n" +
+      " amrs.concept c ON o.concept_id = c.concept_id\n" +
+      " INNER JOIN\n" +
+      " amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
+      " AND cn.locale_preferred = 1\n" +
+      " AND o.concept_id IN (8586)\n" +
+      " INNER JOIN\n" +
+      " amrs.encounter e ON o.encounter_id = e.encounter_id\n" +
+      "AND o.person_id IN(1171851)\n" +
+      " AND e.voided = 0\n" +
+      " AND o.voided = 0\n" +
+      " AND e.encounter_type IN (115)\n" +
+      "ORDER BY patient_id ASC";
+
+    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+
+      String patientId = rs.getString("patient_id");
+      String formId = rs.getString("form_id");
+      String conceptId = rs.getString("concept_id");
+      String encounterId = rs.getString("encounter_id");
+      String encounterDatetime = rs.getString("encounter_datetime");
+      String value = rs.getString("value");
+      String question = rs.getString("question");
+      String dataType = rs.getString("datatype_id");
+      String visitId = rs.getString("visit_id");
+      String obsDateTime = rs.getString("obs_datetime");
+
+// Check if record already exists
+      List<AMRSHeiOutcome> existingRecords = amrsHeiOutcomeService.findByEncounterConceptAndPatient(encounterId, conceptId, patientId);
+      if (!existingRecords.isEmpty()) {
+        System.out.println("Duplicate record found for encounterId: " + encounterId + ", conceptId: " + conceptId + ", patientId: " + patientId);
+        continue; // Skip saving to avoid duplication
+      }
+
+      String kenyaemr_value = dataType.equals("2") ? amrsTranslater.translater(value) : value;
+
+      AMRSHeiOutcome amrsHeiOutcome = new AMRSHeiOutcome();
+      amrsHeiOutcome.setPatientId(patientId);
+      amrsHeiOutcome.setFormId(formId);
+      amrsHeiOutcome.setConceptId(conceptId);
+      amrsHeiOutcome.setEncounterId(encounterId);
+      amrsHeiOutcome.setValue(value);
+      amrsHeiOutcome.setConceptDataTypeId(dataType);
+      amrsHeiOutcome.setVisitId(visitId);
+      amrsHeiOutcome.setQuestion(question);
+      amrsHeiOutcome.setObsDateTime(obsDateTime);
+      amrsHeiOutcome.setKenyaemrEncounterTypeUuid("01894f88-dc73-42d4-97a3-0929118403fb");
+      amrsHeiOutcome.setKenyaemrFormUuid("d823f1ef-0973-44ee-b113-7090dc23257b");
+      amrsHeiOutcome.setKenyaEmrValue(kenyaemr_value);
+      amrsHeiOutcome.setKenyaEmrEncounterDateTime(encounterDatetime);
+      String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+      String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+      amrsHeiOutcome.setKenyaEmrConceptUuid("159427AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+      amrsHeiOutcome.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+      amrsHeiOutcomeService.save(amrsHeiOutcome);
+    }
+    HeiOutcomePayload.processHeiOutcome(amrsHeiOutcomeService, amrsPatientServices, amrsTranslater, url, auth);
+  }
+
+  public static void processAlcohol(String server, String username, String password, String KenyaEMRlocationUuid, AMRSAlcoholService amrsAlcoholService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+    String samplePatientList = AMRSSamples.getPersonIdList();
+
+    String sql = "select\n" +
+      "        o.person_id,\n" +
+      "        e.form_id,\n" +
+      "        e.visit_id,\n" +
+      "        cn.name as question,\n" +
+      "        e.encounter_id,\n" +
+      "        e.encounter_datetime,\n" +
+      "        e.encounter_type,\n" +
+      "        o.concept_id,\n" +
+      "        o.obs_datetime,\n" +
+      "        COALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
+      "        cd.name as value_type,\n" +
+      "        c.datatype_id,\n" +
+      "        et.name encounterName,\n" +
+      "        \"Alcohol and Drug Abuse Screening(CAGE-AID/CRAFFT)\" as Category\n" +
+      "from\n" +
+      "        amrs.obs o\n" +
+      "inner join amrs.encounter e on\n" +
+      "        (o.encounter_id = e.encounter_id)\n" +
+      "inner join amrs.encounter_type et on\n" +
+      "        et.encounter_type_id = e.encounter_type\n" +
+      "inner join amrs.concept c on\n" +
+      "        c.concept_id = o.concept_id\n" +
+      "inner join amrs.concept_datatype cd on\n" +
+      "        cd.concept_datatype_id = c.datatype_id\n" +
+      "INNER JOIN amrs.concept_name cn ON\n" +
+      "        o.concept_id = cn.concept_id\n" +
+      "where\n" +
+      "        o.concept_id in (11634, 9100, 11831)\n" +
+      "        and e.voided = 0\n" +
+      "        and cd.name <> 'N/A'\n" +
+      "        and o.person_id in (" + samplePatientList + ")\n" +
+      "order by\n" +
+      "        o.person_id,\n" +
+      "        e.encounter_id desc;";
 
     // System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
@@ -4645,7 +4642,7 @@ public class MigrateCareData {
       amrsModel.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
       amrsAlcoholService.save(amrsModel);
     }
-    CareOpenMRSPayload.processAlcohol(amrsAlcoholService, amrsPatientServices, amrsTranslater,KenyaEMRlocationUuid, url, auth);
+    CareOpenMRSPayload.processAlcohol(amrsAlcoholService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
   }
 
 }
