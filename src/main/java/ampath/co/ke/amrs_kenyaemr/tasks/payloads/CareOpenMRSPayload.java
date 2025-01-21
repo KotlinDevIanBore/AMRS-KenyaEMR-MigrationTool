@@ -619,7 +619,7 @@ public class CareOpenMRSPayload {
             JSONException, IOException{
     }
 
-    public static void artRefill(AMRSArtRefillService amrsArtRefillService,  AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+    public static void artRefill(AMRSArtRefillService amrsArtRefillService,  AMRSTranslater amrsTranslater, String KenyaEMRlocationUuid, String url, String auth) throws JSONException, IOException {
 
         List<AMRSArtRefill> artRefills = amrsArtRefillService.findByResponseCodeIsNull();
 
@@ -1100,7 +1100,7 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
         }
     }
 
-    public static void prepMonthlyRefill(AMRSPrepMonthlyRefillService amrsPrepMonthlyRefillService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException, SQLException {
+    public static void prepMonthlyRefill(AMRSPrepMonthlyRefillService amrsPrepMonthlyRefillService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String KenyaEMRlocationUuid, String url, String auth) throws JSONException, IOException, SQLException {
         List<AMRSPrepMonthlyRefill> amrsPrepMonthlyRefills = amrsPrepMonthlyRefillService.findByResponseCodeIsNull();
 
         if (!amrsPrepMonthlyRefills.isEmpty()) {
@@ -1162,7 +1162,7 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
                     jsonEncounter.put("visit", kenyaemrVisitUuid);
                     jsonEncounter.put("encounterDatetime", obsDatetime);
                     jsonEncounter.put("encounterType", "c4a2be28-6673-4c36-b886-ea89b0a42116");
-                    jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                    jsonEncounter.put("location", KenyaEMRlocationUuid);
                 }
 
                 // Send API request
@@ -1204,7 +1204,7 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
         }
     }
 
-    public static void processCovid(AMRSCovidService amrsCovidService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+    public static void processCovid(AMRSCovidService amrsCovidService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String KenyaEMRlocationUuid, String url, String auth) throws JSONException, IOException {
         List<AMRSCovid> amrsCovidList = amrsCovidService.findByResponseCodeIsNull();
         if (!amrsCovidList.isEmpty()) {
             // Use a Set to store unique encounter IDs
@@ -1241,7 +1241,7 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
                     jsonObservation.put("concept", amrsCovidEncounters.get(x).getKenyaEmrConceptUuid());
                     jsonObservation.put("obsDatetime", obsDatetime);
                     jsonObservation.put("value", value);
-                    jsonObservation.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                    jsonObservation.put("location", KenyaEMRlocationUuid);
 
                     patientuuid = amrsTranslater.KenyaemrPatientUuid(amrsCovidEncounters.get(x).getPatientId());
                     formuuid = amrsCovidEncounters.get(x).getKenyaemrFormUuid();
@@ -1260,7 +1260,7 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
                     jsonEncounter.put("patient", patientuuid);
                     jsonEncounter.put("encounterDatetime", encounterDatetime);
                     jsonEncounter.put("encounterType", encounteruuid);
-                    jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                    jsonEncounter.put("location", KenyaEMRlocationUuid);
                     jsonEncounter.put("visit", visituuid);
                     jsonEncounter.put("obs", jsonObservations);
                     System.out.println("Payload for is here " + jsonEncounter.toString());
@@ -1288,6 +1288,14 @@ public static void ovc(AMRSOvcService amrsOvcService, AMRSPatientServices amrsPa
                             AMRSCovid at = amrsCovidEncounters.get(x);
                             at.setResponseCode(String.valueOf(rescode));
                             at.setResponseCode("201");
+                            System.out.println("Imefika Hapa na data " + rescode);
+                            amrsCovidService.save(at);
+                        }
+                    }else{
+                        for (int x = 0; x < amrsCovidEncounters.size(); x++) {
+                            AMRSCovid at = amrsCovidEncounters.get(x);
+                            at.setResponseCode(String.valueOf(rescode));
+                            at.setResponseCode("400");
                             System.out.println("Imefika Hapa na data " + rescode);
                             amrsCovidService.save(at);
                         }
