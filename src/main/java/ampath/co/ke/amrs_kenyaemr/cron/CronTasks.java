@@ -230,7 +230,7 @@ public class CronTasks {
             });
     }
 
-    //@Scheduled(initialDelay = 0, fixedRate = 50 * 60 * 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 50 * 60 * 1000)
     public void processGreenCard() throws JSONException, ParseException, SQLException, IOException {
         CompletableFuture.runAsync(() -> {
             try {
@@ -243,13 +243,13 @@ public class CronTasks {
             });
     }
 
-    //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void ArtRefill() throws JSONException, ParseException, SQLException, IOException {
         CompletableFuture.runAsync(() -> {
             try {
                 AMRSLocation amrsLocation = new AMRSLocation();
                 String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-                MigrateCareData.artRefill(server,username,password,KenyaEMRlocationUuid, amrsArtRefillService, amrsTranslater, OpenMRSURL,auth);
+                MigrateCareData.artRefill(server,username,password,KenyaEMRlocationUuid, amrsArtRefillService, amrsTranslater,amrsPatientServices, OpenMRSURL,auth);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -307,10 +307,16 @@ public class CronTasks {
 
     @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void prepFollowUp() throws JSONException, ParseException, SQLException, IOException {
-        String locationId = "'8cad59c8-7f88-4964-aa9e-908f417f70b2','08feb14c-1352-11df-a1f1-0026b9348838','65bdb112-a254-4cf9-a5a7-29dce997312d','8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        String parentUuid = "'8cad59c8-7f88-4964-aa9e-908f417f70b2'";
-        MigrateCareData.prepFollowUp(server, username, password, locationId, parentUuid, amrsPrepFollowUpService, amrsTranslater, amrsPatientServices, OpenMRSURL, auth);
-    }
+        CompletableFuture.runAsync(() -> {
+            try {
+                AMRSLocation amrsLocation = new AMRSLocation();
+                String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+                MigrateCareData.prepFollowUp(server, username, password,KenyaEMRlocationUuid, amrsPrepFollowUpService, amrsTranslater, amrsPatientServices, OpenMRSURL, auth);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+            }
 
     //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
     public void prepMonthlyRefill() throws JSONException, ParseException, SQLException, IOException {
