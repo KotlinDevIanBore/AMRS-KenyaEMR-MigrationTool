@@ -670,7 +670,7 @@ public class CareOpenMRSPayload {
                 jsonEncounter.put("visit", kenyaemrvisitUuid);
                 jsonEncounter.put("encounterDatetime", obsDateTime);
                 jsonEncounter.put("encounterType", "e87aa2ad-6886-422e-9dfd-064e3bfe3aad");
-                jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                jsonEncounter.put("location", KenyaEMRlocationUuid);
 
 
                 // Send API request
@@ -703,6 +703,10 @@ public class CareOpenMRSPayload {
                         }
                     } else {
                         System.err.println("Failed to process Visit ID: " + visitId + " | Status Code: " + responseCode);
+                        for (AMRSArtRefill artRefill : artRefillList) {
+                            artRefill.setResponseCode("400");
+                            amrsArtRefillService.save(artRefill);
+                        }
                     }
                 } catch (Exception e) {
                     System.err.println("Error processing Visit ID: " + visitId + " | " + e.getMessage());

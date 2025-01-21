@@ -4188,7 +4188,9 @@ public class MigrateCareData {
 
     }
 
-    public static void prepFollowUp(String server, String username, String password, String locations, String parentUUID, AMRSPrepFollowUpService amrsPrepFollowUpService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+    public static void prepFollowUp(String server, String username, String password, String KenyaEMRlocationUuid, AMRSPrepFollowUpService amrsPrepFollowUpService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+
+
         String sql = "SELECT o.person_id as patient_id, \n" +
                 "                                    e.form_id, \n" +
                 "                                    o.concept_id, \n" +
@@ -4205,14 +4207,14 @@ public class MigrateCareData {
                 "                                                    FROM amrs.obs o \n" +
                 "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
                 "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
-                "\t\t\t\t\t\t\t\t\t\t\t\t\tand cn.locale_preferred=1 \n" +
+                "                                                   and cn.locale_preferred=1 \n" +
                 "                                                     AND o.person_id IN(1151769) \n" +
                 "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
                 "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
                 "                                                  and e.encounter_type in(134) \n" +
                 "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
 
-        System.out.println("locations " + locations + " parentUUID " + parentUUID);
+        //System.out.println("locations " + locations + " parentUUID " + parentUUID);
         Connection con = DriverManager.getConnection(server, username, password);
         int x = 0;
         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
