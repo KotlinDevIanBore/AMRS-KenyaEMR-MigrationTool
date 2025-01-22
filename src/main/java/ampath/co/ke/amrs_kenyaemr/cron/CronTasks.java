@@ -363,4 +363,17 @@ public class CronTasks {
       }
     });
   }
+  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+  public void processMCHEnrollements() throws JSONException, ParseException, SQLException, IOException {
+    CompletableFuture.runAsync(() -> {
+      try {
+        AMRSLocation amrsLocation = new AMRSLocation();
+        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+        MigrateCareData(server, username, password, KenyaEMRlocationUuid, amrsAlcoholService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+  }
 }
+
