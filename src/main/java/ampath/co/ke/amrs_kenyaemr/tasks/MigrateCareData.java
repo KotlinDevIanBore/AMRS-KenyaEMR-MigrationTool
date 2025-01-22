@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class MigrateCareData {
 
-  public static void programs(String server, String username, String password, String locations, AMRSProgramService amrsProgramService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void programs(String server, String username, String password, AMRSProgramService amrsProgramService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String KenyaEMRlocationUuid, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
     List<AMRSPrograms> amrsProgramss = amrsProgramService.findFirstByOrderByIdDesc();
 
     List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
@@ -1730,6 +1730,7 @@ public class MigrateCareData {
 
   }
 
+
   public static void hivenrollment(String server, String username, String password, String KenyaEMRlocationUuid, AMRSHIVEnrollmentService amrsHIVEnrollmentService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
     // String samplePatientList = AMRSSamples.getPersonIdList();
@@ -1778,7 +1779,7 @@ public class MigrateCareData {
         "                                              amrs.location l ON e.location_id = l.location_id  \n" +
         "                                          WHERE  \n" +
         "                                                  o.concept_id IN(6749,10747,10748,7013,1499,9203,6748,1633,2155,5356,966,1088,5419,10804,6032,6176,5272,5629,1174,7013,1499,9203,6748) -- 5356 \n" +
-        "                                                  and e.patient_id in (" + samplePatientList + ")  \n" +
+        "                                                  and e.patient_id in (1211883)  \n" +
         "                                                  AND e.voided = 0 \n" +
         "                                                 group by o.concept_id,e.patient_id\n" +
         "                                          ORDER BY o.encounter_id   ASC \n" +
@@ -1821,7 +1822,7 @@ public class MigrateCareData {
         "                                              amrs.location l ON e.location_id = l.location_id  \n" +
         "                                          WHERE  \n" +
         "                                                  o.concept_id IN(6749,10747,10748,7013,1499,9203,6748,1633,2155,5356,966,1088,5419,10804,6032,6176,5272,5629,1174,7013,1499,9203,6748) -- 5356 \n" +
-        "                                                  and e.patient_id in (" + samplePatientList + ")  \n" +
+        "                                                  and e.patient_id in (1211883)  \n" +
         "                                                  AND e.voided = 0 \n" +
         "                                                 group by o.concept_id,e.patient_id\n" +
         "                                          ORDER BY o.encounter_id   ASC \n" +
