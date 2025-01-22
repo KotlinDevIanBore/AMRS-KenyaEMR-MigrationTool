@@ -4644,6 +4644,441 @@ public class MigrateCareData {
     }
     CareOpenMRSPayload.processAlcohol(amrsAlcoholService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
   }
+  public static void mchEnrollment(String server, String username, String password, String locations, String parentUUID, AMRSMchEnrollmentService amrsMchEnrollmentService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+    String sql = "SELECT o.person_id as patient_id, \n" +
+            "                                    e.form_id, \n" +
+            "                                    o.concept_id, \n" +
+            "                                    o.encounter_id, \n" +
+            "                                    cn.name question, \n" +
+            "                                    e.visit_id, \n" +
+            "                                    e.encounter_datetime, \n" +
+            "                                    o.obs_datetime, \n" +
+            "                                    case when o.value_datetime is not null then o.value_datetime \n" +
+            "                                                    when o.value_coded is not null then o.value_coded \n" +
+            "                                                    when o.value_numeric is not null then o.value_numeric \n" +
+            "                                                    when o.value_text is not null then o.value_text end  \n" +
+            "                                                    as value \n" +
+            "                                                    FROM amrs.obs o \n" +
+            "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+            "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+            "\t\t\t\t\t\t\t\t\t\t\t\t\tand cn.locale_preferred=1 \n" +
+            "                                                     AND o.person_id IN(1151769) \n" +
+            "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
+            "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+            "                                                  and e.encounter_type in(238) \n" +
+            "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
+
+    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+
+      String patientId = rs.getString("patient_id");
+      String formId = rs.getString("form_id");
+      String conceptId = rs.getString("concept_id");
+      String encounterId = rs.getString("encounter_id");
+      String question = rs.getString("question");
+      String value = rs.getString(("value"));
+      String visitId = rs.getString("visit_id");
+      String obsDatetime = rs.getString("obs_datetime");
+      String encounterDatetime = rs.getString("encounter_datetime");
+
+      List<AMRSMchEnrollment> amrsMchEnrollmentList = amrsMchEnrollmentService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterId,conceptId);
+
+      if(amrsMchEnrollmentList.isEmpty()) {
+        AMRSMchEnrollment amrsMchEnrollment = new AMRSMchEnrollment();
+        amrsMchEnrollment.setPatientId(patientId);
+        amrsMchEnrollment.setFormId(formId);
+        amrsMchEnrollment.setConceptId(conceptId);
+        amrsMchEnrollment.setEncounterId(encounterId);
+        amrsMchEnrollment.setQuestion(question);
+        amrsMchEnrollment.setValue(value);
+        amrsMchEnrollment.setVisitId(visitId);
+        amrsMchEnrollment.setObsDateTime(obsDatetime);
+        amrsMchEnrollment.setKenyaEmrEncounterDatetime(encounterDatetime);
+        String kenyaEmrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+        amrsMchEnrollment.setKenyaEmrPatientUuid(kenyaEmrPatientUuid);
+        String kenyaEmrEncounterUuid = "3ee036d8-7c13-4393-b5d6-036f2fe45126";
+        amrsMchEnrollment.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+        String kenyaEmrFormUuid = "90a18f0c-17cd-4eec-8204-5af52e8d77cf";
+        amrsMchEnrollment.setKenyaEmrFormUuid(kenyaEmrFormUuid);
+        String kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+        amrsMchEnrollment.setKenyaEmrVisitUuid(kenyaemrVisitUuid);
+        String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+        amrsMchEnrollment.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+        String kenyaEmrValueUuid = "";
+        kenyaEmrValueUuid = amrsTranslater.translater(value);
+        amrsMchEnrollment.setKenyaEmrValue(kenyaEmrValueUuid);
+
+        if(!Objects.equals(kenyaEmrValueUuid, "") && !Objects.equals(kenyaEmrConceptUuid, "")) {
+
+          amrsMchEnrollmentService.save(amrsMchEnrollment);
+
+        }
+
+
+      }
+
+      // Call method to create and insert the payload
+    }
+
+    CareOpenMRSPayload.mchEnrollment(amrsMchEnrollmentService, amrsPatientServices, amrsTranslater, url, auth);
+
+  }
+
+  public static void mchAntenatal(String server, String username, String password, String locations, String parentUUID, AMRSMchAntenatalService amrsMchAntenatalService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+    String sql = "SELECT o.person_id as patient_id, \n" +
+            "                                    e.form_id, \n" +
+            "                                    o.concept_id, \n" +
+            "                                    o.encounter_id, \n" +
+            "                                    cn.name question, \n" +
+            "                                    e.visit_id, \n" +
+            "                                    e.encounter_datetime, \n" +
+            "                                    o.obs_datetime, \n" +
+            "                                    case when o.value_datetime is not null then o.value_datetime \n" +
+            "                                                    when o.value_coded is not null then o.value_coded \n" +
+            "                                                    when o.value_numeric is not null then o.value_numeric \n" +
+            "                                                    when o.value_text is not null then o.value_text end  \n" +
+            "                                                    as value \n" +
+            "                                                    FROM amrs.obs o \n" +
+            "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+            "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+            "\t\t\t\t\t\t\t\t\t\t\t\t\tand cn.locale_preferred=1 \n" +
+            "                                                     AND o.person_id IN(1151769) \n" +
+            "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
+            "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+            "                                                  and e.encounter_type in(264) \n" +
+            "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
+
+    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+
+      String patientId = rs.getString("patient_id");
+      String formId = rs.getString("form_id");
+      String conceptId = rs.getString("concept_id");
+      String encounterId = rs.getString("encounter_id");
+      String question = rs.getString("question");
+      String value = rs.getString(("value"));
+      String visitId = rs.getString("visit_id");
+      String obsDatetime = rs.getString("obs_datetime");
+      String encounterDatetime = rs.getString("encounter_datetime");
+
+      List<AMRSMchAntenatal> amrsMchAntenatalList = amrsMchAntenatalService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterId,conceptId);
+
+      if(amrsMchAntenatalList.isEmpty()) {
+        AMRSMchAntenatal amrsMchAntenatal = new AMRSMchAntenatal();
+        amrsMchAntenatal.setPatientId(patientId);
+        amrsMchAntenatal.setFormId(formId);
+        amrsMchAntenatal.setConceptId(conceptId);
+        amrsMchAntenatal.setEncounterId(encounterId);
+        amrsMchAntenatal.setQuestion(question);
+        amrsMchAntenatal.setValue(value);
+        amrsMchAntenatal.setVisitId(visitId);
+        amrsMchAntenatal.setObsDateTime(obsDatetime);
+        amrsMchAntenatal.setKenyaEmrEncounterDatetime(encounterDatetime);
+        String kenyaEmrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+        amrsMchAntenatal.setKenyaEmrPatientUuid(kenyaEmrPatientUuid);
+        String kenyaEmrEncounterUuid = "415f5136-ca4a-49a8-8db3-f994187c3af6";
+        amrsMchAntenatal.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+        String kenyaEmrFormUuid = "8553d869-bdc8-4287-8505-910c7c998aff";
+        amrsMchAntenatal.setKenyaEmrFormUuid(kenyaEmrFormUuid);
+        String kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+        amrsMchAntenatal.setKenyaEmrVisitUuid(kenyaemrVisitUuid);
+        String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+        amrsMchAntenatal.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+        String kenyaEmrValueUuid = "";
+        kenyaEmrValueUuid = amrsTranslater.translater(value);
+        amrsMchAntenatal.setKenyaEmrValue(kenyaEmrValueUuid);
+
+        if(!Objects.equals(kenyaEmrValueUuid, "") && !Objects.equals(kenyaEmrConceptUuid, "")) {
+
+          amrsMchAntenatalService.save(amrsMchAntenatal);
+
+        }
+
+
+      }
+
+      // Call method to create and insert the payload
+    }
+
+    CareOpenMRSPayload.mchAntenatal(amrsMchAntenatalService, amrsPatientServices, amrsTranslater, url, auth);
+
+  }
+
+  public static void mchDischargeAndReferral(String server, String username, String password, String locations, String parentUUID, AMRSMchDischargeAndReferralService amrsMchDischargeAndReferralService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+    String sql = "SELECT o.person_id as patient_id, \n" +
+            "                                    e.form_id, \n" +
+            "                                    o.concept_id, \n" +
+            "                                    o.encounter_id, \n" +
+            "                                    cn.name question, \n" +
+            "                                    e.visit_id, \n" +
+            "                                    e.encounter_datetime, \n" +
+            "                                    o.obs_datetime, \n" +
+            "                                    case when o.value_datetime is not null then o.value_datetime \n" +
+            "                                                    when o.value_coded is not null then o.value_coded \n" +
+            "                                                    when o.value_numeric is not null then o.value_numeric \n" +
+            "                                                    when o.value_text is not null then o.value_text end  \n" +
+            "                                                    as value \n" +
+            "                                                    FROM amrs.obs o \n" +
+            "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+            "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+            "\t\t\t\t\t\t\t\t\t\t\t\t\tand cn.locale_preferred=1 \n" +
+            "                                                     AND o.person_id IN(1151769) \n" +
+            "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
+            "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+            "                                                  and e.encounter_type in(238) \n" +
+            "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
+
+    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+
+      String patientId = rs.getString("patient_id");
+      String formId = rs.getString("form_id");
+      String conceptId = rs.getString("concept_id");
+      String encounterId = rs.getString("encounter_id");
+      String question = rs.getString("question");
+      String value = rs.getString(("value"));
+      String visitId = rs.getString("visit_id");
+      String obsDatetime = rs.getString("obs_datetime");
+      String encounterDatetime = rs.getString("encounter_datetime");
+
+      List<AMRSMchDischargeAndReferral> amrsMchDischargeAndReferralList = amrsMchDischargeAndReferralService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterId,conceptId);
+
+      if(amrsMchDischargeAndReferralList.isEmpty()) {
+        AMRSMchDischargeAndReferral amrsMchDischargeAndReferral = new AMRSMchDischargeAndReferral();
+        amrsMchDischargeAndReferral.setPatientId(patientId);
+        amrsMchDischargeAndReferral.setFormId(formId);
+        amrsMchDischargeAndReferral.setConceptId(conceptId);
+        amrsMchDischargeAndReferral.setEncounterId(encounterId);
+        amrsMchDischargeAndReferral.setQuestion(question);
+        amrsMchDischargeAndReferral.setValue(value);
+        amrsMchDischargeAndReferral.setVisitId(visitId);
+        amrsMchDischargeAndReferral.setObsDateTime(obsDatetime);
+        amrsMchDischargeAndReferral.setKenyaEmrEncounterDatetime(encounterDatetime);
+        String kenyaEmrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+        amrsMchDischargeAndReferral.setKenyaEmrPatientUuid(kenyaEmrPatientUuid);
+        String kenyaEmrEncounterUuid = "c6d09e05-1f25-4164-8860-9f32c5a02df0";
+        amrsMchDischargeAndReferral.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+        String kenyaEmrFormUuid = "af273344-a5f9-11e8-98d0-529269fb1459";
+        amrsMchDischargeAndReferral.setKenyaEmrFormUuid(kenyaEmrFormUuid);
+        String kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+        amrsMchDischargeAndReferral.setKenyaEmrVisitUuid(kenyaemrVisitUuid);
+        String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+        amrsMchDischargeAndReferral.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+        String kenyaEmrValueUuid = "";
+        kenyaEmrValueUuid = amrsTranslater.translater(value);
+        amrsMchDischargeAndReferral.setKenyaEmrValue(kenyaEmrValueUuid);
+
+        if(!Objects.equals(kenyaEmrValueUuid, "") && !Objects.equals(kenyaEmrConceptUuid, "")) {
+
+          amrsMchDischargeAndReferralService.save(amrsMchDischargeAndReferral);
+
+        }
+
+
+      }
+
+      // Call method to create and insert the payload
+    }
+
+//        CareOpenMRSPayload.mchDischargeAndReferral(amrsMchDischargeAndReferralService, amrsPatientServices, amrsTranslater, url, auth);
+
+  }
+
+  public static void mchPostnatal(String server, String username, String password, String locations, String parentUUID, AMRSMchPostnatalService amrsMchPostnatalService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+    String sql = "SELECT o.person_id as patient_id, \n" +
+            "                                    e.form_id, \n" +
+            "                                    o.concept_id, \n" +
+            "                                    o.encounter_id, \n" +
+            "                                    cn.name question, \n" +
+            "                                    e.visit_id, \n" +
+            "                                    e.encounter_datetime, \n" +
+            "                                    o.obs_datetime, \n" +
+            "                                    case when o.value_datetime is not null then o.value_datetime \n" +
+            "                                                    when o.value_coded is not null then o.value_coded \n" +
+            "                                                    when o.value_numeric is not null then o.value_numeric \n" +
+            "                                                    when o.value_text is not null then o.value_text end  \n" +
+            "                                                    as value \n" +
+            "                                                    FROM amrs.obs o \n" +
+            "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+            "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+            "\t\t\t\t\t\t\t\t\t\t\t\t\tand cn.locale_preferred=1 \n" +
+            "                                                     AND o.person_id IN(1151769) \n" +
+            "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
+            "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+            "                                                  and e.encounter_type in(238) \n" +
+            "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
+
+    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+
+      String patientId = rs.getString("patient_id");
+      String formId = rs.getString("form_id");
+      String conceptId = rs.getString("concept_id");
+      String encounterId = rs.getString("encounter_id");
+      String question = rs.getString("question");
+      String value = rs.getString(("value"));
+      String visitId = rs.getString("visit_id");
+      String obsDatetime = rs.getString("obs_datetime");
+      String encounterDatetime = rs.getString("encounter_datetime");
+
+      List<AMRSMchPostnatal> amrsMchPostnatalList = amrsMchPostnatalService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterId,conceptId);
+
+      if(amrsMchPostnatalList.isEmpty()) {
+        AMRSMchPostnatal amrsMchPostnatal = new AMRSMchPostnatal();
+        amrsMchPostnatal.setPatientId(patientId);
+        amrsMchPostnatal.setFormId(formId);
+        amrsMchPostnatal.setConceptId(conceptId);
+        amrsMchPostnatal.setEncounterId(encounterId);
+        amrsMchPostnatal.setQuestion(question);
+        amrsMchPostnatal.setValue(value);
+        amrsMchPostnatal.setVisitId(visitId);
+        amrsMchPostnatal.setObsDateTime(obsDatetime);
+        amrsMchPostnatal.setKenyaEmrEncounterDatetime(encounterDatetime);
+        String kenyaEmrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+        amrsMchPostnatal.setKenyaEmrPatientUuid(kenyaEmrPatientUuid);
+        String kenyaEmrEncounterUuid = "c6d09e05-1f25-4164-8860-9f32c5a02df0";
+        amrsMchPostnatal.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+        String kenyaEmrFormUuid = "72aa78e0-ee4b-47c3-9073-26f3b9ecc4a7";
+        amrsMchPostnatal.setKenyaEmrFormUuid(kenyaEmrFormUuid);
+        String kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+        amrsMchPostnatal.setKenyaEmrVisitUuid(kenyaemrVisitUuid);
+        String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+        amrsMchPostnatal.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+        String kenyaEmrValueUuid = "";
+        kenyaEmrValueUuid = amrsTranslater.translater(value);
+        amrsMchPostnatal.setKenyaEmrValue(kenyaEmrValueUuid);
+
+        if(!Objects.equals(kenyaEmrValueUuid, "") && !Objects.equals(kenyaEmrConceptUuid, "")) {
+
+          amrsMchPostnatalService.save(amrsMchPostnatal);
+
+        }
+      }
+
+      // Call method to create and insert the payload
+    }
+
+//        CareOpenMRSPayload.mchPostnatal(amrsMchPostnatalService, amrsPatientServices, amrsTranslater, url, auth);
+  }
+
+  public static void mchDelivery(String server, String username, String password, String locations, String parentUUID, AMRSMchDeliveryService amrsMchDeliveryService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, JSONException, SQLException {
+    String sql = "SELECT o.person_id as patient_id, \n" +
+            "                                    e.form_id, \n" +
+            "                                    o.concept_id, \n" +
+            "                                    o.encounter_id, \n" +
+            "                                    cn.name question, \n" +
+            "                                    e.visit_id, \n" +
+            "                                    e.encounter_datetime, \n" +
+            "                                    o.obs_datetime, \n" +
+            "                                    case when o.value_datetime is not null then o.value_datetime \n" +
+            "                                                    when o.value_coded is not null then o.value_coded \n" +
+            "                                                    when o.value_numeric is not null then o.value_numeric \n" +
+            "                                                    when o.value_text is not null then o.value_text end  \n" +
+            "                                                    as value \n" +
+            "                                                    FROM amrs.obs o \n" +
+            "                                                    INNER JOIN amrs.concept c ON o.concept_id=c.concept_id \n" +
+            "                                                   INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
+            "\t\t\t\t\t\t\t\t\t\t\t\t\tand cn.locale_preferred=1 \n" +
+            "                                                     AND o.person_id IN(1151769) \n" +
+            "                                                     -- AND c.concept_id in (1532,782,1086,1432,1435) \n" +
+            "                                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+            "                                                  and e.encounter_type in(238) \n" +
+            "                                                  ORDER BY patient_id ASC,encounter_id DESC;";
+
+    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+
+      String patientId = rs.getString("patient_id");
+      String formId = rs.getString("form_id");
+      String conceptId = rs.getString("concept_id");
+      String encounterId = rs.getString("encounter_id");
+      String question = rs.getString("question");
+      String value = rs.getString(("value"));
+      String visitId = rs.getString("visit_id");
+      String obsDatetime = rs.getString("obs_datetime");
+      String encounterDatetime = rs.getString("encounter_datetime");
+
+      List<AMRSMchDelivery> amrsMchDeliveryList = amrsMchDeliveryService.findByPatientIdAndEncounterIdAndConceptId(patientId,encounterId,conceptId);
+
+      if(amrsMchDeliveryList.isEmpty()) {
+        AMRSMchDelivery amrsMchDelivery = new AMRSMchDelivery();
+        amrsMchDelivery.setPatientId(patientId);
+        amrsMchDelivery.setFormId(formId);
+        amrsMchDelivery.setConceptId(conceptId);
+        amrsMchDelivery.setEncounterId(encounterId);
+        amrsMchDelivery.setQuestion(question);
+        amrsMchDelivery.setValue(value);
+        amrsMchDelivery.setVisitId(visitId);
+        amrsMchDelivery.setObsDateTime(obsDatetime);
+        amrsMchDelivery.setKenyaEmrEncounterDatetime(encounterDatetime);
+        String kenyaEmrPatientUuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+        amrsMchDelivery.setKenyaEmrPatientUuid(kenyaEmrPatientUuid);
+        String kenyaEmrEncounterUuid = "c6d09e05-1f25-4164-8860-9f32c5a02df0";
+        amrsMchDelivery.setKenyaEmrEncounterUuid(kenyaEmrEncounterUuid);
+        String kenyaEmrFormUuid = "496c7cc3-0eea-4e84-a04c-2292949e2f7f";
+        amrsMchDelivery.setKenyaEmrFormUuid(kenyaEmrFormUuid);
+        String kenyaemrVisitUuid = amrsTranslater.kenyaemrVisitUuid(visitId);
+        amrsMchDelivery.setKenyaEmrVisitUuid(kenyaemrVisitUuid);
+        String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+        amrsMchDelivery.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+        String kenyaEmrValueUuid = "";
+        kenyaEmrValueUuid = amrsTranslater.translater(value);
+        amrsMchDelivery.setKenyaEmrValue(kenyaEmrValueUuid);
+
+        if(!Objects.equals(kenyaEmrValueUuid, "") && !Objects.equals(kenyaEmrConceptUuid, "")) {
+
+          amrsMchDeliveryService.save(amrsMchDelivery);
+        }
+      }
+
+      // Call method to create and insert the payload
+    }
+
+//        CareOpenMRSPayload.mchDelivery(amrsMchDeliveryService, amrsPatientServices, amrsTranslater, url, auth);
+
+  }
+
+
 
 }
 
