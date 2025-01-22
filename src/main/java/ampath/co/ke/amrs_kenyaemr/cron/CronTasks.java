@@ -122,12 +122,12 @@ public class CronTasks {
     }
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+  //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
   public void ProcessMappings() throws JSONException, ParseException, SQLException, IOException {
     MigrateRegistration.conceptMapping(amrsMappingService);
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
   public void ProcessLocations() throws JSONException, ParseException, SQLException, IOException {
     MigrateRegistration.locations(server, username, password, locationService);
   }
@@ -141,7 +141,7 @@ public class CronTasks {
 
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+  //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
   public void ProcessPatients() throws JSONException, ParseException, SQLException, IOException {
     AMRSLocation amrsLocation = new AMRSLocation();
     String locationId = amrsLocation.getLocationsUuid(locationService);
@@ -151,38 +151,38 @@ public class CronTasks {
     MigrateRegistration.patients(server, username, password, locationId, parentUuid, amrsPatientServices, amrsIdentifiersService, amrsPersonAtrributesService, samplePatients, KenyaEMRlocationUuid, OpenMRSURL, auth);
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
+  //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000) // Every 30 minutes
   public void ProcessPatientRelationShips() throws JSONException, ParseException, SQLException, IOException {
     MigrateRegistration.patient_relationship(server, username, password, amrsPatientRelationshipService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void civilStatus() throws JSONException, ParseException, SQLException, IOException {
     MigrateCareData.patientStatus(server, username, password, amrsPatientStatusService, amrsConceptMappingService, amrsPatientServices, OpenMRSURL, auth);
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void ProcessPrograms() throws JSONException, ParseException, SQLException, IOException {
     AMRSLocation amrsLocation = new AMRSLocation();
     String locationId = amrsLocation.getLocationsUuid(locationService);
     MigrateCareData.programs(server, username, password, locationId, amrsProgramService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+  //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void ProcessVisits() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
         AMRSLocation amrsLocation = new AMRSLocation();
         // String locationId=amrsLocation.getLocationsUuid(locationService);
         String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-        MigrateCareData.visits(server, username, password, KenyaEMRlocationUuid, amrsVisitService, amrsObsService, amrsPatientServices, amrsConceptMappingService, OpenMRSURL, auth);
+        MigrateCareData.visits(server, username, password, KenyaEMRlocationUuid, amrsVisitService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
       } catch (Exception e) {
         e.printStackTrace();
       }
     });
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void ProcessTriage() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -197,7 +197,7 @@ public class CronTasks {
     });
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void ProcessOrders() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -210,7 +210,7 @@ public class CronTasks {
     });
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void HIVEnrollments() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -223,7 +223,7 @@ public class CronTasks {
     });
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void ProcessProgramSwitches() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -249,7 +249,7 @@ public class CronTasks {
     });
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void ArtRefill() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -312,7 +312,7 @@ public class CronTasks {
     MigrateCareData.prepInitial(server, username, password, locationId, parentUuid, amrsPrepInitialService, amrsTranslater, amrsPatientServices, OpenMRSURL, auth);
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void prepFollowUp() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -338,7 +338,7 @@ public class CronTasks {
     });
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void processCovid() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -351,7 +351,7 @@ public class CronTasks {
     });
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void processAlcohol() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -363,7 +363,7 @@ public class CronTasks {
       }
     });
   }
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void processMCHEnrollements() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
