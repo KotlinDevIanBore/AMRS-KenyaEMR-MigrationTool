@@ -113,6 +113,8 @@ public class CronTasks {
   @Autowired
   private AMRSGbvScreeningService amrsGbvScreeningService;
 
+  @Autowired
+  private AMRSEacService amrsEacService;
 
   @Value("${mapping.endpoint:http://localhost:8082/mappings/concepts}")
   private String mappingEndpoint;
@@ -407,6 +409,18 @@ public class CronTasks {
              }
          });
     }
+  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+  public void processEac() throws JSONException, ParseException, SQLException, IOException {
+    CompletableFuture.runAsync(() -> {
+      try {
+        AMRSLocation amrsLocation = new AMRSLocation();
+        String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+        MigrateCareData.processEac(server, username, password, KenyaEMRlocationUuid, amrsEacService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+  }
 }
 
 

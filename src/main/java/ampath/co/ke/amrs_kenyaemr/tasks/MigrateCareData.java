@@ -5176,6 +5176,98 @@ public class MigrateCareData {
     GBVScreeningPayload.processGBVScreening(amrsGbvScreeningService, amrsPatientServices, amrsTranslater, url, auth);
   }
 
+  public static void processEac(String server, String username, String password, String KenyaEMRlocationUuid, AMRSEacService amrsEacService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+
+    String samplePatientList = AMRSSamples.getPersonIdList();
+
+    String sql = "select\n" +
+      "        o.person_id,\n" +
+      "        e.form_id,\n" +
+      "        e.visit_id,\n" +
+      "        cn.name as question,\n" +
+      "        e.encounter_id,\n" +
+      "        e.encounter_datetime,\n" +
+      "        e.encounter_type,\n" +
+      "        o.concept_id,\n" +
+      "        o.obs_datetime,\n" +
+      "        COALESCE(o.value_coded, o.value_datetime, o.value_numeric, o.value_text) as value,\n" +
+      "        cd.name as value_type,\n" +
+      "        c.datatype_id,\n" +
+      "        et.name encounterName,\n" +
+      "        \"Enhanced Adherence Screening\" as Category\n" +
+      "from\n" +
+      "        amrs.obs o\n" +
+      "inner join amrs.encounter e on\n" +
+      "        (o.encounter_id = e.encounter_id)\n" +
+      "inner join amrs.encounter_type et on\n" +
+      "        et.encounter_type_id = e.encounter_type\n" +
+      "inner join amrs.concept c on\n" +
+      "        c.concept_id = o.concept_id\n" +
+      "inner join amrs.concept_datatype cd on\n" +
+      "        cd.concept_datatype_id = c.datatype_id\n" +
+      "INNER JOIN amrs.concept_name cn ON\n" +
+      "        o.concept_id = cn.concept_id\n" +
+      "where\n" +
+      "        o.concept_id in (1639, 10999, 11000, 6098, 1587, 1743, 1779, 12382, 1658, 2389, 11001, 11002, 11724, 1915, 11018, 11019, 10518, 11003, 11004, 11005, 11006, 11007, 11008, 11009, 11010, 11011, 11012, 11013, 11014, 11015, 11016, 1272, 9320, 11020, 10085, 10530)\n" +
+      "        and e.voided = 0\n" +
+      "        and cd.name <> 'N/A'\n" +
+      "        and o.person_id in (" + samplePatientList + ")\n" +
+      "order by\n" +
+      "        o.person_id,\n" +
+      "        e.encounter_id desc;";
+
+    // System.out.println("locations " + locations + " parentUUID " + parentUUID);
+    Connection con = DriverManager.getConnection(server, username, password);
+    int x = 0;
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+      ResultSet.CONCUR_READ_ONLY);
+    ResultSet rs = stmt.executeQuery(sql);
+    rs.last();
+    x = rs.getRow();
+    rs.beforeFirst();
+    while (rs.next()) {
+
+      String patientId = rs.getString("person_id");
+      String formId = rs.getString("form_id");
+      String conceptId = rs.getString("concept_id");
+      String encounterId = rs.getString("encounter_id");
+      String encounterDatetime = rs.getString("encounter_datetime");
+      String value = rs.getString("value");
+      String question = rs.getString("question");
+      String dataType = rs.getString("datatype_id");
+      String visitId = rs.getString("visit_id");
+      String obsDateTime = rs.getString("obs_datetime");
+
+      // Check if record already exists
+      List<AMRSEac> existingRecords = amrsEacService.findByEncounterConceptAndPatient(encounterId, conceptId, patientId);
+      if (!existingRecords.isEmpty()) {
+        System.out.println("Duplicate record found for encounterId: " + encounterId + ", conceptId: " + conceptId + ", patientId: " + patientId);
+        continue; // Skip saving to avoid duplication
+      }
+      String kenyaemr_value = dataType.equals("2") ? amrsTranslater.translater(value) : value;
+
+      AMRSEac amrsModel = new AMRSEac();
+      amrsModel.setPatientId(patientId);
+      amrsModel.setFormId(formId);
+      amrsModel.setConceptId(conceptId);
+      amrsModel.setEncounterId(encounterId);
+      amrsModel.setValue(value);
+      amrsModel.setConceptDataTypeId(dataType);
+      amrsModel.setVisitId(visitId);
+      amrsModel.setQuestion(question);
+      amrsModel.setObsDateTime(obsDateTime);
+      amrsModel.setKenyaemrEncounterTypeUuid("54df6991-13de-4efc-a1a9-2d5ac1b72ff8");
+      amrsModel.setKenyaemrFormUuid("c483f10f-d9ee-4b0d-9b8c-c24c1ec24701");
+      amrsModel.setKenyaEmrValue(kenyaemr_value);
+      amrsModel.setKenyaEmrEncounterDateTime(encounterDatetime);
+      String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+      String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+      amrsModel.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+      amrsModel.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+      amrsEacService.save(amrsModel);
+    }
+    CareOpenMRSPayload.processEac(amrsEacService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
+  }
 
 
 }
