@@ -369,7 +369,7 @@ public class CronTasks {
       try {
         AMRSLocation amrsLocation = new AMRSLocation();
         String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
-        MigrateCareData(server, username, password, KenyaEMRlocationUuid, amrsAlcoholService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
+       // MigrateCareData(server, username, password, KenyaEMRlocationUuid, amrsAlcoholService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
       } catch (Exception e) {
         e.printStackTrace();
       }
