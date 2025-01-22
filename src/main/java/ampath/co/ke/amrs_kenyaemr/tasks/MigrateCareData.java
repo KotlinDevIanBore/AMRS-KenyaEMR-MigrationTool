@@ -113,7 +113,7 @@ public class MigrateCareData {
     }
 
     //Migate Programs
-    CareOpenMRSPayload.programs(amrsProgramService, amrsTranslater, url, auth);
+    CareOpenMRSPayload.programs(amrsProgramService, amrsTranslater, KenyaEMRlocationUuid, url, auth);
   }
 
   public static void encounters(String server, String username, String password, String locations, String parentUUID, AMRSEncounterService amrsEncounterService, AMRSPatientServices amrsPatientServices, AMRSVisitService amrsVisitService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
