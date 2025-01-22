@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class CareOpenMRSPayload {
-    public static void programs(AMRSProgramService amrsProgramService, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+    public static void programs(AMRSProgramService amrsProgramService, AMRSTranslater amrsTranslater,String KenyaEMRlocationUuid, String url, String auth) throws JSONException, IOException {
         //List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
         List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByResponseCodeIsNull();
         if (!amrsProgramsList.isEmpty()) {
@@ -537,6 +537,26 @@ public class CareOpenMRSPayload {
 
                 //Check if the Client is enrolled to HIV If not Enroll 1st
                 //List Programs Lists
+                OkHttpClient clientPrograms = new OkHttpClient();
+                MediaType mediaTypePrograms = MediaType.parse("application/json");
+               // okhttp3.RequestBody bodyy = okhttp3.RequestBody.create(mediaTypePrograms, jsonProgram.toString());
+
+                Request requestPrograms = new Request.Builder()
+                        .url(url + "programenrollment?patient="+kenyaemrPatientUuid)
+                        //.method("GET")
+                        .addHeader("Authorization", "Basic " + auth)
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+                try (Response responsePrograms = clientPrograms.newCall(requestPrograms).execute()) {
+                    String responseBodyPrograms = responsePrograms.body().string();
+                    int responseCodePrograms = responsePrograms.code();
+                    JSONObject jsonObjectPrograms = new JSONObject(responseBodyPrograms);
+                    // String encounterUUID = jsonObjectt.getString("uuid");
+                    System.out.println("Response: " + responseBodyPrograms + " | Status Code: " + responseCodePrograms);
+                } catch (Exception e) {
+                    System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
+                }
+
 
                 //end of Programs Lists
 
