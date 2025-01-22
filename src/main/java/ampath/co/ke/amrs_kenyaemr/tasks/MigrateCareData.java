@@ -2938,7 +2938,11 @@ public class MigrateCareData {
         amrsGreenCard.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
         amrsGreenCard.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
         System.out.println("Patient ID "+ patientId+" Kenyaemr Value "+ kenyaemr_value);
-        amrsGreenCardService.save(amrsGreenCard);
+        try {
+          amrsGreenCardService.save(amrsGreenCard);
+        }catch (Exception e){
+          System.out.println("Could not save this "+e.getMessage());
+        }
       }
 
     }
