@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class CareOpenMRSPayload {
-    public static void programs(AMRSProgramService amrsProgramService, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+    public static void programs(AMRSProgramService amrsProgramService, AMRSTranslater amrsTranslater,String KenyaEMRlocationUuid, String url, String auth) throws JSONException, IOException {
         //List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByParentLocationUuid(parentUUID);
         List<AMRSPrograms> amrsProgramsList = amrsProgramService.findByResponseCodeIsNull();
         if (!amrsProgramsList.isEmpty()) {
