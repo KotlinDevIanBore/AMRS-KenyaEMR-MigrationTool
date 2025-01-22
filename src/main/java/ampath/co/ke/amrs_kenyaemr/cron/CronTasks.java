@@ -173,7 +173,8 @@ public class CronTasks {
   public void ProcessPrograms() throws JSONException, ParseException, SQLException, IOException {
     AMRSLocation amrsLocation = new AMRSLocation();
     String locationId = amrsLocation.getLocationsUuid(locationService);
-    MigrateCareData.programs(server, username, password, locationId, amrsProgramService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
+      String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+    MigrateCareData.programs(server, username, password, amrsProgramService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, OpenMRSURL, auth);
   }
 
   //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
@@ -218,7 +219,7 @@ public class CronTasks {
     });
   }
 
- // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void HIVEnrollments() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
@@ -244,7 +245,7 @@ public class CronTasks {
     });
   }
 
-  @Scheduled(initialDelay = 0, fixedRate = 50 * 60 * 1000)
+ // @Scheduled(initialDelay = 0, fixedRate = 50 * 60 * 1000)
   public void processGreenCard() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {

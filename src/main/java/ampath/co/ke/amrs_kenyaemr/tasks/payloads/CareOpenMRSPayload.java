@@ -33,6 +33,7 @@ public class CareOpenMRSPayload {
 
                     jsonProgram.put("patient", amrsTranslater.KenyaemrPatientUuid(ap.getPatientId()));
                     jsonProgram.put("program", ap.getKenyaemrProgramUuid());
+                    jsonProgram.put("location",KenyaEMRlocationUuid);
                     jsonProgram.put("dateEnrolled", ap.getDateEnrolled());
                     //jsonProgram.put("location", ap.getDateEnrolled());
                     if (pid == 1 || pid == 3 || pid == 9 || pid == 20) {
@@ -439,7 +440,18 @@ public class CareOpenMRSPayload {
 
         }
     }
+    public void ProgramChecker(String patientUUID) throws IOException {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        Request request = new Request.Builder()
+                .url("/openmrs/ws/rest/v1/programenrollment?patient=:uuid")
+                .method("GET", null)
+                .addHeader("Authorization", "Basic YWRtaW46QWRtaW4xMjM=")
+                .addHeader("Cookie", "JSESSIONID=DF385B2E6E39E0BB49BB7E079BF31C44")
+                .build();
+        Response response = client.newCall(request).execute();
 
+    }
     public static void hivEnrollment(
             AMRSHIVEnrollmentService amrshivEnrollmentService,
             AMRSTranslater amrsTranslater,
@@ -498,7 +510,7 @@ public class CareOpenMRSPayload {
                         if (!Objects.equals(enrollment.getKenyaemrConceptUuid(), "") && !Objects.equals(enrollment.getKenyaemrValue(), "")) {
                             jsonObservations.put(jsonObservation);
                         }
-                        if(enrollment.getConceptId()=="6749"){
+                        if(Objects.equals(enrollment.getConceptId(), "6749")){
                             checkEntry=1;
                         }
                     }
@@ -523,52 +535,43 @@ public class CareOpenMRSPayload {
                 jsonEncounter.put("encounterDatetime", obsDateTime);
                 jsonEncounter.put("location", KenyaEMRlocationUuid );
 
-
-                /*jsonEncounter.put("form", formuuid);
-                jsonEncounter.put("patient", patintUUID);
-                jsonEncounter.put("encounterDatetime", amrsVisits.get(0).getDateStarted());
-                jsonEncounter.put("encounterType", etypeuuid);
-                jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
-                jsonEncounter.put("visit", visituuid);
-                */
                 //Check if the Client is enrolled to HIV If not Enroll 1st
+                //List Programs Lists
 
-             /*  String statesSql = " \"states\":[{\n" +
-                       "                    \"state\":\"dfdc6d40-2f2f-463d-ba90-cc97350441a8\",\n" +
-                       "                            \"startDate\":\""+obsDateTime+"\"\n" +
-                      " \"endDate\":\"\"\n" +
-                       "                }]";
+                //end of Programs Lists
 
+
+//Create New
+                JSONObject jsonProgram = new JSONObject();
+                jsonProgram.put("patient", kenyaemrPatientUuid);
+                jsonProgram.put("program", "dfdc6d40-2f2f-463d-ba90-cc97350441a8");
+                jsonProgram.put("location",KenyaEMRlocationUuid);
+                jsonProgram.put("dateEnrolled", obsDateTime);
 
                 OkHttpClient clientt = new OkHttpClient();
                 MediaType mediaTypee = MediaType.parse("application/json");
-                okhttp3.RequestBody bodyy = okhttp3.RequestBody.create(mediaTypee, statesSql);
+                okhttp3.RequestBody bodyy = okhttp3.RequestBody.create(mediaTypee, jsonProgram.toString());
 
                 Request requestt = new Request.Builder()
-                        .url(url + "programenrollment/"+kenyaemrPatientUuid)
+                        .url(url + "programenrollment")
                         .method("POST", bodyy)
                         .addHeader("Authorization", "Basic " + auth)
                         .addHeader("Content-Type", "application/json")
                         .build();
 
-                System.out.println("Payload is Here "+ jsonEncounter.toString() );
-
+                System.out.println("Payload is Here for Program Enrollments "+ jsonProgram.toString());
                 try (Response responsee = clientt.newCall(requestt).execute()) {
                     String responseBodyy = responsee.body().string();
                     int responseCodee = responsee.code();
-
                     JSONObject jsonObjectt = new JSONObject(responseBodyy);
                    // String encounterUUID = jsonObjectt.getString("uuid");
-
-
                     System.out.println("Response: " + responseBodyy + " | Status Code: " + responseCodee);
                 } catch (Exception e) {
                     System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
                 }
-                */
+                //end of Create New
 
-                    //
-
+                // End of Check if the Client is enrolled to HIV If not Enroll 1st
 
 
                 // Send API request
@@ -585,7 +588,7 @@ public class CareOpenMRSPayload {
 
                 System.out.println("Payload is Here "+ jsonEncounter.toString() );
 
-                try (Response response = client.newCall(request).execute()) {
+              /*  try (Response response = client.newCall(request).execute()) {
                     String responseBody = response.body().string();
                     int responseCode = response.code();
 
@@ -607,6 +610,7 @@ public class CareOpenMRSPayload {
                 } catch (Exception e) {
                     System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
                 }
+                */
             }
 
         } else {
