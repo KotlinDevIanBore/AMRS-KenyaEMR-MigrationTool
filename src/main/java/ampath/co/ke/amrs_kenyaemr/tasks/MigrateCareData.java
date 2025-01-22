@@ -3726,9 +3726,11 @@ public class MigrateCareData {
   }
 
 
-  public static void processOtzDiscontinuation(String server, String username, String password, String locations, String parentUUID, AMRSOtzDiscontinuationService amrsOtzDiscontinuationService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void processOtzDiscontinuation(String server, String username, String password, String KenyaEMRlocationUuid, AMRSOtzDiscontinuationService amrsOtzDiscontinuationService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-    String samplePatientList = AMRSSamples.getPersonIdList();
+   // String samplePatientList = AMRSSamples.getPersonIdList();
+    List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+    String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
 
 
     String sql = "SELECT \n" +
@@ -3764,7 +3766,6 @@ public class MigrateCareData {
       "        AND e.encounter_type IN (285)\n" +
       "ORDER BY patient_id ASC , encounter_id DESC";
 
-    System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -3814,10 +3815,10 @@ public class MigrateCareData {
       amrsOtzDiscontinuation.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
       amrsOtzDiscontinuationService.save(amrsOtzDiscontinuation);
     }
-    OTZPayload.processOTZDiscontinuation(amrsOtzDiscontinuationService, amrsPatientServices, amrsTranslater, url, auth);
+    OTZPayload.processOTZDiscontinuation(amrsOtzDiscontinuationService, amrsTranslater, KenyaEMRlocationUuid, url, auth);
   }
 
-  public static void processOtzEnrollments(String server, String username, String password, String locations, String parentUUID, AMRSOtzEnrollmentService amrsOtzEnrollmentService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void processOtzEnrollments(String server, String username, String password, String KenyaEMRlocationUuid, AMRSOtzEnrollmentService amrsOtzEnrollmentService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
     String samplePatientList = AMRSSamples.getPersonIdList();
 
@@ -3855,7 +3856,7 @@ public class MigrateCareData {
       "        AND e.encounter_type IN (283)\n" +
       "ORDER BY patient_id ASC , encounter_id DESC";
 
-    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+  //  System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -3906,7 +3907,7 @@ public class MigrateCareData {
       amrsOtzEnrollment.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
       amrsOtzEnrollmentService.save(amrsOtzEnrollment);
     }
-    OTZPayload.processOTZEnrollment(amrsOtzEnrollmentService, amrsPatientServices, amrsTranslater, url, auth);
+    OTZPayload.processOTZEnrollment(amrsOtzEnrollmentService, amrsTranslater,KenyaEMRlocationUuid, url, auth);
   }
 
   public static void processTBScreening(String server, String username, String password, String locations, String parentUUID, AMRSTbScreeningService amrsTbScreeningService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
