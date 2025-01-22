@@ -410,7 +410,7 @@ public class CronTasks {
              }
          });
     }
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+  //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
   public void processEac() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {

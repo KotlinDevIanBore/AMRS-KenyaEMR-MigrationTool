@@ -452,6 +452,23 @@ public class CareOpenMRSPayload {
         Response response = client.newCall(request).execute();
 
     }
+    public static void DeleteProgram(String programuuid,String url,String auth){
+        OkHttpClient clientPrograms = new OkHttpClient();
+        MediaType mediaTypePrograms = MediaType.parse("application/json");
+        Request requestPrograms = new Request.Builder()
+                .url(url + "programenrollment/"+programuuid)
+                .method("DELETE" ,null)
+                .addHeader("Authorization", "Basic " + auth)
+                .addHeader("Content-Type", "application/json")
+                .build();
+        try (Response responsePrograms = clientPrograms.newCall(requestPrograms).execute()) {
+            String responseBodyPrograms = responsePrograms.body().string();
+            int responseCodePrograms = responsePrograms.code();
+            System.out.println("Response  Status Code: " + responseCodePrograms);
+        } catch (Exception e) {
+            System.err.println("Error processing Patient ID: " + e.getMessage());
+        }
+    }
     public static void hivEnrollment(
             AMRSHIVEnrollmentService amrshivEnrollmentService,
             AMRSTranslater amrsTranslater,
@@ -553,13 +570,24 @@ public class CareOpenMRSPayload {
                     JSONObject jsonObjectPrograms = new JSONObject(responseBodyPrograms);
                     // String encounterUUID = jsonObjectt.getString("uuid");
                     System.out.println("Response: " + responseBodyPrograms + " | Status Code: " + responseCodePrograms);
+                    JSONArray results = jsonObjectPrograms.getJSONArray("results");
+
+                    // Extract and display UUIDs
+                    for (int i = 0; i < results.length(); i++) {
+                        JSONObject result = results.getJSONObject(i);
+                        String uuid = result.getString("uuid");
+                        String Programs = result.getString("display");
+                        if(Programs.equals("HIV")){
+                            DeleteProgram(uuid,url,auth);
+                        }
+                        System.out.println("UUID: " + uuid+ " Name "+ Programs);
+                    }
+
                 } catch (Exception e) {
                     System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
                 }
 
-
                 //end of Programs Lists
-
 
 //Create New
                 JSONObject jsonProgram = new JSONObject();
@@ -593,7 +621,6 @@ public class CareOpenMRSPayload {
 
                 // End of Check if the Client is enrolled to HIV If not Enroll 1st
 
-
                 // Send API request
                 OkHttpClient client = new OkHttpClient();
                 MediaType mediaType = MediaType.parse("application/json");
@@ -608,12 +635,10 @@ public class CareOpenMRSPayload {
 
                 System.out.println("Payload is Here "+ jsonEncounter.toString() );
 
-              /*  try (Response response = client.newCall(request).execute()) {
+                try (Response response = client.newCall(request).execute()) {
                     String responseBody = response.body().string();
                     int responseCode = response.code();
-
                     System.out.println("Response: " + responseBody + " | Status Code: " + responseCode);
-
                     // Update response code for successful submissions
                     if (responseCode == 201) {
                         for (AMRSHIVEnrollment enrollment : amrshivEnrollmentList) {
@@ -630,7 +655,7 @@ public class CareOpenMRSPayload {
                 } catch (Exception e) {
                     System.err.println("Error processing Patient ID: " + patientId + " | " + e.getMessage());
                 }
-                */
+
             }
 
         } else {
