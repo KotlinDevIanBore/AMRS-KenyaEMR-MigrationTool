@@ -877,7 +877,7 @@ public class MigrateCareData {
     EnrollmentsPayload.encounters(url, auth);
   }
 
-  public static void visits(String server, String username, String password, String kenyaEMRLocationUuid, AMRSVisitService amrsVisitService, AMRSObsService amrsObsService, AMRSPatientServices amrsPatientServices, AMRSConceptMappingService amrsConceptMappingService, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void visits(String server, String username, String password, String kenyaEMRLocationUuid, AMRSVisitService amrsVisitService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
     String sql = "";
     List<AMRSVisits> amrsVisitsList = amrsVisitService.findFirstByOrderByIdDesc();
     List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
@@ -946,10 +946,7 @@ public class MigrateCareData {
         List<AMRSPatients> amrsPatients = amrsPatientServices.getByPatientID(patientId);
         String kenyaemrpid = "Client Not Migrated";
         AMRSVisits avv = new AMRSVisits();
-        if (!amrsPatients.isEmpty()) {
-          kenyaemrpid = amrsPatients.get(0).getKenyaemrpatientUUID();
-          // avv.setResponseCode("400");
-        }
+          kenyaemrpid = amrsTranslater.translater(amrsPatients.get(0).getPersonId());
         avv.setVisitId(visitId);
         avv.setDateStarted(dateStarted);
         avv.setPatientId(patientId);
@@ -1005,7 +1002,6 @@ public class MigrateCareData {
       "                          LEFT OUTER JOIN amrs.concept_name t2 ON (t1.concept_id = t2.concept_id)  \n" +
       "                          LEFT OUTER JOIN amrs.patient_identifier t6 ON (t1.patient_id = t6.patient_id) \n" +
       "                       WHERE p.voided = 0 AND e.voided = 0 \n" +
-      "                          AND e.location_id IN (2 , 339, 98, 379)  \n" +
       "                          AND (t1.voided IS NULL || t1.voided = 0) \n" +
       "                          AND t1.patient_id IN(" + samplePatientList + ") \n" +
       "                       GROUP BY t1.patient_id, t1.order_number \n" +
