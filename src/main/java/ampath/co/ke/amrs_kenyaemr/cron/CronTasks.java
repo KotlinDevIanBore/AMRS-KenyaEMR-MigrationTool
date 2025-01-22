@@ -107,6 +107,12 @@ public class CronTasks {
   @Autowired
   private AMRSAlcoholService amrsAlcoholService;
 
+    @Autowired
+    private AMRSHeiOutcomeService amrsHeiOutcomeService;
+
+  @Autowired
+  private AMRSGbvScreeningService amrsGbvScreeningService;
+
 
   @Value("${mapping.endpoint:http://localhost:8082/mappings/concepts}")
   private String mappingEndpoint;
@@ -375,5 +381,32 @@ public class CronTasks {
       }
     });
   }
+
+    // @Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    public void processHeiOutcome() throws JSONException, ParseException, SQLException, IOException {
+        CompletableFuture.runAsync(() -> {
+            try {
+                AMRSLocation amrsLocation = new AMRSLocation();
+                String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+                MigrateCareData.processHeiOutcome(server, username, password, KenyaEMRlocationUuid, amrsHeiOutcomeService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+     //@Scheduled(initialDelay = 0, fixedRate = 30 * 60 * 1000)
+    public void GBVScreening() throws JSONException, ParseException, SQLException, IOException {
+         CompletableFuture.runAsync(() -> {
+             try {
+                 AMRSLocation amrsLocation = new AMRSLocation();
+                 String KenyaEMRlocationUuid = amrsLocation.getKenyaEMRLocationUuid();
+                 MigrateCareData.processGBVScreening(server, username, password,  KenyaEMRlocationUuid, amrsGbvScreeningService, amrsPatientServices, amrsTranslater, OpenMRSURL, auth);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         });
+    }
 }
+
 
