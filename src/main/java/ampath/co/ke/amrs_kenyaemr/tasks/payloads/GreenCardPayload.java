@@ -43,8 +43,7 @@ public class GreenCardPayload {
                 String obsDatetime = "";
                 String visituuid = amrsTranslater.kenyaemrVisitUuid(visitId);
                 // String locationuuid= amrsTranslater.location()
-
-
+                System.out.println("VisitId ID for GreenCard " + visitId+ " Concepts Questions "+ amrsGreenCardEncounters.size());
                 for (int x = 0; x < amrsGreenCardEncounters.size(); x++) {
                     JSONObject jsonObservation = new JSONObject();
                     String value = amrsGreenCardEncounters.get(x).getKenyaEmrValue();
@@ -54,13 +53,13 @@ public class GreenCardPayload {
                     jsonObservation.put("obsDatetime", amrsGreenCardEncounters.get(x).getObsDateTime());///String.valueOf(conceptsetId));
                     jsonObservation.put("value", amrsGreenCardEncounters.get(x).getKenyaEmrValue());
                     jsonObservation.put("location", KenyaEMRlocationUuid);
-                    Set<String> excludedIds = Set.of("10102", "10103","10104","10105","10106","10107","10108","10109");
+                    Set<String> excludedIds = Set.of("10102", "10103","10104","10105","10106","10107","10108","10109","1645");
                     if (!Objects.equals(value, "")) {
                         if (!excludedIds.contains(amrsGreenCardEncounters.get(x).getConceptId())) {
                             jsonObservations.put(jsonObservation);
                         }
                     }
-                    patientuuid = amrsTranslater.KenyaemrPatientUuid(amrsGreenCardEncounters.get(x).getKenyaemrPatientUuid());
+                    patientuuid = amrsTranslater.KenyaemrPatientUuid(amrsGreenCardEncounters.get(x).getPatientId());
                     formuuid = amrsGreenCardEncounters.get(x).getKenyaemrFormUuid();
                     encounteruuid = amrsGreenCardEncounters.get(x).getKenyaemrEncounterTypeUuid();
                     encounterDatetime = amrsGreenCardEncounters.get(x).getKenyaEmrEncounterDateTime();
@@ -104,6 +103,7 @@ public class GreenCardPayload {
                     jsonEncounter.put("location", KenyaEMRlocationUuid);
                     jsonEncounter.put("visit", visituuid);
                     jsonEncounter.put("obs", jsonObservations);
+
                     System.out.println("Payload for is here " + jsonEncounter.toString());
 
                     OkHttpClient client = new OkHttpClient();
