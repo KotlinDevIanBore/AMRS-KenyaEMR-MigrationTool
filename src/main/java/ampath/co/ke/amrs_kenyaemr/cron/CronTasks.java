@@ -244,7 +244,7 @@ public class CronTasks {
     });
   }
 
-  //@Scheduled(initialDelay = 0, fixedRate = 50 * 60 * 1000)
+  @Scheduled(initialDelay = 0, fixedRate = 50 * 60 * 1000)
   public void processGreenCard() throws JSONException, ParseException, SQLException, IOException {
     CompletableFuture.runAsync(() -> {
       try {
