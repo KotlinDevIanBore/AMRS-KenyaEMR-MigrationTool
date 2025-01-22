@@ -307,6 +307,7 @@ public class CareOpenMRSPayload {
                         jsonObservationPType.put("person", patient);
                         jsonObservationPType.put("concept", "1255AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                         jsonObservationPType.put("value", "1256AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                        jsonObservationPType.put("location", KenyaEMRlocationUuid);
                         jsonObservationPType.put("obsDatetime", regimenSwitchList.get(x).getEncounterDatetime());
                         jsonObservations.put(jsonObservationPType);
 
@@ -314,6 +315,7 @@ public class CareOpenMRSPayload {
                         JSONObject jsonObservation = new JSONObject();
                         jsonObservation.put("person", patient);
                         jsonObservation.put("concept", regimenSwitchList.get(x).getKenyaemrConceptUuid());
+                        jsonObservationPType.put("location", KenyaEMRlocationUuid);
                         jsonObservation.put("value", regimenSwitchList.get(x).getKenyaemrValue());
                         jsonObservationPType.put("obsDatetime", regimenSwitchList.get(x).getEncounterDatetime());
                         jsonObservations.put(jsonObservation);

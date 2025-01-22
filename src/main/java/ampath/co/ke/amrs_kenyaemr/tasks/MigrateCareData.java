@@ -1324,9 +1324,9 @@ public class MigrateCareData {
         at.setKenyaemConceptId(kenyaemr_uuid);
         at.setKenyaemrFormUuid("37f6bd8d-586a-4169-95fa-5781f987fe62");
         amrsTriageService.save(at);
-        System.out.println("Patient_id" + patientId + "encounterID " + encounterID);
+        System.out.println("Patient_id" + patientId + "Triage encounterID " + encounterID);
       } else {
-        System.out.println("Existing Patient_id " + patientId + "encounterID " + encounterID);
+        System.out.println("Existing Patient_id " + patientId + " Triage encounterID " + encounterID);
 
       }
     }
