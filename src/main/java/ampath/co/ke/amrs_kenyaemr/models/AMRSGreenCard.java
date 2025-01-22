@@ -2,7 +2,7 @@ package ampath.co.ke.amrs_kenyaemr.models;
 
 import jakarta.persistence.*;
 
-//@Table(name = "amrs_green_card")
+@Table(name = "amrs_green_card")
 @Entity
 public class AMRSGreenCard {
     @Id
@@ -10,14 +10,11 @@ public class AMRSGreenCard {
     @Column(nullable = false)
     private Integer id;
     private String patientId;
-
     private String formId;
     private String kenyaemrFormUuid;
     private String kenyaemrEncounterTypeUuid;
-
     private String conceptId;
     private String conceptDataTypeId;
-
     private String encounterId;
     private String visitId;
     private String kenyaemrVisitUuid;

@@ -2849,34 +2849,37 @@ public class MigrateCareData {
 
         System.out.println("locations " + locations + " parentUUID " + parentUUID); */
     String sql = "SELECT o.person_id as patient_id,e.form_id,e.encounter_type,e.visit_id,o.concept_id,o.encounter_id,o.obs_datetime,e.encounter_datetime,\n" +
-      "                 cn.name question,c.datatype_id,\n" +
-      "                case when o.value_datetime is not null then o.value_datetime\n" +
-      "                when o.value_coded is not null then o.value_coded\n" +
-      "                when o.value_numeric is not null then o.value_numeric\n" +
-      "                when o.value_text is not null then o.value_text end \n" +
-      "                as value  \n" +
-      "                                  FROM amrs.obs o  \n" +
-      "                                  INNER JOIN amrs.concept c ON o.concept_id=c.concept_id  \n" +
-      "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
-      "                                 and cn.locale_preferred=1 \n" +
-      "                                  AND c.concept_id in (1246,1412,9782,10653,12285,5356,5219,10893,10727,\n" +
-      "                                  6176,9742,10591,6147,1271,2028,7502,10677,7637,8292,10679,10785,10786,\n" +
-      "                                  10787,10788,1266,10681,6793,6968,10706,10239,6137,11679,6137,1664,1193,\n" +
-      "                                  2031,6968,10706,7897,1198,1915,10707,1836,2061,5272,9736,10814,5596,\n" +
-      "                                  12253,10708,7947,5624,5632,8355,374,6687,1119,6042,7222,1109,10831,\n" +
-      "                                  10832,10833,10834,8288,6287,6259,10726,2312,10400,9611,9609,9070,5096,1835,\n" +
-      "                                  9605,10988,1113,1111,8292,8293,10679,10788,1266,10681,6793,2031,6968,10706,\n" +
-      "                                  10239,6137,11679,6137,1664,1193,2031,6968,7897,1198,1915,1836,10845,1123) -- 5088,5087,5085,5086,5089,5090,5092 \n" +
-      "                                  INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
-      "                                  -- and e.encounter_type in(2,4,106,176) \n" +
-      "                                  -- and e.encounter_id in (14763811)\n" +
-      "                                  where e.patient_id in (1212684,1209134)\n" +
-      "                                  ORDER BY patient_id ASC,encounter_id DESC";
+            "                 cn.name question,c.datatype_id,\n" +
+            "                case when o.value_datetime is not null then o.value_datetime\n" +
+            "                when o.value_coded is not null then o.value_coded\n" +
+            "                when o.value_numeric is not null then o.value_numeric\n" +
+            "                when o.value_text is not null then o.value_text end \n" +
+            "                as value  \n" +
+            "                                  FROM amrs.obs o  \n" +
+            "                                  INNER JOIN amrs.concept c ON o.concept_id=c.concept_id  \n" +
+            "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
+            "                                 and cn.locale_preferred=1 \n" +
+            "                                  AND c.concept_id in (1246,1412,9782,10653,12285,5356,5219,10893,10727,\n" +
+            "                                  6176,9742,10591,6147,1271,2028,7502,10677,7637,8292,10679,10785,10786,\n" +
+            "                                  10787,10788,1266,10681,6793,6968,10706,10239,6137,11679,6137,1664,1193,\n" +
+            "                                  2031,6968,10706,7897,1198,1915,10707,1836,2061,5272,9736,10814,5596,\n" +
+            "                                  12253,10708,7947,5624,5632,8355,374,6687,1119,6042,7222,1109,10831,\n" +
+            "                                  10832,10833,10834,8288,6287,6259,10726,2312,10400,9611,9609,9070,5096,1835,\n" +
+            "                                  9605,10988,1113,1111,8292,8293,10679,10788,1266,10681,6793,2031,6968,10706,\n" +
+            "                                  10239,6137,11679,6137,1664,1193,2031,6968,7897,1198,1915,1836,10845,1123) -- 5088,5087,5085,5086,5089,5090,5092 \n" +
+            "                                  INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0  \n" +
+            "                                  -- and e.encounter_type in(2,4,106,176) \n" +
+            "                                  -- and e.encounter_id in (14763811)\n" +
+            "                                  where e.patient_id in ("+ samplePatientList+")\n" +
+            "                            group by  patient_id,concept_id,visit_id\n" +
+            "                                  ORDER BY patient_id ASC,encounter_id DESC";
+
+    System.out.println("SQL is here " + sql);
 
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-      ResultSet.CONCUR_READ_ONLY);
+            ResultSet.CONCUR_READ_ONLY);
     ResultSet rs = stmt.executeQuery(sql);
     rs.last();
     x = rs.getRow();
@@ -2895,44 +2898,50 @@ public class MigrateCareData {
       String obsDateTime = rs.getString("obs_datetime");
 
       String kenyaemr_uuid = "";
-      AMRSGreenCard amrsGreenCard = new AMRSGreenCard();
-      String kenyaemr_encounter_id;
-      String kenyaemr_value = "";
-      if (dataType.equals("2")) {
-        kenyaemr_value = amrsTranslater.translater(value);
-      } else if (dataType.equals("10")) {
-        if (Objects.equals(conceptId, "5632")) {
-          kenyaemr_value = amrsTranslater.translater(value);
-        } else {
-          boolean vcheck = false;
-          if (value.equals("1065")) {
-            vcheck = true;
-          }
-          kenyaemr_value = String.valueOf(vcheck);
-        }
+      List<AMRSGreenCard> amrsGreenCardExist = amrsGreenCardService.findByPatientIdAndVisitIdAndConceptId(patientId, visitId, conceptId);
+      if (!amrsGreenCardExist.isEmpty()) {
+
       } else {
-        kenyaemr_value = value;
+        AMRSGreenCard amrsGreenCard = new AMRSGreenCard();
+        String kenyaemr_encounter_id;
+        String kenyaemr_value = "";
+        if (dataType.equals("2")) {
+          kenyaemr_value = amrsTranslater.translater(value);
+        } else if (dataType.equals("10")) {
+          if (Objects.equals(conceptId, "5632")) {
+            kenyaemr_value = amrsTranslater.translater(value);
+          } else {
+            boolean vcheck = false;
+            if (value.equals("1065")) {
+              vcheck = true;
+            }
+            kenyaemr_value = String.valueOf(vcheck);
+          }
+        } else {
+          kenyaemr_value = value;
+        }
+        amrsGreenCard.setPatientId(patientId);
+        amrsGreenCard.setFormId(formId);
+        amrsGreenCard.setConceptId(conceptId);
+        amrsGreenCard.setEncounterId(encounterId);
+        amrsGreenCard.setValue(value);
+        amrsGreenCard.setConceptDataTypeId(dataType);
+        amrsGreenCard.setVisitId(visitId);
+        amrsGreenCard.setQuestion(question);
+        amrsGreenCard.setObsDateTime(obsDateTime);
+        amrsGreenCard.setKenyaemrEncounterTypeUuid("a0034eee-1940-4e35-847f-97537a35d05e");
+        amrsGreenCard.setKenyaemrFormUuid("22c68f86-bbf0-49ba-b2d1-23fa7ccf0259");
+        amrsGreenCard.setKenyaEmrValue(kenyaemr_value);
+        amrsGreenCard.setKenyaEmrEncounterDateTime(encounterDatetime);
+        String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
+        String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
+        amrsGreenCard.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
+        amrsGreenCard.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+        amrsGreenCardService.save(amrsGreenCard);
       }
-      amrsGreenCard.setPatientId(patientId);
-      amrsGreenCard.setFormId(formId);
-      amrsGreenCard.setConceptId(conceptId);
-      amrsGreenCard.setEncounterId(encounterId);
-      amrsGreenCard.setValue(value);
-      amrsGreenCard.setConceptDataTypeId(dataType);
-      amrsGreenCard.setVisitId(visitId);
-      amrsGreenCard.setQuestion(question);
-      amrsGreenCard.setObsDateTime(obsDateTime);
-      amrsGreenCard.setKenyaemrEncounterTypeUuid("a0034eee-1940-4e35-847f-97537a35d05e");
-      amrsGreenCard.setKenyaemrFormUuid("22c68f86-bbf0-49ba-b2d1-23fa7ccf0259");
-      amrsGreenCard.setKenyaEmrValue(kenyaemr_value);
-      amrsGreenCard.setKenyaEmrEncounterDateTime(encounterDatetime);
-      String kenyaemr_patient_uuid = amrsTranslater.KenyaemrPatientUuid(patientId);
-      String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
-      amrsGreenCard.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
-      amrsGreenCard.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
-      amrsGreenCardService.save(amrsGreenCard);
     }
     GreenCardPayload.processGreenCard(amrsGreenCardService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
+
   }
 
   public static void ordersResults(String server, String username, String password, String locations, String parentUUID, AMRSOrdersResultsService amrsOrdersResultsService, AMRSConceptMappingService amrsConceptMappingService, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {

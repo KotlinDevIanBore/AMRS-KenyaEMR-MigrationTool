@@ -33,6 +33,10 @@ public class AMRSGreenCardService {
     public List<AMRSGreenCard> findByVisitId(String visitId){
         return amrsGreenCardRepository.findByVisitId(visitId);
     }
+    public List<AMRSGreenCard> findByPatientIdAndVisitIdAndConceptId(String patientId,String visitId,String conceptId){
+        return amrsGreenCardRepository.findByPatientIdAndVisitIdAndConceptId(patientId, visitId,conceptId);
+    }
+
 
     public AMRSGreenCard save (AMRSGreenCard amrsGreenCard){
         return amrsGreenCardRepository.save(amrsGreenCard);
