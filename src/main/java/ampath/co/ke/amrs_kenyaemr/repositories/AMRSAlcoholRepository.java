@@ -1,7 +1,6 @@
 package ampath.co.ke.amrs_kenyaemr.repositories;
 
 import ampath.co.ke.amrs_kenyaemr.models.AMRSAlcohol;
-import ampath.co.ke.amrs_kenyaemr.models.AMRSAlcohol;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
