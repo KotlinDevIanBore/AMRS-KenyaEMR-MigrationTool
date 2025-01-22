@@ -2937,8 +2937,10 @@ public class MigrateCareData {
         String kenyaEmrConceptUuid = amrsTranslater.translater(conceptId);
         amrsGreenCard.setKenyaEmrConceptUuid(kenyaEmrConceptUuid);
         amrsGreenCard.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
+        System.out.println("Patient ID "+ patientId+" Kenyaemr Value "+ kenyaemr_value);
         amrsGreenCardService.save(amrsGreenCard);
       }
+
     }
     GreenCardPayload.processGreenCard(amrsGreenCardService, amrsPatientServices, amrsTranslater, KenyaEMRlocationUuid, url, auth);
 
@@ -3555,20 +3557,12 @@ public class MigrateCareData {
   }
 
 
-  public static void defaulterTracing(String server, String username, String password, String locations, String parentUUID, AMRSDefaulterTracingService amrsDefaulterTracingService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, SQLException, JSONException {
-//            List<AMRSPatients> amrsPatientsList = amrsPatientServices.getAll();
-//            String pidss = "";
-//            for (int y = 0; y < amrsPatientsList.size(); y++) {
-//                pidss += amrsPatientsList.get(y).getPersonId() + ",";
-//            }
-//            String pid = pidss.substring(0, pidss.length() - 1);
-//
-//            System.out.println("Patient Id " + pid);
-//
-//
-//            System.out.println("Patient Id " + pid);
+  public static void defaulterTracing(String server, String username, String password, String KenyaEMRlocationUuid, AMRSDefaulterTracingService amrsDefaulterTracingService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws IOException, SQLException, JSONException {
 
-    String samplePatientList = AMRSSamples.getPersonIdList();
+   // String samplePatientList = AMRSSamples.getPersonIdList();
+    List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+    String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+
 
     String sql = "SELECT o.person_id as patient_id,\n" +
       "e.form_id,\n" +
@@ -3585,14 +3579,14 @@ public class MigrateCareData {
       "                FROM amrs.obs o\n" +
       "                INNER JOIN amrs.concept c ON o.concept_id=c.concept_id\n" +
       "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id\n" +
-      "\t\t\t\tand cn.locale_preferred=1\n" +
-      "                AND o.person_id IN(59807)\n" +
+      "  and cn.locale_preferred=1\n" +
+      "                AND o.person_id IN("+ samplePatientList +")\n" +
       "                 -- AND c.concept_id in (66,91,112,364,457,525,909,1093,1486,1487)\n" +
       "                INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 \n" +
       "                and e.encounter_type in(21)\n" +
       "                ORDER BY patient_id ASC,encounter_id DESC";
 
-    System.out.println("locations " + locations + " parentUUID " + parentUUID);
+
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -3646,13 +3640,16 @@ public class MigrateCareData {
       // Call method to create and insert the payload
     }
 
-    CareOpenMRSPayload.defaulterTracing(amrsDefaulterTracingService, amrsTranslater, amrsPatientServices, url, auth);
+    CareOpenMRSPayload.defaulterTracing(amrsDefaulterTracingService, amrsTranslater,KenyaEMRlocationUuid, url, auth);
 
   }
 
-  public static void processOtzActivity(String server, String username, String password, String locations, String parentUUID, AMRSOtzActivityService amrsOtzActivityService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
+  public static void processOtzActivity(String server, String username, String password, String KenyaEMRlocationUuid, AMRSOtzActivityService amrsOtzActivityService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws SQLException, JSONException, ParseException, IOException {
 
-    String samplePatientList = AMRSSamples.getPersonIdList();
+    //String samplePatientList = AMRSSamples.getPersonIdList();
+    List<String> stringPIDsList = amrsPatientServices.getAllPatientID();
+    String samplePatientList = stringPIDsList.toString().substring(1, stringPIDsList.toString().length() - 1);
+
 
 
     String sql = "SELECT o.person_id as patient_id,e.form_id,e.visit_id,o.concept_id,o.encounter_id,o.obs_datetime,e.encounter_datetime,  \n" +
@@ -3667,7 +3664,7 @@ public class MigrateCareData {
       "                INNER JOIN amrs.concept_name cn ON o.concept_id = cn.concept_id \n" +
       "                                  and cn.locale_preferred=1  \n" +
       "                               -- LEFT JOIN amrs.concept_name cn_answer ON o.value_coded = cn_answer.concept_id and cn_answer.locale_preferred=1\\n  +\n" +
-      "                       AND o.person_id IN(3858, 3907)    \n" +
+      "                       AND o.person_id IN("+samplePatientList+")    \n" +
       "                                   AND c.concept_id in (11032,11037, 11033, 12300, 11034, 12272, 11035, 9302, 10984, 9467) \n" +
       "                                   INNER JOIN amrs.encounter e ON o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0    \n" +
       "                                   and e.encounter_type in(284) \n" +
@@ -3676,7 +3673,6 @@ public class MigrateCareData {
       "                                   encounter_id DESC";
 
 
-    System.out.println("locations " + locations + " parentUUID " + parentUUID);
     Connection con = DriverManager.getConnection(server, username, password);
     int x = 0;
     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -3726,7 +3722,7 @@ public class MigrateCareData {
       amrsOtzActivity.setKenyaemrPatientUuid(kenyaemr_patient_uuid);
       amrsOtzActivityService.save(amrsOtzActivity);
     }
-    OTZPayload.processOTZActivity(amrsOtzActivityService, amrsPatientServices, amrsTranslater, url, auth);
+    OTZPayload.processOTZActivity(amrsOtzActivityService, amrsTranslater,KenyaEMRlocationUuid, url, auth);
   }
 
 

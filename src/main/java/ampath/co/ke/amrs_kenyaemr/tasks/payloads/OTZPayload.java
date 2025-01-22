@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class OTZPayload {
-    public static void processOTZActivity(AMRSOtzActivityService amrsOtzActivityService, AMRSPatientServices amrsPatientServices, AMRSTranslater amrsTranslater, String url, String auth) throws JSONException, IOException {
+    public static void processOTZActivity(AMRSOtzActivityService amrsOtzActivityService, AMRSTranslater amrsTranslater,String KenyaEMRlocationUuid, String url, String auth) throws JSONException, IOException {
         List<AMRSOtzActivity> amrsOtzActivities = amrsOtzActivityService.findByResponseCodeIsNull();
         if (amrsOtzActivities.size() > 0) {
             // Use a Set to store unique encounter IDs
@@ -60,7 +60,7 @@ public class OTZPayload {
                     jsonObservation.put("concept", amrsOtzActivityEncounters.get(x).getKenyaEmrConceptUuid());
                     jsonObservation.put("obsDatetime", obsDatetime);
                     jsonObservation.put("value", value);
-                    jsonObservation.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                    jsonObservation.put("location", KenyaEMRlocationUuid);
 
                     patientuuid = amrsTranslater.KenyaemrPatientUuid(amrsOtzActivityEncounters.get(x).getPatientId());
                     formuuid = amrsOtzActivityEncounters.get(x).getKenyaemrFormUuid();
@@ -77,7 +77,7 @@ public class OTZPayload {
                     jsonEncounter.put("patient", patientuuid);
                     jsonEncounter.put("encounterDatetime", encounterDatetime);
                     jsonEncounter.put("encounterType", encounteruuid);
-                    jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                    jsonEncounter.put("location", KenyaEMRlocationUuid);
                     jsonEncounter.put("visit", visituuid);
                     jsonEncounter.put("obs", jsonObservations);
                     System.out.println("Payload for is here " + jsonEncounter.toString());
@@ -105,6 +105,14 @@ public class OTZPayload {
                             AMRSOtzActivity at = amrsOtzActivityEncounters.get(x);
                             at.setResponseCode(String.valueOf(rescode));
                             at.setResponseCode("201");
+                            System.out.println("Imefika Hapa na data " + rescode);
+                            amrsOtzActivityService.save(at);
+                        }
+                    }else{
+                        for (int x = 0; x < amrsOtzActivityEncounters.size(); x++) {
+                            AMRSOtzActivity at = amrsOtzActivityEncounters.get(x);
+                            at.setResponseCode(String.valueOf(rescode));
+                            at.setResponseCode("400");
                             System.out.println("Imefika Hapa na data " + rescode);
                             amrsOtzActivityService.save(at);
                         }
