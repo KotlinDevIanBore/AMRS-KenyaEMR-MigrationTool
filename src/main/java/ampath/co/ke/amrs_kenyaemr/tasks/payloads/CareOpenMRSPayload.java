@@ -294,7 +294,7 @@ public class CareOpenMRSPayload {
                String patient = amrsTranslater.KenyaemrPatientUuid(encounterId);
                String visitId = amrsTranslater.kenyaemrVisitUuid(regimenSwitchList.get(x).getVisitId());
                     //List<AMRSPatients> amrsPatients = patient;
-                    if (visitId!="") {
+                    if (!Objects.equals(visitId, "")) {
 
                         //PLAN 1255AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                         //START 1256AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -708,6 +708,7 @@ public class CareOpenMRSPayload {
                     jsonObservationD.put("person", kenyaemrPatientUuid);
                     jsonObservationD.put("concept", artRefillList.get(x).getKenyaEmrConceptUuid());
                     jsonObservationD.put("value", artRefillList.get(x).getKenyaEmrValue());
+                    jsonObservationD.put("location", KenyaEMRlocationUuid);
                     jsonObservationD.put("obsDatetime", artRefillList.get(x).getObsDateTime());
                     if(!Objects.equals(artRefillList.get(x).getKenyaEmrConceptUuid(), "") && !Objects.equals(artRefillList.get(x).getKenyaEmrValue(), "") ) {
                         jsonObservations.put(jsonObservationD);
@@ -767,7 +768,7 @@ public class CareOpenMRSPayload {
     }
 }
 
-public static void defaulterTracing(AMRSDefaulterTracingService amrsDefaulterTracingService, AMRSTranslater amrsTranslater, AMRSPatientServices amrsPatientServices, String url, String auth) throws  IOException, JSONException {
+public static void defaulterTracing(AMRSDefaulterTracingService amrsDefaulterTracingService, AMRSTranslater amrsTranslater, String KenyaEMRlocationUuid, String url, String auth) throws  IOException, JSONException {
     List<AMRSDefaulterTracing> amrsDefaulterTracings = amrsDefaulterTracingService.findByResponseCodeIsNull();
 
     if (!amrsDefaulterTracings.isEmpty()) {
@@ -802,6 +803,7 @@ public static void defaulterTracing(AMRSDefaulterTracingService amrsDefaulterTra
                 jsonObservationD.put("concept", amrsDefaulterTracingList.get(x).getKenyaEmrConceptUuid());
                 jsonObservationD.put("value", amrsDefaulterTracingList.get(x).getKenyaEmrValueUuid());
                 jsonObservationD.put("obsDatetime", amrsDefaulterTracingList.get(x).getObsDatetime());
+                jsonObservationD.put("location", KenyaEMRlocationUuid);
                 if(!Objects.equals(amrsDefaulterTracingList.get(x).getKenyaEmrConceptUuid(), "") && !Objects.equals(amrsDefaulterTracingList.get(x).getKenyaEmrValueUuid(), "") ) {
                     jsonObservations.put(jsonObservationD);
                 }
@@ -816,7 +818,7 @@ public static void defaulterTracing(AMRSDefaulterTracingService amrsDefaulterTra
                 jsonEncounter.put("encounterDatetime", obsDatetime);
                 jsonEncounter.put("obs", jsonObservations);
                 jsonEncounter.put("encounterType", "1495edf8-2df2-11e9-b210-d663bd873d93");
-                jsonEncounter.put("location", "37f6bd8d-586a-4169-95fa-5781f987fe62");
+                jsonEncounter.put("location", KenyaEMRlocationUuid);
 //            }
 
             // Send API request

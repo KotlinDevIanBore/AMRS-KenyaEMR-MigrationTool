@@ -18,6 +18,7 @@ public class AMRSGreenCard {
     private String encounterId;
     private String visitId;
     private String kenyaemrVisitUuid;
+    @Column(name = "value", columnDefinition = "LONGTEXT")
     private String value;
     private String obsDateTime;
     private String responseCode;
@@ -25,6 +26,8 @@ public class AMRSGreenCard {
     private String kenyaemrPatientUuid;
 
     private String kenyaEmrConceptUuid;
+
+    @Column(name = "kenyaEmrValue", columnDefinition = "LONGTEXT")
     private String kenyaEmrValue;
     private String Question;
     private String kenyaEmrEncounterDateTime;
